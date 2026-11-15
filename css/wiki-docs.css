@@ -255,6 +255,14 @@ html:not(.wiki-js) .wiki-branch {
   line-height: 1.5;
   max-width: 62ch;
 }
+.wiki-entry-path {
+  grid-column: 2;
+  grid-row: 1;
+  justify-self: end;
+  font-family: var(--hud-mono);
+  font-size: 0.72rem;
+  color: var(--q2-text-muted);
+}
 .wiki-entry-date {
   grid-column: 2;
   grid-row: 1 / span 2;
@@ -371,6 +379,11 @@ html:not(.wiki-js) .wiki-branch {
   .wiki-entry-date {
     grid-column: 1;
     grid-row: auto;
+  }
+  .wiki-entry-path {
+    grid-column: 1;
+    grid-row: auto;
+    justify-self: start;
   }
 }
 @media (prefers-reduced-motion: reduce) {
