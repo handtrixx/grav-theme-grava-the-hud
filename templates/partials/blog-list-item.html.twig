@@ -1,24 +1,26 @@
-<article class="card h-entry">
-    {% set image = page.media.images|first %}
+{% set image = page.media.images|first %}
+{# News-site row: one article per row, preview image on the left.
+   Layout lives in css/custom.css (.blog-row). #}
+<article class="blog-row h-entry">
     {% if image %}
-    <a class="card-image" href="{{ page.url }}">{{ image.cropZoom(800, 420).html|raw }}</a>
+    <a class="blog-row-media" href="{{ page.url }}" tabindex="-1" aria-hidden="true">
+        {{ image.cropZoom(480, 300).html|raw }}
+    </a>
     {% endif %}
-    <header class="card-header">
-        <div class="card-subtitle">
+    <div class="blog-row-body">
+        <div class="blog-row-meta">
             {% include 'partials/blog/date.html.twig' %}
         </div>
-        <div class="card-title">
-            {% include 'partials/blog/title.html.twig' with {title_level: 'h3'} %}
+        {% include 'partials/blog/title.html.twig' with {title_level: 'h3'} %}
+        <div class="blog-row-summary">
+            {% if page.summary != page.content %}
+                {{ page.summary|raw }}
+            {% else %}
+                {{ page.content|truncate(280)|raw }}
+            {% endif %}
         </div>
-    </header>
-    <div class="card-body">
-        {% if page.summary != page.content %}
-            {{ page.summary|raw }}
-        {% else %}
-            {{ page.content|raw }}
-        {% endif %}
+        <div class="blog-row-tags">
+            {% include 'partials/blog/taxonomy.html.twig' %}
+        </div>
     </div>
-    <footer class="card-footer">
-        {% include 'partials/blog/taxonomy.html.twig' %}
-    </footer>
 </article>

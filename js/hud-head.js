@@ -43,7 +43,7 @@
     let loaded = false;
 
     new GLTFLoader().load(
-      '/user/themes/quark-hud/js/models/LeePerrySmith.glb',
+      '/user/themes/grava-the-hud/js/models/LeePerrySmith.glb',
       (gltf) => {
         const src = gltf.scene;
         src.updateMatrixWorld(true);

@@ -13,7 +13,7 @@
     {% set rest_items = rest_items|merge([p]) %}
   {% endif %}
 {% endfor %}
-{% set nav_items = nav_items|merge(rest_items) %}
+{% set nav_items = nav_items|merge(rest_items|sort((p, q) => p.header.order <=> q.header.order)) %}
 <ul {{ tree ? "class=\"tree navigation\"" : "class=\"navigation\"" }}>
     {% for p in nav_items %}
       {% set active_page = (p.active or p.activeChild) ? 'active' : '' %}

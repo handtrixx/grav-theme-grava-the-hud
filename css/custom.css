@@ -1,8 +1,9 @@
 /*
- * Quark 2 — user customizations
+ * Grava the HUD — user customizations
  *
- * "Terminal HUD" redesign, 2026-11-09.
- * Previous version backed up at /data/docker/niklas-stephan.de/backup-design-2026-11-09/
+ * "Terminal HUD" redesign, 2026-11-09 (forked from Quark 2).
+ * Previous versions backed up on the live host under
+ * /data/docker/niklas-stephan.de/backup-* dirs.
  * This file is loaded last (priority 80), so rules here override theme.css.
  *
  * Look: dark HUD — JetBrains Mono for UI chrome (nav, labels, meta, footer),
@@ -774,4 +775,269 @@ body.hud-flat #body-wrapper > .container > .content-item p {
     align-items: center;
     gap: 6px;
   }
+}
+
+/* ---------- Blog listing: news-site rows ----------
+   One article per row, preview image on the left, meta + title + summary on
+   the right. Rows are divided by hairlines instead of cards (news feel); on
+   hover the row lifts and the accent line lights up. */
+
+.blog-listing .blog-page-header {
+  text-align: left;
+  margin-inline: 0;
+}
+.blog-listing .blog-grid {
+  grid-template-columns: minmax(0, 1fr);
+  gap: 0;
+}
+.blog-row {
+  display: grid;
+  grid-template-columns: minmax(200px, 300px) minmax(0, 1fr);
+  gap: clamp(1rem, 2.5vw, 2rem);
+  align-items: center;
+  padding: clamp(1.1rem, 2.5vw, 1.6rem) 0;
+  border-bottom: 1px solid var(--q2-divider);
+  transition: border-color 0.22s ease;
+}
+.blog-row:first-child {
+  border-top: 1px solid var(--q2-divider);
+}
+.blog-row:hover {
+  border-bottom-color: var(--hud-accent-line);
+}
+.blog-row-media {
+  display: block;
+  border-radius: var(--q2-radius-md);
+  overflow: hidden;
+  border: 1px solid var(--q2-divider);
+  background: var(--q2-bg-elev);
+  transition: border-color 0.22s ease, box-shadow 0.22s ease;
+}
+.blog-row-media img {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 480 / 300;
+  object-fit: cover;
+  transition: transform 0.35s ease;
+}
+.blog-row:hover .blog-row-media {
+  border-color: var(--hud-accent-line);
+  box-shadow: 0 0 24px -8px var(--hud-accent-glow);
+}
+.blog-row:hover .blog-row-media img {
+  transform: scale(1.03);
+}
+.blog-row-meta {
+  font-family: var(--hud-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  color: var(--q2-text-muted);
+  margin-bottom: 0.4rem;
+}
+.blog-row-body h3 {
+  margin: 0 0 0.5rem;
+  font-size: clamp(1.15rem, 2.2vw, 1.45rem);
+  line-height: 1.3;
+}
+.blog-row-body h3 a {
+  color: var(--q2-text-strong);
+  text-decoration: none;
+}
+.blog-row-body h3 a:hover {
+  color: var(--hud-accent);
+}
+.blog-row-summary {
+  color: var(--q2-text-muted);
+  font-size: 0.95rem;
+  line-height: 1.6;
+  max-width: 62ch;
+}
+.blog-row-summary p {
+  margin: 0;
+}
+/* Grav builds the summary from the article's own content, which starts with
+   its `#` heading — the row already shows the title, so hide it in the summary. */
+.blog-row-summary h1,
+.blog-row-summary h2 {
+  display: none;
+}
+.blog-row-tags {
+  margin-top: 0.6rem;
+}
+@media (max-width: 720px) {
+  .blog-row {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.9rem;
+  }
+  .blog-row-media {
+    max-width: 260px;
+  }
+}
+
+/* ---------- Wiki listing: directory tree ----------
+   Nested list with indent guides; folders carry a count chip. The active
+   branch lights up in the accent colour. */
+
+.wiki-page-header {
+  margin: 0 0 clamp(1.5rem, 3vw, 2.5rem);
+}
+.wiki-page-header h1 {
+  margin: 0 0 0.5rem;
+}
+.wiki-page-intro {
+  margin-top: 1rem;
+  color: var(--q2-text-muted);
+  font-size: 1rem;
+  line-height: 1.6;
+  max-width: 68ch;
+}
+.wiki-tree {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  font-family: var(--hud-mono);
+  font-size: 0.88rem;
+}
+/* Pico draws its own bullet markers via li::before — suppress them here. */
+.wiki-tree li {
+  list-style: none;
+}
+.wiki-tree li::before {
+  content: none;
+  display: none;
+}
+.wiki-tree .wiki-tree {
+  margin-left: 1.1rem;
+  padding-left: 0.9rem;
+  border-left: 1px solid var(--q2-divider);
+}
+.wiki-node {
+  margin: 0.15rem 0;
+}
+.wiki-node-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 0.35rem 0.6rem;
+  border-radius: var(--q2-radius-sm);
+  color: var(--q2-text);
+  text-decoration: none;
+  transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+  border: 1px solid transparent;
+}
+.wiki-node-link i {
+  font-size: 0.8rem;
+  opacity: 0.55;
+  width: 1.1em;
+  text-align: center;
+}
+.wiki-dir-link {
+  color: var(--q2-text-strong);
+  font-weight: 600;
+}
+.wiki-node-link:hover {
+  color: var(--hud-accent);
+  background: color-mix(in oklab, var(--hud-accent) 8%, transparent);
+  border-color: var(--hud-accent-line);
+}
+.wiki-node-link:hover i {
+  opacity: 0.9;
+}
+.wiki-node.is-active > .wiki-node-link {
+  color: var(--hud-accent);
+  background: color-mix(in oklab, var(--hud-accent) 13%, transparent);
+  border-color: var(--hud-accent-line);
+}
+.wiki-node-count {
+  font-size: 0.68rem;
+  letter-spacing: 0.06em;
+  color: var(--q2-text-muted);
+  border: 1px solid var(--q2-divider);
+  border-radius: 999px;
+  padding: 0.1rem 0.45rem;
+}
+
+/* ---------- Zoo: project cards ---------- */
+
+.zoo-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: clamp(1.25rem, 2.5vw, 1.75rem);
+  margin-top: clamp(1.5rem, 3vw, 2.5rem);
+}
+@media (min-width: 900px) {
+  .zoo-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+.zoo-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  padding: clamp(1.4rem, 3vw, 2rem);
+  border: 1px solid var(--q2-divider);
+  border-radius: var(--q2-radius-lg);
+  background: var(--q2-bg-elev);
+  transition: border-color 0.22s ease, box-shadow 0.22s ease, transform 0.22s ease;
+}
+.zoo-card:hover {
+  transform: translateY(-4px);
+  border-color: var(--hud-accent-line);
+  box-shadow:
+    0 14px 34px -12px rgba(0, 0, 0, 0.35),
+    0 0 26px -6px var(--hud-accent-glow);
+}
+.zoo-index {
+  font-family: var(--hud-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.1em;
+  color: var(--hud-accent);
+  margin-bottom: 0.8rem;
+}
+.zoo-kicker {
+  display: block;
+  font-family: var(--hud-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--q2-text-muted);
+  margin-bottom: 0.5rem;
+}
+.zoo-card h3 {
+  margin: 0 0 0.7rem;
+  font-size: clamp(1.3rem, 2.4vw, 1.6rem);
+}
+.zoo-card p {
+  margin: 0 0 1.1rem;
+  color: var(--q2-text-muted);
+  line-height: 1.65;
+}
+.zoo-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  margin-top: auto;
+}
+.zoo-links a {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.4rem 0.8rem;
+  border: 1px solid var(--q2-divider);
+  border-radius: 999px;
+  font-family: var(--hud-mono);
+  font-size: 0.78rem;
+  letter-spacing: 0.05em;
+  color: var(--q2-text);
+  text-decoration: none;
+  transition: border-color 0.15s ease, color 0.15s ease, background 0.15s ease;
+}
+.zoo-links a:hover {
+  color: var(--hud-accent);
+  border-color: var(--hud-accent-line);
+  background: color-mix(in oklab, var(--hud-accent) 10%, transparent);
+}
+.zoo-links i {
+  font-size: 0.85rem;
 }
