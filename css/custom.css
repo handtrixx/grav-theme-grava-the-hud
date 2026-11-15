@@ -645,6 +645,12 @@ body.hud-flat #body-wrapper > .container > .content-item {
   -webkit-backdrop-filter: none;
   padding-inline: clamp(1rem, 4vw, 3.25rem);
 }
+/* theme.css paints a card shadow under :root[data-theme="dark"], whose
+   selector is more specific than the flat override above (extra class-level
+   selectors), so reset the shadow for dark mode explicitly too. */
+:root[data-theme='dark'] body.hud-flat #body-wrapper > .container > .content-item {
+  box-shadow: none;
+}
 /* terminal header band */
 body.hud-flat #body-wrapper > .container > .content-item > h1 {
   color: var(--hud-accent);
