@@ -16,7 +16,7 @@
     {% if text and text|lower != p.title|lower %}
         {% set clean = [] %}
         {% for line in text|split('\n') %}
-            {% if line|trim and not line starts with ':::' and not line contains '![' %}
+            {% if line|trim and not (line starts with ':::') and not ('![' in line) %}
                 {% set clean = clean|merge([line|trim]) %}
             {% endif %}
         {% endfor %}
