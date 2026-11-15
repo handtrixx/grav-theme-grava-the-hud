@@ -78,6 +78,7 @@
   background: transparent;
   color: var(--q2-text-muted);
   margin: 0;
+  white-space: nowrap;
 }
 .wiki-search-submit:hover {
   color: var(--q2-accent);
