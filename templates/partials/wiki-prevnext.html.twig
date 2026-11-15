@@ -1,9 +1,8 @@
 {# Previous / next page within the same folder, in the same order the sidebar
    uses (by title). Only pages, not folders. Two quirks of Grav's Twig:
-   `sort` keeps the original array keys (so loop.previtem/nextitem and index
-   lookups fail), and a `set` inside a for-loop does not survive the loop —
-   hence sorting first, then re-indexing via merge, and rendering inside the
-   loop. #}
+   `sort` keeps the original array keys (so re-index via merge), and
+   loop.previtem/nextitem do not resolve here — neighbour pages are looked up
+   by position instead. #}
 {% set siblings = [] %}
 {% for s in page.parent.children|filter(p => p.published)|sort((a, b) => a.title <=> b.title) %}
     {% if s.children|filter(p => p.published)|length == 0 %}
@@ -13,17 +12,19 @@
 
 {% for s in siblings %}
     {% if s.url == page.url %}
+        {% set prev = loop.index0 > 0 ? siblings[loop.index0 - 1] : null %}
+        {% set next = loop.index0 < siblings|length - 1 ? siblings[loop.index0 + 1] : null %}
         <nav class="wiki-prevnext" aria-label="{{ 'THEME_GRAVA_HUD.WIKI.ARIA.PREVNEXT'|t|e('html_attr') }}">
-            {% if loop.previtem %}
-                <a class="wiki-prevnext-link wiki-prev" href="{{ loop.previtem.url }}">
+            {% if prev %}
+                <a class="wiki-prevnext-link wiki-prev" href="{{ prev.url }}">
                     <span class="wiki-prevnext-label">{{ 'THEME_GRAVA_HUD.WIKI.PREV'|t }}</span>
-                    <span class="wiki-prevnext-title">{{ loop.previtem.title }}</span>
+                    <span class="wiki-prevnext-title">{{ prev.title }}</span>
                 </a>
             {% endif %}
-            {% if loop.nextitem %}
-                <a class="wiki-prevnext-link wiki-next" href="{{ loop.nextitem.url }}">
+            {% if next %}
+                <a class="wiki-prevnext-link wiki-next" href="{{ next.url }}">
                     <span class="wiki-prevnext-label">{{ 'THEME_GRAVA_HUD.WIKI.NEXT'|t }}</span>
-                    <span class="wiki-prevnext-title">{{ loop.nextitem.title }}</span>
+                    <span class="wiki-prevnext-title">{{ next.title }}</span>
                 </a>
             {% endif %}
         </nav>
