@@ -36,10 +36,11 @@
   var input = document.querySelector('.wiki-search-input');
   if (input) {
     var nodes = Array.prototype.slice.call(document.querySelectorAll('.wiki-node'));
-    var nodeTitle = {};
+    // DOM nodes cannot be plain-object keys (they coerce to one string) — use Maps.
+    var nodeTitle = new Map();
     nodes.forEach(function (li) {
       var t = li.querySelector('.wiki-node-title');
-      nodeTitle[li] = (t ? t.textContent : li.textContent).toLowerCase();
+      nodeTitle.set(li, (t ? t.textContent : li.textContent).toLowerCase());
     });
 
     function filter(term) {
@@ -47,20 +48,20 @@
         nodes.forEach(function (li) { li.hidden = false; });
         return;
       }
-      var hits = {};
+      var hits = new Map();
       nodes.forEach(function (li) {
-        if (nodeTitle[li].indexOf(term) !== -1) {
+        if (nodeTitle.get(li).indexOf(term) !== -1) {
           // reveal the node and every ancestor branch
           var el = li;
           while (el && el.classList && el.classList.contains('wiki-node')) {
-            hits[el] = true;
+            hits.set(el, true);
             el = el.parentElement ? el.parentElement.closest('.wiki-node') : null;
           }
           var box = li.parentElement;
           if (box && box.classList.contains('wiki-branch')) box.classList.add('is-open');
         }
       });
-      nodes.forEach(function (li) { li.hidden = !hits[li]; });
+      nodes.forEach(function (li) { li.hidden = !hits.has(li); });
     }
 
     input.addEventListener('input', function () {
