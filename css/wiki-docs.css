@@ -178,6 +178,30 @@ html:not(.wiki-js) .wiki-branch {
   padding-left: 1.1rem;
 }
 
+/* Breadcrumbs on wiki pages (Grav 2 has no breadcrumb service; the theme
+   builds the trail itself in partials/wiki-breadcrumbs.html.twig). */
+.breadcrumbs ol {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  list-style: none;
+  margin: 0 0 1rem;
+  padding: 0;
+  font-family: var(--hud-mono);
+  font-size: 0.78rem;
+}
+.breadcrumbs li::before {
+  content: none;
+}
+.breadcrumbs li:not(:last-child)::after {
+  content: '/';
+  color: var(--q2-text-muted);
+  margin-left: 0.35rem;
+}
+.breadcrumbs li[aria-current="page"] {
+  color: var(--q2-text-muted);
+}
+
 /* Listing entries in the main column */
 .wiki-section {
   margin: 1.75rem 0 0;

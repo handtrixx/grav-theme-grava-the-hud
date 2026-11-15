@@ -1,0 +1,24 @@
+{% import _self as wb %}
+
+{# Grav 2 has no breadcrumbs service, so build the trail from the page chain:
+   every ancestor up to the wiki root, then the current page. #}
+{% macro trail(p, depth) %}
+    {% if p and depth > 0 and p.route != '' %}
+        {% if p.route == '/wiki' %}
+            <li><a href="{{ p.url }}">{{ p.title }}</a></li>
+        {% else %}
+            {{ wb.trail(p.parent, depth - 1) }}
+            <li><a href="{{ p.url }}">{{ p.title }}</a></li>
+        {% endif %}
+    {% endif %}
+{% endmacro %}
+
+{% set parent = page.parent %}
+{% if parent and parent.route != '' %}
+    <nav class="breadcrumbs" aria-label="{{ 'THEME_GRAVA_HUD.ARIA.BREADCRUMB'|t|e('html_attr') }}">
+        <ol>
+            {{ wb.trail(parent, 6) }}
+            <li aria-current="page">{{ page.title }}</li>
+        </ol>
+    </nav>
+{% endif %}

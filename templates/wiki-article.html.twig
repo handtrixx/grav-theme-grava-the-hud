@@ -10,7 +10,7 @@
             {% embed 'partials/wiki-layout.html.twig' %}
                 {% block item %}
                     {% if show_breadcrumbs %}
-                        {% include 'partials/breadcrumbs.html.twig' %}
+                        {% include 'partials/wiki-breadcrumbs.html.twig' %}
                     {% endif %}
                     <article class="content-item">
                         {{ page.content|raw }}

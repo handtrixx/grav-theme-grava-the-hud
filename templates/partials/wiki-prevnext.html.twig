@@ -1,5 +1,6 @@
 {# Previous / next page within the same folder, in the same order the sidebar
-   uses (by title). Only pages, not folders. #}
+   uses (by title). Only pages, not folders. The nav renders inside the loop:
+   in Twig 3 a `set` inside a for-loop does not survive the loop. #}
 {% set siblings = [] %}
 {% for s in page.parent.children|filter(p => p.published) %}
     {% if s.children|filter(p => p.published)|length == 0 %}
@@ -8,28 +9,21 @@
 {% endfor %}
 {% set siblings = siblings|sort((a, b) => a.title <=> b.title) %}
 
-{% set prev = null %}
-{% set next = null %}
 {% for s in siblings %}
     {% if s.url == page.url %}
-        {% set prev = loop.previtem %}
-        {% set next = loop.nextitem %}
+        <nav class="wiki-prevnext" aria-label="{{ 'THEME_GRAVA_HUD.WIKI.ARIA.PREVNEXT'|t|e('html_attr') }}">
+            {% if loop.previtem %}
+                <a class="wiki-prevnext-link wiki-prev" href="{{ loop.previtem.url }}">
+                    <span class="wiki-prevnext-label">{{ 'THEME_GRAVA_HUD.WIKI.PREV'|t }}</span>
+                    <span class="wiki-prevnext-title">{{ loop.previtem.title }}</span>
+                </a>
+            {% endif %}
+            {% if loop.nextitem %}
+                <a class="wiki-prevnext-link wiki-next" href="{{ loop.nextitem.url }}">
+                    <span class="wiki-prevnext-label">{{ 'THEME_GRAVA_HUD.WIKI.NEXT'|t }}</span>
+                    <span class="wiki-prevnext-title">{{ loop.nextitem.title }}</span>
+                </a>
+            {% endif %}
+        </nav>
     {% endif %}
 {% endfor %}
-
-{% if prev or next %}
-    <nav class="wiki-prevnext" aria-label="{{ 'THEME_GRAVA_HUD.WIKI.ARIA.PREVNEXT'|t|e('html_attr') }}">
-        {% if prev %}
-            <a class="wiki-prevnext-link wiki-prev" href="{{ prev.url }}">
-                <span class="wiki-prevnext-label">{{ 'THEME_GRAVA_HUD.WIKI.PREV'|t }}</span>
-                <span class="wiki-prevnext-title">{{ prev.title }}</span>
-            </a>
-        {% endif %}
-        {% if next %}
-            <a class="wiki-prevnext-link wiki-next" href="{{ next.url }}">
-                <span class="wiki-prevnext-label">{{ 'THEME_GRAVA_HUD.WIKI.NEXT'|t }}</span>
-                <span class="wiki-prevnext-title">{{ next.title }}</span>
-            </a>
-        {% endif %}
-    </nav>
-{% endif %}

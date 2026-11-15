@@ -12,6 +12,9 @@
         <div class="container">
             {% embed 'partials/wiki-layout.html.twig' %}
                 {% block item %}
+                    {% if show_breadcrumbs %}
+                        {% include 'partials/wiki-breadcrumbs.html.twig' %}
+                    {% endif %}
                     {% if children|length %}
                         <header class="wiki-page-header">
                             <h1>{{ page.title }}</h1>
@@ -24,9 +27,6 @@
                         </header>
                         {% include 'partials/wiki-listing.html.twig' %}
                     {% else %}
-                        {% if show_breadcrumbs %}
-                            {% include 'partials/breadcrumbs.html.twig' %}
-                        {% endif %}
                         <article class="content-item">
                             {{ page.content|raw }}
                         </article>
