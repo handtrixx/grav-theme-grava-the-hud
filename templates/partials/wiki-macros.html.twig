@@ -3,25 +3,32 @@
 {# Shared row helpers, imported by wiki-listing and wiki-search-results.
    This file defines macros only — importing it renders nothing of its own. #}
 
+{% macro clean_text(text) %}
+    {{ text|replace({'🌲 ': '', '🎵 ': '', '💬 ': '', '📁 ': '', '🔑 ': '', '🔒 ': '', '🔍 ': '', '📖 ': '', '🗄️ ': '', '🖥️ ': '', '🛡️ ': '', '🎬 ': '', '📚 ': '', '🧰 ': '', '🎯 ': '', '🔧 ': '', '🐳 ': '', '📝 ': '', '🌐 ': '', '⚙️ ': '', '📡 ': '', '🅿️ ': '', '🏕️ ': '', '💡 ': '', '🖨️ ': '', '🌲': '', '🎵': '', '💬': '', '📁': '', '🔑': '', '🔒': '', '🔍': '', '📖': '', '🗄️': '', '🖥️': '', '🛡️': '', '🎬': '', '📚': '', '🧰': '', '🎯': '', '🔧': '', '🐳': '', '📝': '', '🌐': '', '⚙️': '', '📡': '', '🅿️': '', '🏕️': '', '💡': '', '🖨️': ''})|trim }}
+{% endmacro %}
+
 {% macro clean_title(p) %}
-    {% set t = p.title %}
-    {{ t|replace({'🌲 ': '', '🎵 ': '', '💬 ': '', '📁 ': '', '🔑 ': '', '🔒 ': '', '🔍 ': '', '📖 ': '', '🗄️ ': '', '🖥️ ': '', '🛡️ ': '', '🎬 ': '', '📚 ': '', '🧰 ': '', '🎯 ': '', '🔧 ': '', '🐳 ': '', '📝 ': '', '🌐 ': '', '⚙️ ': '', '📡 ': '', '🅿️ ': '', '🏕️ ': '', '💡 ': '', '🖨️ ': ''}) }}
+    {{ wm.clean_text(p.title) }}
 {% endmacro %}
 
 {% macro excerpt(p) %}
-    {# Auto excerpt: description if set, else the summary with raw-markdown
-       noise (alert markers, image lines) dropped; skipped when it just
+    {# Auto excerpt: description if set, else the summary. Raw-markdown noise
+       (alert markers, image lines) is dropped, the emoji decoration and the
+       auto-prepended title are stripped; nothing shown when what remains
        repeats the title. #}
     {% set text = p.header.description ?: (p.summary|striptags|trim) %}
-    {% if text and text|lower != p.title|lower %}
+    {% if text %}
         {% set clean = [] %}
         {% for line in text|split('\n') %}
             {% if line|trim and not (line starts with ':::') and not ('![' in line) %}
                 {% set clean = clean|merge([line|trim]) %}
             {% endif %}
         {% endfor %}
-        {% set text = clean|join(' ') %}
-        {% if text %}
+        {% set text = wm.clean_text(clean|join(' ')) %}
+        {% if text|lower starts with p.title|lower %}
+            {% set text = text|slice(p.title|length)|trim %}
+        {% endif %}
+        {% if text and text|lower != p.title|lower %}
             <p class="wiki-entry-excerpt">{{ text|length > 220 ? text|slice(0, 220) ~ '…' : text }}</p>
         {% endif %}
     {% endif %}
