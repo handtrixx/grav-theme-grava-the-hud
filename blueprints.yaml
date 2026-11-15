@@ -8,9 +8,9 @@ author:
   name: Niklas Stephan
   email: mail@niklas-stephan.de
   url: https://niklas-stephan.de
-homepage: https://github.com/handtrixxx/grav-theme-grava-the-hud
+homepage: https://github.com/handtrixx/grav-theme-grava-the-hud
 keywords: hud, grava, blades, pico, theme, grav, modern, fast, responsive, html5, dark-mode
-bugs: https://github.com/handtrixxx/grav-theme-grava-the-hud/issues
+bugs: https://github.com/handtrixx/grav-theme-grava-the-hud/issues
 license: MIT
 compatibility:
   grav: ['2.1']

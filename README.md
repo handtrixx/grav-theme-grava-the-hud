@@ -34,7 +34,7 @@ bin/gpm install grav-theme-grava-the-hud
 Clone into your Grav install and point Grav at it in `user/system.yaml`:
 
 ```bash
-git clone https://github.com/handtrixxx/grav-theme-grava-the-hud user/themes/grava-the-hud
+git clone https://github.com/handtrixx/grav-theme-grava-the-hud user/themes/grava-the-hud
 ```
 
 ```yaml
