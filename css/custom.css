@@ -1,0 +1,777 @@
+/*
+ * Quark 2 — user customizations
+ *
+ * "Terminal HUD" redesign, 2026-11-09.
+ * Previous version backed up at /data/docker/niklas-stephan.de/backup-design-2026-11-09/
+ * This file is loaded last (priority 80), so rules here override theme.css.
+ *
+ * Look: dark HUD — JetBrains Mono for UI chrome (nav, labels, meta, footer),
+ * ambient aurora + grid background, glass nav with glowing active pill,
+ * glowing card hover, scroll-reveal, grain texture, terminal hero on home.
+ * All motion is disabled under prefers-reduced-motion.
+ */
+
+/* ---------- Fonts ---------- */
+
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-weight: 400 700;
+  font-display: swap;
+  src: url('../fonts/jetbrains-mono/jbm-latin.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-weight: 400 700;
+  font-display: swap;
+  src: url('../fonts/jetbrains-mono/jbm-latin-ext.woff2') format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+
+:root {
+  --hud-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+  --hud-accent: #18a98a;
+  --hud-accent-glow: color-mix(in oklab, var(--hud-accent) 35%, transparent);
+  --hud-accent-line: color-mix(in oklab, var(--hud-accent) 45%, transparent);
+}
+
+/* ---------- Ambient background: grid + aurora + grain ---------- */
+
+/* theme.css paints solid backgrounds on body and #body-wrapper, which cover
+ * the z-index:-1 layers below. Keep them transparent; html keeps --q2-bg as
+ * the canvas color, so grid and aurora show through behind the content. */
+body,
+#body-wrapper {
+  background: transparent;
+}
+
+body::before,
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: -1;
+}
+
+/* faint HUD grid — full page, faded slightly toward the bottom */
+body::before {
+  z-index: -3;
+  background-image:
+    linear-gradient(color-mix(in oklab, var(--hud-accent) 16%, transparent) 1px, transparent 1px),
+    linear-gradient(90deg, color-mix(in oklab, var(--hud-accent) 16%, transparent) 1px, transparent 1px);
+  /* Something upstream sets background-repeat: no-repeat on ::before, which
+     would draw a single 52px tile in the corner only; force tiling. */
+  background-repeat: repeat;
+  background-size: 52px 52px;
+  mask-image: linear-gradient(to bottom, black 0%, rgba(0, 0, 0, 0.65) 60%, rgba(0, 0, 0, 0.4) 100%);
+  -webkit-mask-image: linear-gradient(to bottom, black 0%, rgba(0, 0, 0, 0.65) 60%, rgba(0, 0, 0, 0.4) 100%);
+}
+
+/* drifting aurora — kept subtle, just an ambient glow */
+body::after {
+  z-index: -2;
+  background:
+    radial-gradient(38% 45% at 12% 6%, color-mix(in oklab, var(--hud-accent) 12%, transparent), transparent 70%),
+    radial-gradient(42% 40% at 88% 14%, color-mix(in oklab, var(--hud-accent) 8%, transparent), transparent 70%),
+    radial-gradient(50% 40% at 50% 100%, color-mix(in oklab, var(--hud-accent) 6%, transparent), transparent 75%);
+  animation: hud-drift 26s ease-in-out infinite alternate;
+}
+
+/* dark mode canvas: terminal-dark tint instead of the theme's near-black */
+html[data-theme='dark'] {
+  background: #060d12;
+}
+
+@keyframes hud-drift {
+  from { transform: translate3d(-2%, 0, 0) scale(1.02); }
+  to   { transform: translate3d(2%, 1.5%, 0) scale(1.06); }
+}
+
+/* grain */
+html::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 90;
+  opacity: 0.05;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+:root[data-theme='light'] body::before { opacity: 0.6; }
+html[data-theme='light']::after { opacity: 0.03; }
+
+/* ---------- Nav: glass HUD with glowing pill ---------- */
+
+#header {
+  border-bottom: 1px solid color-mix(in oklab, var(--hud-accent) 14%, var(--q2-nav-border));
+}
+
+.dropmenu a {
+  font-family: var(--hud-mono);
+  font-size: 0.825rem;
+  letter-spacing: 0.02em;
+  border: 1px solid transparent;
+  transition:
+    background 0.18s ease,
+    color 0.18s ease,
+    border-color 0.18s ease,
+    box-shadow 0.18s ease;
+}
+.dropmenu a:hover {
+  border-color: var(--hud-accent-line);
+  color: var(--hud-accent);
+  background: color-mix(in oklab, var(--hud-accent) 8%, transparent);
+}
+.dropmenu a.active {
+  background: color-mix(in oklab, var(--hud-accent) 13%, transparent);
+  color: var(--hud-accent);
+  border-color: var(--hud-accent-line);
+  box-shadow:
+    0 0 18px -2px var(--hud-accent-glow),
+    inset 0 0 10px -4px var(--hud-accent-glow);
+}
+.dropmenu a.active:hover {
+  background: color-mix(in oklab, var(--hud-accent) 20%, transparent);
+  color: var(--hud-accent);
+}
+
+/* dropdown submenus: monospace, glowing border */
+.dropmenu ul ul {
+  font-family: var(--hud-mono);
+  border: 1px solid color-mix(in oklab, var(--hud-accent) 25%, var(--q2-divider)) !important;
+  box-shadow: 0 10px 30px -8px rgba(0, 0, 0, 0.45), 0 0 20px -6px var(--hud-accent-glow) !important;
+}
+
+/* ---------- Headings ---------- */
+
+h1.display,
+.h-display {
+  letter-spacing: -0.02em;
+}
+
+/* content titles: small monospace kicker above the h1 */
+.content-title h1 {
+  font-family: var(--pico-font-family-display);
+}
+
+/* ---------- Links ---------- */
+
+a {
+  text-decoration-color: color-mix(in oklab, var(--hud-accent) 55%, transparent);
+  text-underline-offset: 3px;
+  transition: color 0.15s ease, text-decoration-color 0.15s ease;
+}
+a:hover {
+  color: var(--hud-accent);
+  text-decoration-color: var(--hud-accent);
+  text-decoration-thickness: 2px;
+}
+
+/* ---------- Cards: glow + lift on hover ---------- */
+
+.card {
+  border: 1px solid var(--q2-divider);
+  transition:
+    transform 0.22s ease,
+    border-color 0.22s ease,
+    box-shadow 0.22s ease;
+}
+.card:hover {
+  transform: translateY(-4px);
+  border-color: var(--hud-accent-line);
+  box-shadow:
+    0 14px 34px -12px rgba(0, 0, 0, 0.35),
+    0 0 26px -6px var(--hud-accent-glow);
+}
+
+.card-subtitle {
+  font-family: var(--hud-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+/* ---------- Meta: labels, dates, breadcrumbs, nav between posts ---------- */
+
+.label {
+  font-family: var(--hud-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  transition: box-shadow 0.18s ease, border-color 0.18s ease, color 0.18s ease;
+}
+.label:hover {
+  border-color: var(--hud-accent-line);
+  color: var(--hud-accent);
+  box-shadow: 0 0 14px -4px var(--hud-accent-glow);
+}
+
+.breadcrumbs,
+.breadcrumbs a {
+  font-family: var(--hud-mono);
+  font-size: 0.78rem;
+  letter-spacing: 0.04em;
+}
+
+.prev-next .btn {
+  font-family: var(--hud-mono);
+  font-size: 0.8rem;
+  letter-spacing: 0.02em;
+}
+.prev-next .btn:hover {
+  border-color: var(--hud-accent-line);
+  color: var(--hud-accent);
+  box-shadow: 0 0 16px -4px var(--hud-accent-glow);
+}
+
+/* ---------- Sidebar / tree nav ---------- */
+
+#sidebar .sidebar-content h4 {
+  font-family: var(--hud-mono);
+  font-size: 0.8rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: color-mix(in oklab, var(--hud-accent) 80%, var(--q2-text));
+}
+
+.tree a {
+  font-family: var(--hud-mono);
+  font-size: 0.82rem;
+}
+
+/* ---------- Code ---------- */
+
+pre,
+code,
+kbd,
+samp {
+  font-family: var(--hud-mono);
+}
+
+pre {
+  border: 1px solid var(--q2-divider);
+  box-shadow: inset 0 0 24px -12px rgba(0, 0, 0, 0.3);
+}
+:root[data-theme='dark'] pre {
+  background: color-mix(in oklab, #0b1114 88%, var(--q2-bg-muted));
+}
+
+code:not(pre code) {
+  color: color-mix(in oklab, var(--hud-accent) 75%, var(--q2-text));
+  border: 1px solid color-mix(in oklab, var(--hud-accent) 18%, transparent);
+  background: color-mix(in oklab, var(--hud-accent) 6%, var(--q2-bg-muted));
+}
+
+/* ---------- Footer ---------- */
+
+#footer p {
+  font-family: var(--hud-mono);
+  font-size: 0.78rem;
+  letter-spacing: 0.03em;
+}
+
+/* ---------- Scroll reveal ---------- */
+
+@supports (animation-timeline: view()) {
+  .card {
+    animation: hud-reveal linear both;
+    animation-timeline: view();
+    animation-range: entry 0% cover 28%;
+  }
+  /* No reveal on .content-item: on long pages the element is taller than the
+     viewport, so the view() timeline would keep the text dim at the top of
+     the page (progress only reaches mid-animation at scroll 0). */
+  @keyframes hud-reveal-fade {
+    from { opacity: 0.1; }
+    to   { opacity: 1; }
+  }
+  @keyframes hud-reveal {
+    from {
+      opacity: 0.1;
+      transform: translateY(22px);
+      filter: brightness(0.85);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+      filter: none;
+    }
+  }
+}
+
+/* ---------- Terminal hero (home page) ---------- */
+
+.hud-hero {
+  padding-block: clamp(1rem, 4vw, 2.5rem);
+}
+.hud-hero .display {
+  font-size: clamp(2.1rem, 5vw, 3.4rem);
+  margin-bottom: 0.5rem;
+}
+.hud-hero .lead {
+  margin-bottom: 2rem;
+}
+
+.hud-terminal {
+  font-family: var(--hud-mono);
+  border: 1px solid color-mix(in oklab, var(--hud-accent) 30%, var(--q2-divider));
+  border-radius: 14px;
+  overflow: hidden;
+  background: #0b1114;
+  box-shadow:
+    0 18px 44px -14px rgba(0, 0, 0, 0.5),
+    0 0 34px -10px var(--hud-accent-glow);
+}
+
+.hud-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem 1rem;
+  border-bottom: 1px solid color-mix(in oklab, var(--hud-accent) 18%, #1d2a30);
+  background: color-mix(in oklab, #0b1114 70%, #16232a);
+}
+.hud-bar b {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #34454d;
+}
+.hud-bar b:first-child {
+  background: var(--hud-accent);
+  box-shadow: 0 0 8px var(--hud-accent-glow);
+}
+.hud-bar em {
+  margin-left: auto;
+  font-style: normal;
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  color: #7d9098;
+}
+
+.hud-out {
+  margin: 0;
+  padding: 1.15rem 1.35rem 1.35rem;
+  background: transparent;
+  box-shadow: none;
+  border: 0;
+  font-size: clamp(0.8rem, 2.2vw, 0.95rem);
+  line-height: 1.8;
+  color: #c9d6cf;
+}
+.hud-out .prompt {
+  color: var(--hud-accent);
+  font-weight: 700;
+}
+.hud-out .hl {
+  color: var(--hud-accent);
+  font-weight: 700;
+}
+.hud-out .dir {
+  color: #7fd4bd;
+}
+.hud-out .muted {
+  color: #7d9098;
+}
+.hud-out a {
+  color: #7fd4bd;
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  transition: color 0.15s ease, border-color 0.15s ease, text-shadow 0.15s ease;
+}
+.hud-out a:hover {
+  color: var(--hud-accent);
+  border-bottom-color: var(--hud-accent);
+  text-shadow: 0 0 12px var(--hud-accent-glow);
+}
+
+/* typewriter reveal of terminal lines */
+.hud-line {
+  display: block;
+  white-space: nowrap;
+  overflow: hidden;
+  width: 0;
+  animation: hud-type 0.7s steps(36, end) forwards;
+}
+.hud-line:nth-of-type(2) { animation-delay: 0.45s; }
+.hud-line:nth-of-type(3) { animation-delay: 1.05s; }
+.hud-line:nth-of-type(4) { animation-delay: 1.5s; }
+.hud-line:nth-of-type(5) { animation-delay: 2.1s; }
+.hud-line:nth-of-type(6) { animation-delay: 2.55s; }
+
+@keyframes hud-type {
+  from { width: 0; }
+  to   { width: 100%; }
+}
+
+/* blinking caret after the last line */
+.hud-caret::after {
+  content: '▋';
+  color: var(--hud-accent);
+  margin-left: 0.35em;
+  animation: hud-blink 1.1s steps(1, end) infinite;
+}
+
+@keyframes hud-blink {
+  50% { opacity: 0; }
+}
+
+/* ---------- Reduced motion ---------- */
+
+@media (prefers-reduced-motion: reduce) {
+  body::after { animation: none; }
+  .hud-line {
+    width: auto;
+    animation: none;
+    overflow: visible;
+  }
+  .hud-caret::after { animation: none; }
+  @supports (animation-timeline: view()) {
+    .card,
+    .content-item { animation: none; }
+  }
+  .card:hover { transform: none; }
+}
+
+/* ---------- CRT scanlines + vignette (dark mode only) ---------- */
+
+html::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  /* Ambient background stack: grid -3, aurora -2, scanlines -1. Behind the
+     content, never over it. */
+  z-index: -1;
+  background:
+    repeating-linear-gradient(to bottom,
+      rgba(168, 255, 234, 0.035) 0px,
+      rgba(168, 255, 234, 0.035) 1px,
+      transparent 1px,
+      transparent 4px),
+    radial-gradient(120% 90% at 50% 45%, transparent 55%, rgba(2, 8, 12, 0.35) 100%);
+}
+
+/* light mode: scanlines and vignette would muddy the page */
+html[data-theme=light]::before { display: none; }
+
+/* ---------- Glass content surface (dark mode) ---------- */
+/* The theme paints an opaque #1d1f25 card over the whole content column,
+   which hides the grid/aurora background. Make it translucent glass with a
+   glowing accent edge; light mode keeps the stock card. */
+
+html[data-theme='dark'] #body-wrapper > .container > .content-item {
+  background: color-mix(in oklab, var(--q2-bg-elev) 62%, transparent);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid color-mix(in oklab, var(--hud-accent) 22%, transparent);
+  box-shadow:
+    0 0 34px color-mix(in oklab, var(--hud-accent) 9%, transparent),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.03);
+}
+
+/* footer: stock solid canvas -> translucent so the HUD background continues */
+html[data-theme='dark'] footer.section {
+  background: color-mix(in oklab, var(--q2-bg) 75%, transparent);
+  border-top: 1px solid color-mix(in oklab, var(--hud-accent) 14%, transparent);
+}
+
+/* ---- About page: HUD timelines (replaces the CV tables) ---- */
+.hud-timeline {
+  position: relative;
+  margin: var(--pico-spacing) 0;
+}
+/* spine: accent line that fades out toward the oldest entry */
+.hud-timeline::before {
+  content: "";
+  position: absolute;
+  left: 6.45rem;
+  top: 1.1rem;
+  bottom: 1.1rem;
+  width: 2px;
+  background: linear-gradient(to bottom,
+    color-mix(in oklab, var(--hud-accent) 55%, transparent) 0%,
+    color-mix(in oklab, var(--hud-accent) 45%, transparent) 70%,
+    color-mix(in oklab, var(--hud-accent) 10%, transparent) 100%);
+}
+.hud-tl-item {
+  display: grid;
+  grid-template-columns: 5.5rem 1fr;
+  gap: 0 1.9rem;
+  position: relative;
+  padding-block: 0.7rem;
+  transition: transform 0.15s ease;
+}
+.hud-tl-item:hover {
+  transform: translateX(3px);
+}
+/* node dot centred on the spine */
+.hud-tl-item::before {
+  content: "";
+  position: absolute;
+  left: calc(6.45rem - 5px);
+  top: calc(0.7rem + 0.6em);
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: color-mix(in oklab, var(--hud-accent) 85%, transparent);
+  border: 1px solid var(--hud-accent);
+  box-shadow: 0 0 6px var(--hud-accent-glow);
+  transition: box-shadow 0.15s ease;
+}
+.hud-tl-item:hover::before {
+  box-shadow: 0 0 12px color-mix(in oklab, var(--hud-accent) 55%, transparent);
+}
+.hud-tl-item:first-child::before {
+  background: var(--hud-accent);
+  box-shadow: 0 0 10px var(--hud-accent-glow);
+}
+.hud-tl-year {
+  font-family: var(--hud-mono);
+  font-weight: 700;
+  font-size: 1.15rem;
+  color: var(--hud-accent);
+  letter-spacing: 0.02em;
+  font-variant-numeric: tabular-nums;
+}
+.hud-tl-title {
+  font-weight: 600;
+  font-size: 1.25rem;
+  line-height: 1.35;
+}
+.hud-tl-item:hover .hud-tl-title {
+  color: var(--hud-accent);
+}
+.hud-tl-meta {
+  color: var(--pico-muted-color);
+  font-size: 1.05rem;
+  margin-top: 0.2rem;
+}
+@media (max-width: 640px) {
+  .hud-timeline::before {
+    left: 4.45rem;
+  }
+  .hud-tl-item {
+    grid-template-columns: 3.5rem 1fr;
+    gap: 0 1.5rem;
+  }
+  .hud-tl-item::before {
+    left: calc(4.45rem - 5px);
+  }
+}
+
+/* ---------- Headings: JetBrains Mono, real weights ---------- */
+/* Cal Sans ships only 400, so theme.css bold headings were synthesized
+   faux-bold and looked smeared. JetBrains Mono is variable 400-700: crisp. */
+h1, h2, h3, h4, h5, h6,
+.display,
+.h-display {
+  font-family: var(--hud-mono);
+}
+h1 {
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+h2 {
+  font-weight: 700;
+  letter-spacing: 0.01em;
+}
+h3 {
+  font-weight: 700;
+  letter-spacing: 0.01em;
+}
+h2::before {
+  background: var(--hud-accent);
+  opacity: 1;
+  box-shadow: 0 0 8px var(--hud-accent-glow);
+}
+
+/* ---------- Flat HUD sheet (static pages: body_classes: hud-flat) ---------- */
+/* Blog/wiki item pages keep the card; static pages sit directly on the
+   ambient grid background, with terminal rules instead of card chrome. */
+body.hud-flat #body-wrapper > .container > .content-item {
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  padding-inline: clamp(1rem, 4vw, 3.25rem);
+}
+/* terminal header band */
+body.hud-flat #body-wrapper > .container > .content-item > h1 {
+  color: var(--hud-accent);
+  padding-bottom: 0.9rem;
+  border-bottom: 1px solid color-mix(in oklab, var(--hud-accent) 35%, transparent);
+}
+body.hud-flat #body-wrapper > .container > .content-item > h1::after {
+  content: "//";
+  font-weight: 400;
+  color: color-mix(in oklab, var(--hud-accent) 45%, transparent);
+  margin-left: 0.6rem;
+}
+/* hairline rules between sections */
+body.hud-flat #body-wrapper > .container > .content-item > h2 {
+  margin-top: clamp(2rem, 5vw, 3rem);
+  padding-top: 1.4rem;
+  border-top: 1px solid var(--q2-divider);
+}
+body.hud-flat #body-wrapper > .container > .content-item > h2:first-of-type {
+  margin-top: clamp(1.5rem, 3vw, 2rem);
+}
+
+/* ---- About page trivia: HUD chips ---- */
+.hud-trivia {
+  display: grid;
+  gap: 1.35rem;
+  margin: var(--pico-spacing) 0;
+}
+.hud-trivia-label {
+  font-family: var(--hud-mono);
+  font-size: 0.9rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--hud-accent);
+  margin-bottom: 0.5rem;
+}
+.hud-trivia-label::before {
+  content: "> ";
+  color: color-mix(in oklab, var(--hud-accent) 50%, transparent);
+}
+.hud-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+}
+.hud-chip {
+  font-family: var(--hud-mono);
+  font-size: 1rem;
+  padding: 0.42rem 0.9rem;
+  border: 1px solid var(--q2-divider);
+  border-radius: 999px;
+  color: var(--pico-color);
+  background: color-mix(in oklab, var(--hud-accent) 6%, transparent);
+  transition:
+    border-color 0.15s ease,
+    background 0.15s ease,
+    color 0.15s ease,
+    box-shadow 0.15s ease,
+    transform 0.15s ease;
+}
+.hud-chip:hover {
+  border-color: var(--hud-accent-line);
+  background: color-mix(in oklab, var(--hud-accent) 14%, transparent);
+  color: var(--hud-accent);
+  box-shadow: 0 0 12px -4px var(--hud-accent-glow);
+  transform: translateY(-2px);
+}
+
+/* flat sheet: body paragraphs read larger than the 16px base */
+body.hud-flat #body-wrapper > .container > .content-item p {
+  font-size: 1.25rem;
+}
+
+/* ---- About page: WebGL wireframe head (desktop gutter) ---- */
+/* Three.js mesh head floating in the right gutter of /en/about. hud-head.js
+   orbits it from scroll (front -> lateral -> superior), sweeps a scan band
+   across the wireframe in vertex colours, and fades the FIG captions with the
+   view. Desktop only; if WebGL or three.js fail, the gutter stays empty. */
+.hud-sketch { display: none; }
+@media (min-width: 1180px) {
+  .hud-sketch {
+    display: block;
+    position: fixed;
+    right: max(18px, calc((100vw - 960px) / 2 - 295px));
+    top: clamp(140px, 24vh, 260px);
+    width: clamp(295px, calc((100vw - 960px) / 2 - 15px), 435px);
+    z-index: 1;
+    pointer-events: none;
+  }
+}
+.sketch-stage {
+  position: relative;
+  aspect-ratio: 220 / 260;
+}
+.sketch-stage canvas {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+/* corner ticks framing the viewport */
+.sketch-stage::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.5;
+  background:
+    linear-gradient(var(--hud-accent), var(--hud-accent)) left 12px top 12px / 12px 1px no-repeat,
+    linear-gradient(var(--hud-accent), var(--hud-accent)) left 12px top 12px / 1px 12px no-repeat,
+    linear-gradient(var(--hud-accent), var(--hud-accent)) right 12px top 12px / 12px 1px no-repeat,
+    linear-gradient(var(--hud-accent), var(--hud-accent)) right 12px top 12px / 1px 12px no-repeat,
+    linear-gradient(var(--hud-accent), var(--hud-accent)) left 12px bottom 12px / 12px 1px no-repeat,
+    linear-gradient(var(--hud-accent), var(--hud-accent)) left 12px bottom 12px / 1px 12px no-repeat,
+    linear-gradient(var(--hud-accent), var(--hud-accent)) right 12px bottom 12px / 12px 1px no-repeat,
+    linear-gradient(var(--hud-accent), var(--hud-accent)) right 12px bottom 12px / 1px 12px no-repeat;
+}
+.sketch-caption {
+  position: absolute;
+  left: 0;
+  bottom: 4px;
+  font-family: var(--hud-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.12em;
+  color: var(--hud-accent);
+}
+.sketch-caption .cap {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  opacity: 0;
+  white-space: nowrap;
+  text-shadow: 0 0 8px var(--hud-accent-glow);
+}
+.sketch-caption .cap-front { opacity: 1; }
+.sketch-readout {
+  position: absolute;
+  right: 0;
+  top: 6px;
+  font-family: var(--hud-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.1em;
+  color: var(--hud-accent);
+  opacity: 0.6;
+}
+
+/* ---------- Language switch (single button, like the theme toggle) ---------- */
+/* One pill showing the language you are in; clicking swaps this page to the
+   other language. Same geometry as .theme-toggle (36px pill, transparent,
+   hover muted bg); js/language-toggle.js applies the browser-language default
+   on first visit. */
+.lang-toggle {
+  text-decoration: none;
+  border: 1px solid var(--q2-divider);
+}
+.lang-toggle:hover {
+  border-color: var(--hud-accent-line);
+}
+.lang-toggle .lang-code {
+  font-family: var(--hud-mono);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+}
+/* Mobile: language + theme buttons sit in the fixed header row left of the
+   hamburger (inside .mobile-menu), not inside the overlay menu. */
+@media (max-width: 860px) {
+  .mobile-menu {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+}

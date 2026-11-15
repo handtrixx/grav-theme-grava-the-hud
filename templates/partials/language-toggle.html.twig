@@ -1,0 +1,26 @@
+{% set active_lang = grav.language.getActive ?: grav.config.site.default_lang %}
+{% set langs = grav.language.getLanguages %}
+{% set current_url = page.url(false, true) %}
+{% if langs|length > 1 %}
+{# Single language button, styled exactly like the theme toggle: shows the
+   language you are in, click swaps this same page to the other language
+   (prefix swap of the current route). On first visit the browser language
+   decides — js/language-toggle.js redirects once and remembers the choice. #}
+{% set other = '' %}
+{% for code in langs %}{% if code != active_lang %}{% set other = code %}{% endif %}{% endfor %}
+{% if current_url starts with '/' ~ active_lang %}
+    {% set target_url = '/' ~ other ~ current_url|slice(1 + active_lang|length) %}
+{% else %}
+    {% set target_url = '/' ~ other ~ current_url %}
+{% endif %}
+<a class="theme-toggle lang-toggle"
+   href="{{ target_url }}"
+   hreflang="{{ other }}"
+   data-supported="{{ langs|join(',') }}"
+   data-lang-href="{{ target_url }}"
+   data-lang-target="{{ other }}"
+   aria-label="{{ active_lang == 'de' ? 'Sprache wechseln' : 'Switch language' }}"
+   title="{{ active_lang == 'de' ? 'Sprache wechseln' : 'Switch language' }}">
+    <span class="lang-code">{{ active_lang|upper }}</span>
+</a>
+{% endif %}
