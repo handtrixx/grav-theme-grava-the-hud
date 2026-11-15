@@ -29,7 +29,8 @@ class GravaTheHud extends Theme
     {
         $page = $this->grav['page'];
         $route = (string) $page->route();
-        if ((string) $page->template() === '' && strpos($route, '/wiki') === 0) {
+        $header = $page->header();
+        if (!isset($header->template) && strpos($route, '/wiki') === 0) {
             $page->template('wiki');
         }
     }
