@@ -1,5 +1,5 @@
 /*
- * Quark 2 — language controller
+ * Grava the HUD — language controller
  *
  * Default: on the first visit (no stored choice) the browser language decides.
  * If the browser prefers a supported language other than the one being served,
@@ -20,7 +20,18 @@
   var supported = (root.dataset.langSupported || '').split(',').filter(Boolean);
 
   function getStored() {
-    try { return localStorage.getItem(STORAGE_KEY); } catch (e) { return null; }
+    try {
+      var v = localStorage.getItem(STORAGE_KEY);
+      if (v === null) {
+        // Migrate the choice stored by the pre-rename theme (quark2-lang).
+        var legacy = localStorage.getItem('quark2-lang');
+        if (legacy === 'en' || legacy === 'de') {
+          localStorage.setItem(STORAGE_KEY, legacy);
+          return legacy;
+        }
+      }
+      return v;
+    } catch (e) { return null; }
   }
   function setStored(value) {
     try { localStorage.setItem(STORAGE_KEY, value); } catch (e) {}

@@ -1,5 +1,5 @@
 /*
- * Quark 2 — appearance controller
+ * Grava the HUD — appearance controller
  *
  * Two-state toggle: the theme is light or dark. Initial mode = stored user
  * choice (localStorage), else the OS preference (prefers-color-scheme).
@@ -17,7 +17,18 @@
   var root = document.documentElement;
 
   function getStored() {
-    try { return localStorage.getItem(STORAGE_KEY); } catch (e) { return null; }
+    try {
+      var v = localStorage.getItem(STORAGE_KEY);
+      if (v === null) {
+        // Migrate the preference stored by the pre-rename theme (quark2-*).
+        var legacy = localStorage.getItem('quark2-theme');
+        if (legacy === 'light' || legacy === 'dark') {
+          localStorage.setItem(STORAGE_KEY, legacy);
+          return legacy;
+        }
+      }
+      return v;
+    } catch (e) { return null; }
   }
   function setStored(value) {
     try { localStorage.setItem(STORAGE_KEY, value); } catch (e) {}

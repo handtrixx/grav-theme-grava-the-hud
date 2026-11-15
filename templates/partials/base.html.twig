@@ -55,7 +55,7 @@
     (function () {
       try {
         var d = document.documentElement;
-        var stored = localStorage.getItem('grava-theme');
+        var stored = localStorage.getItem('grava-theme') || localStorage.getItem('quark2-theme');
         var mode = (stored === 'light' || stored === 'dark')
           ? stored
           : (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
