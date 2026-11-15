@@ -1,0 +1,50 @@
+{% import _self as ws %}
+
+{# Result rows for the search page. Kept as a partial so the macros resolve:
+   inside an {% embed %} block, `import _self` points at the embedded
+   template, not the outer one. #}
+{% macro trail(p, depth) %}
+    {% if p and depth > 0 and p.route != '' %}
+        {% if p.route == '/wiki' %}
+            {{ p.title }}
+        {% else %}
+            {{ ws.trail(p.parent, depth - 1) }} / {{ p.title }}
+        {% endif %}
+    {% endif %}
+{% endmacro %}
+
+{% macro row(p) %}
+    <li class="wiki-entry">
+        <a class="wiki-entry-title" href="{{ p.url }}">{{ p.title }}</a>
+        {% if p.parent and p.parent.route != '' and p.parent.route != '/wiki' %}
+            <span class="wiki-entry-path">{{ ws.trail(p.parent, 5) }}</span>
+        {% endif %}
+        {% set text = p.header.description ?: (p.summary|striptags|trim) %}
+        {% if text %}
+            <p class="wiki-entry-excerpt">{{ text|length > 220 ? text|slice(0, 220) ~ '…' : text }}</p>
+        {% endif %}
+        {% set updated = p.lastModified|default(null) %}
+        {% if updated %}
+            <span class="wiki-entry-date">{{ updated|date(config.system.pages.dateformat.default|default('d-m-Y')) }}</span>
+        {% endif %}
+    </li>
+{% endmacro %}
+
+{% set results = search_results|default([])|filter(p => p.published and p.route starts with '/wiki') %}
+
+{% if query %}
+    <p class="wiki-search-summary">
+        {{ results|length == 1
+            ? 'THEME_GRAVA_HUD.WIKI.RESULTS_ONE'|t(query|e)
+            : 'THEME_GRAVA_HUD.WIKI.RESULTS_MANY'|t(query|e, results|length) }}
+    </p>
+    {% if results|length %}
+        <ul class="wiki-entry-list">
+            {% for p in results %}{{ ws.row(p) }}{% endfor %}
+        </ul>
+    {% else %}
+        <p class="wiki-search-empty">{{ 'THEME_GRAVA_HUD.WIKI.RESULTS_NONE'|t(query|e) }}</p>
+    {% endif %}
+{% else %}
+    <p class="wiki-search-empty">{{ 'THEME_GRAVA_HUD.WIKI.SEARCH_HINT'|t }}</p>
+{% endif %}
