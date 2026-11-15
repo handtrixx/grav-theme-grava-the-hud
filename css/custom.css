@@ -316,6 +316,49 @@ code:not(pre code) {
   margin-bottom: 2rem;
 }
 
+/* Desktop home: text left, terminal right */
+@media (min-width: 900px) {
+  .hud-hero {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(300px, 440px);
+    column-gap: clamp(2rem, 4vw, 3.5rem);
+    align-items: center;
+  }
+  .hud-hero .display,
+  .hud-hero .lead {
+    grid-column: 1;
+  }
+  .hud-hero .lead {
+    margin-bottom: 0;
+  }
+  .hud-terminal {
+    grid-column: 2;
+  }
+}
+
+/* ---------- Page titles: one terminal header band everywhere ---------- */
+/* About (hud-flat content-item), Blog/Wiki listing headers and the Zoo hero
+   speak the same voice: accent title, hairline underline, "//" suffix.
+   The home hero keeps its plain display face (it is not hud-flat). */
+body.hud-flat #body-wrapper > .container > .content-item > h1,
+body.hud-flat .hud-hero .display,
+.blog-page-header h1,
+.wiki-page-header h1 {
+  font-size: clamp(2.1rem, 5vw, 3.4rem);
+  color: var(--hud-accent);
+  padding-bottom: 0.9rem;
+  border-bottom: 1px solid color-mix(in oklab, var(--hud-accent) 35%, transparent);
+}
+body.hud-flat #body-wrapper > .container > .content-item > h1::after,
+body.hud-flat .hud-hero .display::after,
+.blog-page-header h1::after,
+.wiki-page-header h1::after {
+  content: "//";
+  font-weight: 400;
+  color: color-mix(in oklab, var(--hud-accent) 45%, transparent);
+  margin-left: 0.6rem;
+}
+
 .hud-terminal {
   font-family: var(--hud-mono);
   border: 1px solid color-mix(in oklab, var(--hud-accent) 30%, var(--q2-divider));
