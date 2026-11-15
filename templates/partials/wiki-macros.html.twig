@@ -1,0 +1,35 @@
+{% import _self as wm %}
+
+{# Shared row helpers, imported by wiki-listing and wiki-search-results.
+   This file defines macros only — importing it renders nothing of its own. #}
+
+{% macro clean_title(p) %}
+    {% set t = p.title %}
+    {{ t|replace({'🌲 ': '', '🎵 ': '', '💬 ': '', '📁 ': '', '🔑 ': '', '🔒 ': '', '🔍 ': '', '📖 ': '', '🗄️ ': '', '🖥️ ': '', '🛡️ ': '', '🎬 ': '', '📚 ': '', '🧰 ': '', '🎯 ': '', '🔧 ': '', '🐳 ': '', '📝 ': '', '🌐 ': '', '⚙️ ': '', '📡 ': '', '🅿️ ': '', '🏕️ ': '', '💡 ': '', '🖨️ ': ''}) }}
+{% endmacro %}
+
+{% macro excerpt(p) %}
+    {# Auto excerpt: description if set, else the summary with raw-markdown
+       noise (alert markers, image lines) dropped; skipped when it just
+       repeats the title. #}
+    {% set text = p.header.description ?: (p.summary|striptags|trim) %}
+    {% if text and text|lower != p.title|lower %}
+        {% set clean = [] %}
+        {% for line in text|split('\n') %}
+            {% if line|trim and not line starts with ':::' and not line contains '![' %}
+                {% set clean = clean|merge([line|trim]) %}
+            {% endif %}
+        {% endfor %}
+        {% set text = clean|join(' ') %}
+        {% if text %}
+            <p class="wiki-entry-excerpt">{{ text|length > 220 ? text|slice(0, 220) ~ '…' : text }}</p>
+        {% endif %}
+    {% endif %}
+{% endmacro %}
+
+{% macro date(p) %}
+    {% set updated = p.modified|default(null) %}
+    {% if updated %}
+        <span class="wiki-entry-date">{{ updated|date('d-m-Y') }}</span>
+    {% endif %}
+{% endmacro %}

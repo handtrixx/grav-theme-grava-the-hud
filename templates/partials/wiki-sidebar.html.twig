@@ -1,4 +1,5 @@
 {% import _self as wt %}
+{% import 'partials/wiki-macros.html.twig' as wm %}
 
 {# The whole wiki as a browsable tree, shown on every wiki page. Folders are
    collapsible; the branch containing the current page opens by default, and
@@ -19,7 +20,7 @@
                     </button>
                     <a class="wiki-node-link wiki-dir-link" href="{{ p.url }}">
                         <i class="fa-solid fa-folder" aria-hidden="true"></i>
-                        <span class="wiki-node-title">{{ p.title }}</span>
+                        <span class="wiki-node-title">{{ wm.clean_title(p) }}</span>
                         <span class="wiki-node-count">{{ kids|length }}</span>
                     </a>
                 </div>

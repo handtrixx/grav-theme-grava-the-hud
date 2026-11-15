@@ -193,11 +193,6 @@ html:not(.wiki-js) .wiki-branch {
 .breadcrumbs li::before {
   content: none;
 }
-.breadcrumbs li:not(:last-child)::after {
-  content: '/';
-  color: var(--q2-text-muted);
-  margin-left: 0.35rem;
-}
 .breadcrumbs li[aria-current="page"] {
   color: var(--q2-text-muted);
 }

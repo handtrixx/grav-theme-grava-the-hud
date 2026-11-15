@@ -1,32 +1,29 @@
 {% import _self as ws %}
 
+{% import _self as ws %}
+{% import 'partials/wiki-macros.html.twig' as wm %}
+
 {# Result rows for the search page. Kept as a partial so the macros resolve:
    inside an {% embed %} block, `import _self` points at the embedded
    template, not the outer one. #}
 {% macro trail(p, depth) %}
     {% if p and depth > 0 and p.route != '' %}
         {% if p.route == '/wiki' %}
-            {{ p.title }}
+            {{ wm.clean_title(p) }}
         {% else %}
-            {{ ws.trail(p.parent, depth - 1) }} / {{ p.title }}
+            {{ ws.trail(p.parent, depth - 1) }} / {{ wm.clean_title(p) }}
         {% endif %}
     {% endif %}
 {% endmacro %}
 
 {% macro row(p) %}
     <li class="wiki-entry">
-        <a class="wiki-entry-title" href="{{ p.url }}">{{ p.title }}</a>
+        <a class="wiki-entry-title" href="{{ p.url }}">{{ wm.clean_title(p) }}</a>
         {% if p.parent and p.parent.route != '' and p.parent.route != '/wiki' %}
             <span class="wiki-entry-path">{{ ws.trail(p.parent, 5) }}</span>
         {% endif %}
-        {% set text = p.header.description ?: (p.summary|striptags|trim) %}
-        {% if text %}
-            <p class="wiki-entry-excerpt">{{ text|length > 220 ? text|slice(0, 220) ~ '…' : text }}</p>
-        {% endif %}
-        {% set updated = p.lastModified|default(null) %}
-        {% if updated %}
-            <span class="wiki-entry-date">{{ updated|date(config.system.pages.dateformat.default|default('d-m-Y')) }}</span>
-        {% endif %}
+        {{ wm.excerpt(p) }}
+        {{ wm.date(p) }}
     </li>
 {% endmacro %}
 
@@ -35,15 +32,15 @@
 {% if query %}
     <p class="wiki-search-summary">
         {{ results|length == 1
-            ? 'THEME_GRAVA_HUD.WIKI.RESULTS_ONE'|t(query|e)
-            : 'THEME_GRAVA_HUD.WIKI.RESULTS_MANY'|t(query|e, results|length) }}
+            ? 'THEME_GRAVA_HUD.WIKI.RESULTS_ONE'|t(query)
+            : 'THEME_GRAVA_HUD.WIKI.RESULTS_MANY'|t(query, results|length) }}
     </p>
     {% if results|length %}
         <ul class="wiki-entry-list">
             {% for p in results %}{{ ws.row(p) }}{% endfor %}
         </ul>
     {% else %}
-        <p class="wiki-search-empty">{{ 'THEME_GRAVA_HUD.WIKI.RESULTS_NONE'|t(query|e) }}</p>
+        <p class="wiki-search-empty">{{ 'THEME_GRAVA_HUD.WIKI.RESULTS_NONE'|t(query) }}</p>
     {% endif %}
 {% else %}
     <p class="wiki-search-empty">{{ 'THEME_GRAVA_HUD.WIKI.SEARCH_HINT'|t }}</p>

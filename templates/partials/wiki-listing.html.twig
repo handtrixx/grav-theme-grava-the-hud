@@ -1,42 +1,36 @@
-{% import _self as wl %}
+{% import 'partials/wiki-macros.html.twig' as wm %}
 
-{# Main column of a wiki listing page: sections as blocks, pages as rows with
-   an auto excerpt and the date the file last changed. #}
-{% macro excerpt(p) %}
-    {% set text = p.header.description ?: (p.summary|striptags|trim) %}
-    {% if text %}<p class="wiki-entry-excerpt">{{ text|length > 220 ? text|slice(0, 220) ~ '…' : text }}</p>{% endif %}
-{% endmacro %}
-
-{% macro date(p) %}
-    {% set updated = p.lastModified|default(null) %}
-    {% if updated %}
-        <span class="wiki-entry-date">{{ updated|date(config.system.pages.dateformat.default|default('d-m-Y')) }}</span>
-    {% endif %}
-{% endmacro %}
-
-{% for p in page.children|filter(p => p.published)|sort((a, b) => a.title <=> b.title) %}
-    {% set kids = p.children|filter(p => p.published) %}
-    {% if kids|length %}
+{# Sections and entries for a wiki page that has children. Folder children
+   render as their own section (their pages listed underneath); pages render
+   directly in a flat list. #}
+{% for section in page.children|filter(p => p.published)|sort((a, b) => a.title <=> b.title) %}
+    {% set entries = section.children|filter(p => p.published)|sort((a, b) => a.title <=> b.title) %}
+    {% if entries|length %}
         <section class="wiki-section">
             <h2>
-                <a href="{{ p.url }}">{{ p.title }}</a>
-                <span class="wiki-node-count">{{ kids|length }}</span>
+                <a href="{{ section.url }}">{{ wm.clean_title(section) }}</a>
+                <span class="wiki-section-count">{{ entries|length }}</span>
             </h2>
+            {% if section.content|striptags|trim is not empty %}
+                <div class="wiki-section-intro">{{ section.content|raw }}</div>
+            {% endif %}
             <ul class="wiki-entry-list">
-                {% for c in kids|sort((a, b) => a.title <=> b.title) %}
+                {% for p in entries %}
                     <li class="wiki-entry">
-                        <a class="wiki-entry-title" href="{{ c.url }}">{{ c.title }}</a>
-                        {{ wl.excerpt(c) }}
-                        {{ wl.date(c) }}
+                        <a class="wiki-entry-title" href="{{ p.url }}">{{ wm.clean_title(p) }}</a>
+                        {{ wm.excerpt(p) }}
+                        {{ wm.date(p) }}
                     </li>
                 {% endfor %}
             </ul>
         </section>
     {% else %}
-        <article class="wiki-entry wiki-entry-standalone">
-            <h2><a href="{{ p.url }}">{{ p.title }}</a></h2>
-            {{ wl.excerpt(p) }}
-            {{ wl.date(p) }}
-        </article>
+        <ul class="wiki-entry-list">
+            <li class="wiki-entry wiki-entry-standalone">
+                <a class="wiki-entry-title" href="{{ section.url }}">{{ wm.clean_title(section) }}</a>
+                {{ wm.excerpt(section) }}
+                {{ wm.date(section) }}
+            </li>
+        </ul>
     {% endif %}
 {% endfor %}
