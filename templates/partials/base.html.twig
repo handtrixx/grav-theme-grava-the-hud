@@ -89,6 +89,10 @@
     {% do assets.addJs('theme://js/theme-toggle.js', {group:'head', priority: 100}) %}
     {% do assets.addJs('theme://js/language-toggle.js', {group:'head', priority: 110}) %}
     {% do assets.addJs('theme://js/site.js', {group:'bottom', priority: 100}) %}
+    {# Wiki tree: collapse, live filter, TOC, mobile drawer (wiki pages only). #}
+    {% if page.template in ['wiki', 'wiki-article', 'wiki-search'] %}
+        {% do assets.addJs('theme://js/wiki.js', {group:'bottom', priority: 110}) %}
+    {% endif %}
 {% endblock %}
 
 {% block assets deferred %}
