@@ -10,6 +10,7 @@ class GravaTheHud extends Theme
     {
         return [
             'onThemeInitialized' => ['onThemeInitialized', 0],
+            'onPageInitialized'  => ['onPageInitialized', 0],
             'onTwigLoader'       => ['onTwigLoader', 0],
             'onTwigInitialized'  => ['onTwigInitialized', 0],
         ];
@@ -17,6 +18,20 @@ class GravaTheHud extends Theme
 
     public function onThemeInitialized()
     {
+    }
+
+    /**
+     * Give every page under /wiki the docs layout without touching the
+     * content files. Pages that set a template themselves (Admin Next, the
+     * search page) keep it.
+     */
+    public function onPageInitialized()
+    {
+        $page = $this->grav['page'];
+        $route = (string) $page->route();
+        if ((string) $page->template() === '' && strpos($route, '/wiki') === 0) {
+            $page->template('wiki');
+        }
     }
 
     public function onTwigLoader()
