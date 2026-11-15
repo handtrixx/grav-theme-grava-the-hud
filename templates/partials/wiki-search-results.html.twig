@@ -1,32 +1,8 @@
-{% import _self as ws %}
-
-{% import _self as ws %}
 {% import 'partials/wiki-macros.html.twig' as wm %}
 
 {# Result rows for the search page. Kept as a partial so the macros resolve:
    inside an {% embed %} block, `import _self` points at the embedded
-   template, not the outer one. #}
-{% macro trail(p, depth) %}
-    {% if p and depth > 0 and p.route != '' %}
-        {% if p.route == '/wiki' %}
-            {{ wm.clean_title(p) }}
-        {% else %}
-            {{ ws.trail(p.parent, depth - 1) }} / {{ wm.clean_title(p) }}
-        {% endif %}
-    {% endif %}
-{% endmacro %}
-
-{% macro row(p) %}
-    <li class="wiki-entry">
-        <a class="wiki-entry-title" href="{{ p.url }}">{{ wm.clean_title(p) }}</a>
-        {% if p.parent and p.parent.route != '' and p.parent.route != '/wiki' %}
-            <span class="wiki-entry-path">{{ ws.trail(p.parent, 5) }}</span>
-        {% endif %}
-        {{ wm.excerpt(p) }}
-        {{ wm.date(p) }}
-    </li>
-{% endmacro %}
-
+   template, not the outer one. Row rendering lives in wiki-macros. #}
 {% set results = search_results|default([])|filter(p => p.published and p.route starts with '/wiki') %}
 
 {% if query %}
@@ -37,7 +13,7 @@
     </p>
     {% if results|length %}
         <ul class="wiki-entry-list">
-            {% for p in results %}{{ ws.row(p) }}{% endfor %}
+            {% for p in results %}{{ wm.search_row(p) }}{% endfor %}
         </ul>
     {% else %}
         <p class="wiki-search-empty">{{ 'THEME_GRAVA_HUD.WIKI.RESULTS_NONE'|t(query) }}</p>

@@ -1,14 +1,14 @@
-{% import _self as wm %}
-
 {# Shared row helpers, imported by wiki-listing and wiki-search-results.
-   This file defines macros only — importing it renders nothing of its own. #}
+   This file defines macros only — importing it renders nothing of its own.
+   Nested calls use _self: macros imported into a template body are not
+   available inside other macro bodies. #}
 
 {% macro clean_text(text) %}
     {{ text|replace({'🌲 ': '', '🎵 ': '', '💬 ': '', '📁 ': '', '🔑 ': '', '🔒 ': '', '🔍 ': '', '📖 ': '', '🗄️ ': '', '🖥️ ': '', '🛡️ ': '', '🎬 ': '', '📚 ': '', '🧰 ': '', '🎯 ': '', '🔧 ': '', '🐳 ': '', '📝 ': '', '🌐 ': '', '⚙️ ': '', '📡 ': '', '🅿️ ': '', '🏕️ ': '', '💡 ': '', '🖨️ ': '', '🌲': '', '🎵': '', '💬': '', '📁': '', '🔑': '', '🔒': '', '🔍': '', '📖': '', '🗄️': '', '🖥️': '', '🛡️': '', '🎬': '', '📚': '', '🧰': '', '🎯': '', '🔧': '', '🐳': '', '📝': '', '🌐': '', '⚙️': '', '📡': '', '🅿️': '', '🏕️': '', '💡': '', '🖨️': ''})|trim }}
 {% endmacro %}
 
 {% macro clean_title(p) %}
-    {{ wm.clean_text(p.title) }}
+    {{ _self.clean_text(p.title) }}
 {% endmacro %}
 
 {% macro excerpt(p) %}
@@ -24,7 +24,7 @@
                 {% set clean = clean|merge([line|trim]) %}
             {% endif %}
         {% endfor %}
-        {% set text = wm.clean_text(clean|join(' ')) %}
+        {% set text = _self.clean_text(clean|join(' ')) %}
         {% if text|lower starts with p.title|lower %}
             {% set text = text|slice(p.title|length)|trim %}
         {% endif %}
@@ -39,4 +39,27 @@
     {% if updated %}
         <span class="wiki-entry-date">{{ updated|date('d-m-Y') }}</span>
     {% endif %}
+{% endmacro %}
+
+{# Folder trail for search rows: "Wiki / Projects" without emoji decoration. #}
+{% macro trail(p, depth) %}
+    {% if p and depth > 0 and p.route != '' %}
+        {% if p.route == '/wiki' %}
+            {{ _self.clean_title(p) }}
+        {% else %}
+            {{ _self.trail(p.parent, depth - 1) }} / {{ _self.clean_title(p) }}
+        {% endif %}
+    {% endif %}
+{% endmacro %}
+
+{# One search-result row: title, folder trail, excerpt, modified date. #}
+{% macro search_row(p) %}
+    <li class="wiki-entry">
+        <a class="wiki-entry-title" href="{{ p.url }}">{{ _self.clean_title(p) }}</a>
+        {% if p.parent and p.parent.route != '' and p.parent.route != '/wiki' %}
+            <span class="wiki-entry-path">{{ _self.trail(p.parent, 5) }}</span>
+        {% endif %}
+        {{ _self.excerpt(p) }}
+        {{ _self.date(p) }}
+    </li>
 {% endmacro %}

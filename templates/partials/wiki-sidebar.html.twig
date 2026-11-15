@@ -1,9 +1,12 @@
 {% import _self as wt %}
-{% import 'partials/wiki-macros.html.twig' as wm %}
 
 {# The whole wiki as a browsable tree, shown on every wiki page. Folders are
    collapsible; the branch containing the current page opens by default, and
    js/wiki.js remembers what the visitor opened or closed. #}
+{% macro node_title(p) %}
+    {{ p.title|replace({'🌲 ': '', '🎵 ': '', '💬 ': '', '📁 ': '', '🔑 ': '', '🔒 ': '', '🔍 ': '', '📖 ': '', '🗄️ ': '', '🖥️ ': '', '🛡️ ': '', '🎬 ': '', '📚 ': '', '🧰 ': '', '🎯 ': '', '🔧 ': '', '🐳 ': '', '📝 ': '', '🌐 ': '', '⚙️ ': '', '📡 ': '', '🅿️ ': '', '🏕️ ': '', '💡 ': '', '🖨️ ': ''}) }}
+{% endmacro %}
+
 {% macro wiki_nav(nodes, depth) %}
 <ul class="wiki-tree">
     {% for p in nodes|sort((a, b) => a.title <=> b.title) if p.published %}
@@ -20,7 +23,7 @@
                     </button>
                     <a class="wiki-node-link wiki-dir-link" href="{{ p.url }}">
                         <i class="fa-solid fa-folder" aria-hidden="true"></i>
-                        <span class="wiki-node-title">{{ wm.clean_title(p) }}</span>
+                        <span class="wiki-node-title">{{ _self.node_title(p) }}</span>
                         <span class="wiki-node-count">{{ kids|length }}</span>
                     </a>
                 </div>
