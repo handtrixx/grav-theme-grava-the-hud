@@ -1,0 +1,12 @@
+{# Docs layout: sticky wiki tree on the left, content on the right.
+   The sidebar renders as a drawer below 960px (js/wiki.js). #}
+<div class="wiki-layout{% sidebar_open|default(false) ? ' is-sidebar-open' : '' %}">
+    <aside class="wiki-sidebar" id="wiki-sidebar" aria-label="{{ 'THEME_GRAVA_HUD.WIKI.ARIA.SIDEBAR'|t|e('html_attr') }}">
+        {% block sidebar %}
+            {% include 'partials/wiki-sidebar.html.twig' %}
+        {% endblock %}
+    </aside>
+    <div class="wiki-main">
+        {% block item %}{% endblock %}
+    </div>
+</div>

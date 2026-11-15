@@ -1,0 +1,35 @@
+{# Previous / next page within the same folder, in the same order the sidebar
+   uses (by title). Only pages, not folders. #}
+{% set siblings = [] %}
+{% for s in page.parent.children|filter(p => p.published) %}
+    {% if s.children|filter(p => p.published)|length == 0 %}
+        {% set siblings = siblings|merge([s]) %}
+    {% endif %}
+{% endfor %}
+{% set siblings = siblings|sort((a, b) => a.title <=> b.title) %}
+
+{% set prev = null %}
+{% set next = null %}
+{% for s in siblings %}
+    {% if s.url == page.url %}
+        {% set prev = loop.previtem %}
+        {% set next = loop.nextitem %}
+    {% endif %}
+{% endfor %}
+
+{% if prev or next %}
+    <nav class="wiki-prevnext" aria-label="{{ 'THEME_GRAVA_HUD.WIKI.ARIA.PREVNEXT'|t|e('html_attr') }}">
+        {% if prev %}
+            <a class="wiki-prevnext-link wiki-prev" href="{{ prev.url }}">
+                <span class="wiki-prevnext-label">{{ 'THEME_GRAVA_HUD.WIKI.PREV'|t }}</span>
+                <span class="wiki-prevnext-title">{{ prev.title }}</span>
+            </a>
+        {% endif %}
+        {% if next %}
+            <a class="wiki-prevnext-link wiki-next" href="{{ next.url }}">
+                <span class="wiki-prevnext-label">{{ 'THEME_GRAVA_HUD.WIKI.NEXT'|t }}</span>
+                <span class="wiki-prevnext-title">{{ next.title }}</span>
+            </a>
+        {% endif %}
+    </nav>
+{% endif %}

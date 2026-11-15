@@ -1,0 +1,42 @@
+{% import _self as wl %}
+
+{# Main column of a wiki listing page: sections as blocks, pages as rows with
+   an auto excerpt and the date the file last changed. #}
+{% macro excerpt(p) %}
+    {% set text = p.header.description ?: (p.summary|striptags|trim) %}
+    {% if text %}<p class="wiki-entry-excerpt">{{ text|length > 220 ? text|slice(0, 220) ~ '…' : text }}</p>{% endif %}
+{% endmacro %}
+
+{% macro date(p) %}
+    {% set updated = p.lastModified|default(null) %}
+    {% if updated %}
+        <span class="wiki-entry-date">{{ updated|date(config.system.pages.dateformat.default|default('d-m-Y')) }}</span>
+    {% endif %}
+{% endmacro %}
+
+{% for p in page.children|filter(p => p.published)|sort((a, b) => a.title <=> b.title) %}
+    {% set kids = p.children|filter(p => p.published) %}
+    {% if kids|length %}
+        <section class="wiki-section">
+            <h2>
+                <a href="{{ p.url }}">{{ p.title }}</a>
+                <span class="wiki-node-count">{{ kids|length }}</span>
+            </h2>
+            <ul class="wiki-entry-list">
+                {% for c in kids|sort((a, b) => a.title <=> b.title) %}
+                    <li class="wiki-entry">
+                        <a class="wiki-entry-title" href="{{ c.url }}">{{ c.title }}</a>
+                        {{ wl.excerpt(c) }}
+                        {{ wl.date(c) }}
+                    </li>
+                {% endfor %}
+            </ul>
+        </section>
+    {% else %}
+        <article class="wiki-entry wiki-entry-standalone">
+            <h2><a href="{{ p.url }}">{{ p.title }}</a></h2>
+            {{ wl.excerpt(p) }}
+            {{ wl.date(p) }}
+        </article>
+    {% endif %}
+{% endfor %}

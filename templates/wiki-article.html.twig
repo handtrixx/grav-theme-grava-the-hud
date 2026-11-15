@@ -1,0 +1,23 @@
+{% extends 'partials/base.html.twig' %}
+
+{# Wiki article page: docs layout — tree sidebar + search + TOC on the left,
+   the article in the main column, breadcrumbs and prev/next around it. #}
+{% set show_breadcrumbs = header_var('show_breadcrumbs')|defined(true) %}
+
+{% block body %}
+    <section id="body-wrapper" class="section wiki-article">
+        <div class="container">
+            {% embed 'partials/wiki-layout.html.twig' %}
+                {% block item %}
+                    {% if show_breadcrumbs %}
+                        {% include 'partials/breadcrumbs.html.twig' %}
+                    {% endif %}
+                    <article class="content-item">
+                        {{ page.content|raw }}
+                    </article>
+                    {% include 'partials/wiki-prevnext.html.twig' %}
+                {% endblock %}
+            {% endembed %}
+        </div>
+    </section>
+{% endblock %}

@@ -38,6 +38,47 @@ en:
       SCORE: "Score"
       POST_COUNT: "Post count"
       OPEN_POST: "Open post"
+    WIKI:
+      LABEL: "Wiki"
+      TOC_HEADLINE: "On this page"
+      SHOW_TREE: "Browse wiki"
+      PREV: "Previous"
+      NEXT: "Next"
+      SEARCH_LABEL: "Search the wiki"
+      SEARCH_PLACEHOLDER: "Search …"
+      SEARCH_BUTTON: "Search"
+      SEARCH_HEADLINE: "Search"
+      SEARCH_HINT: "Type at least three characters to search the wiki."
+      RESULTS_ONE: "Query: <strong>%s</strong> — one result"
+      RESULTS_MANY: "Query: <strong>%s</strong> — %s results"
+      RESULTS_NONE: "Query: <strong>%s</strong> found nothing. Try another word, or browse the wiki tree."
+      ARIA:
+        SIDEBAR: "Wiki navigation"
+        TOGGLE: "Open or close this section"
+        TOC: "Table of contents"
+        PREVNEXT: "Previous and next page"
+
+de:
+  THEME_GRAVA_HUD:
+    WIKI:
+      LABEL: "Wiki"
+      TOC_HEADLINE: "Auf dieser Seite"
+      SHOW_TREE: "Wiki durchblättern"
+      PREV: "Zurück"
+      NEXT: "Weiter"
+      SEARCH_LABEL: "Wiki durchsuchen"
+      SEARCH_PLACEHOLDER: "Suchen …"
+      SEARCH_BUTTON: "Suchen"
+      SEARCH_HEADLINE: "Suche"
+      SEARCH_HINT: "Mindestens drei Zeichen eingeben, um das Wiki zu durchsuchen."
+      RESULTS_ONE: "Suche: <strong>%s</strong> — ein Ergebnis"
+      RESULTS_MANY: "Suche: <strong>%s</strong> — %s Ergebnisse"
+      RESULTS_NONE: "Suche: <strong>%s</strong> fand nichts. Versuch ein anderes Wort oder blättere im Wiki-Baum."
+      ARIA:
+        SIDEBAR: "Wiki-Navigation"
+        TOGGLE: "Diesen Abschnitt öffnen oder schließen"
+        TOC: "Inhaltsverzeichnis"
+        PREVNEXT: "Vorherige und nächste Seite"
 
 es:
   THEME_GRAVA_HUD:

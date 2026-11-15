@@ -1,0 +1,53 @@
+{% extends 'partials/base.html.twig' %}
+{% import _self as ws %}
+
+{# Full-text search results (SimpleSearch plugin), in the docs layout.
+   Restricted to the wiki so results stay about documentation. #}
+{% macro row(p) %}
+    <li class="wiki-entry">
+        <a class="wiki-entry-title" href="{{ p.url }}">{{ p.title }}</a>
+        {% set crumbs = p.breadcrumbs(-1, true)|default([]) %}
+        {% if crumbs|length > 1 %}
+            <span class="wiki-entry-path">{{ crumbs|map(c => c.title)|join(' / ') }}</span>
+        {% endif %}
+        {% set text = p.header.description ?: (p.summary|striptags|trim) %}
+        {% if text %}
+            <p class="wiki-entry-excerpt">{{ text|length > 220 ? text|slice(0, 220) ~ '…' : text }}</p>
+        {% endif %}
+        {% set updated = p.lastModified|default(null) %}
+        {% if updated %}
+            <span class="wiki-entry-date">{{ updated|date(config.system.pages.dateformat.default|default('d-m-Y')) }}</span>
+        {% endif %}
+    </li>
+{% endmacro %}
+
+{% block body %}
+    <section id="body-wrapper" class="section wiki-search-page">
+        <div class="container">
+            {% embed 'partials/wiki-layout.html.twig' %}
+                {% block item %}
+                    <header class="wiki-page-header">
+                        <h1>{{ 'THEME_GRAVA_HUD.WIKI.SEARCH_HEADLINE'|t }}</h1>
+                        {% if query %}
+                            {% set results = search_results|default([])|filter(p => p.published and p.path starts with '/wiki') %}
+                            <p class="wiki-search-summary">
+                                {{ results|length == 1
+                                    ? 'THEME_GRAVA_HUD.WIKI.RESULTS_ONE'|t(query|e)
+                                    : 'THEME_GRAVA_HUD.WIKI.RESULTS_MANY'|t(query|e, results|length) }}
+                            </p>
+                            {% if results|length %}
+                                <ul class="wiki-entry-list">
+                                    {% for p in results %}{{ ws.row(p) }}{% endfor %}
+                                </ul>
+                            {% else %}
+                                <p class="wiki-search-empty">{{ 'THEME_GRAVA_HUD.WIKI.RESULTS_NONE'|t(query|e) }}</p>
+                            {% endif %}
+                        {% else %}
+                            <p class="wiki-search-empty">{{ 'THEME_GRAVA_HUD.WIKI.SEARCH_HINT'|t }}</p>
+                        {% endif %}
+                    </header>
+                {% endblock %}
+            {% endembed %}
+        </div>
+    </section>
+{% endblock %}

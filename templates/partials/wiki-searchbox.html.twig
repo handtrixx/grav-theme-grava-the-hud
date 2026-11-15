@@ -1,0 +1,20 @@
+{# GET form to SimpleSearch's route. The plugin reads the query from the
+   regular query string, so no param separator or plugin JS is needed. #}
+{% set route = config.plugins.simplesearch.route|default('/search') %}
+{% set min_chars = config.plugins.simplesearch.min_query_length|default(3) %}
+<form class="wiki-search" action="{{ base_url ~ route }}" method="get" role="search">
+    <label class="wiki-search-label">
+        <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
+        <span class="visually-hidden">{{ 'THEME_GRAVA_HUD.WIKI.SEARCH_LABEL'|t|e('html_attr') }}</span>
+    </label>
+    <input type="search"
+           name="query"
+           class="wiki-search-input"
+           placeholder="{{ 'THEME_GRAVA_HUD.WIKI.SEARCH_PLACEHOLDER'|t|e('html_attr') }}"
+           value="{{ query|default('')|e('html_attr') }}"
+           minlength="{{ min_chars }}"
+           autocomplete="off"
+           aria-label="{{ 'THEME_GRAVA_HUD.WIKI.SEARCH_LABEL'|t|e('html_attr') }}"
+           {% if simplesearch_is_search_page|default(false) %}autofocus{% endif %}>
+    <button type="submit" class="wiki-search-submit">{{ 'THEME_GRAVA_HUD.WIKI.SEARCH_BUTTON'|t }}</button>
+</form>

@@ -1,45 +1,26 @@
 {% extends 'partials/base.html.twig' %}
-{% import _self as wt %}
+{% import _self as wl %}
 
-{# Wiki listing as a directory tree (not cards): every published page under the
-   current one, nested by folder, sorted by title. Recursive macro; depth unlimited.
-   Note: pages here set only `published`, not `visible`, so filter on published. #}
-{% macro wiki_tree(nodes) %}
-<ul class="wiki-tree">
-    {% for p in nodes|sort((a, b) => a.title <=> b.title) if p.published %}
-        {% set kids = p.children|filter(p => p.published) %}
-        <li class="wiki-node{{ kids|length ? ' wiki-dir' : '' }}{{ p.active or p.activeChild ? ' is-active' : '' }}">
-            <a class="wiki-node-link{{ kids|length ? ' wiki-dir-link' : '' }}" href="{{ p.url }}">
-                <i class="fa-solid {{ kids|length ? 'fa-folder' : 'fa-file-lines' }}" aria-hidden="true"></i>
-                <span class="wiki-node-title">{{ p.title }}</span>
-                {% if kids|length %}<span class="wiki-node-count">{{ kids|length }}</span>{% endif %}
-            </a>
-            {% if kids|length %}
-                {{ wt.wiki_tree(kids) }}
-            {% endif %}
-        </li>
-    {% endfor %}
-</ul>
-{% endmacro %}
+{# Wiki listing pages (the wiki root and every section): docs layout with the
+   full tree in the sidebar, sections and entries in the main column. #}
 
 {% block body %}
     <section id="body-wrapper" class="section wiki-listing">
         <div class="container">
-            {% if config.plugins.breadcrumbs.enabled %}
-                {% include 'partials/breadcrumbs.html.twig' %}
-            {% endif %}
-
-            <header class="wiki-page-header">
-                <h1>{{ page.title }}</h1>
-                {% if page.header.subtitle %}
-                    <p class="lead">{{ page.header.subtitle }}</p>
-                {% endif %}
-                {% if page.content|striptags|trim is not empty %}
-                    <div class="wiki-page-intro">{{ page.content|raw }}</div>
-                {% endif %}
-            </header>
-
-            {{ wt.wiki_tree(page.children|filter(p => p.published)) }}
+            {% embed 'partials/wiki-layout.html.twig' %}
+                {% block item %}
+                    <header class="wiki-page-header">
+                        <h1>{{ page.title }}</h1>
+                        {% if page.header.subtitle %}
+                            <p class="lead">{{ page.header.subtitle }}</p>
+                        {% endif %}
+                        {% if page.content|striptags|trim is not empty %}
+                            <div class="wiki-page-intro">{{ page.content|raw }}</div>
+                        {% endif %}
+                    </header>
+                    {% include 'partials/wiki-listing.html.twig' %}
+                {% endblock %}
+            {% endembed %}
         </div>
     </section>
 {% endblock %}

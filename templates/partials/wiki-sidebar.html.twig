@@ -1,0 +1,63 @@
+{% import _self as wt %}
+
+{# The whole wiki as a browsable tree, shown on every wiki page. Folders are
+   collapsible; the branch containing the current page opens by default, and
+   js/wiki.js remembers what the visitor opened or closed. #}
+{% macro wiki_nav(nodes, depth) %}
+<ul class="wiki-tree">
+    {% for p in nodes|sort((a, b) => a.title <=> b.title) if p.published %}
+        {% set kids = p.children|filter(p => p.published) %}
+        {% set branch_id = 'wt-' ~ (p.path|replace({'/': '-'})) %}
+        <li class="wiki-node{{ kids|length ? ' wiki-dir' : '' }}{{ p.active ? ' is-current' : '' }}{{ p.activeChild ? ' is-active' : '' }}">
+            {% if kids|length %}
+                <div class="wiki-row">
+                    <button type="button" class="wiki-twist" data-twist="{{ branch_id }}"
+                            aria-expanded="{{ p.activeChild ? 'true' : 'false' }}"
+                            aria-controls="{{ branch_id }}"
+                            aria-label="{{ 'THEME_GRAVA_HUD.WIKI.ARIA.TOGGLE'|t|e('html_attr') }}">
+                        <i class="fa-solid fa-chevron-right" aria-hidden="true"></i>
+                    </button>
+                    <a class="wiki-node-link wiki-dir-link" href="{{ p.url }}">
+                        <i class="fa-solid fa-folder" aria-hidden="true"></i>
+                        <span class="wiki-node-title">{{ p.title }}</span>
+                        <span class="wiki-node-count">{{ kids|length }}</span>
+                    </a>
+                </div>
+                <div class="wiki-branch{{ p.activeChild ? ' is-open' : '' }}" id="{{ branch_id }}">
+                    {{ wt.wiki_nav(kids, depth + 1) }}
+                </div>
+            {% else %}
+                <a class="wiki-node-link" href="{{ p.url }}">
+                    <i class="fa-solid fa-file-lines" aria-hidden="true"></i>
+                    <span class="wiki-node-title">{{ p.title }}</span>
+                    {% if page.path == p.path %}<span class="wiki-node-mark" aria-hidden="true"></span>{% endif %}
+                </a>
+            {% endif %}
+        </li>
+    {% endfor %}
+</ul>
+{% endmacro %}
+
+<div class="wiki-sidebar-head">
+    <span class="wiki-sidebar-label">{{ 'THEME_GRAVA_HUD.WIKI.LABEL'|t }}</span>
+    {% include 'partials/wiki-searchbox.html.twig' %}
+    <button type="button" class="wiki-drawer-toggle" aria-expanded="false"
+            aria-controls="wiki-sidebar-body">
+        <i class="fa-solid fa-list" aria-hidden="true"></i>
+        {{ 'THEME_GRAVA_HUD.WIKI.SHOW_TREE'|t }}
+    </button>
+</div>
+
+<div class="wiki-sidebar-body" id="wiki-sidebar-body">
+    {% set wiki_root = grav.pages.find('/wiki') %}
+    {% if wiki_root %}
+        {{ wt.wiki_nav(wiki_root.children|filter(p => p.published), 0) }}
+    {% endif %}
+
+    {# Filled by js/wiki.js from the article's headings. Hidden until it has items. #}
+    <nav class="wiki-toc" id="wiki-toc" hidden
+         aria-label="{{ 'THEME_GRAVA_HUD.WIKI.ARIA.TOC'|t|e('html_attr') }}">
+        <span class="wiki-sidebar-label">{{ 'THEME_GRAVA_HUD.WIKI.TOC_HEADLINE'|t }}</span>
+        <ul class="wiki-toc-list"></ul>
+    </nav>
+</div>
