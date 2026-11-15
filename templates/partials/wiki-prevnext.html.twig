@@ -1,13 +1,15 @@
 {# Previous / next page within the same folder, in the same order the sidebar
-   uses (by title). Only pages, not folders. The nav renders inside the loop:
-   in Twig 3 a `set` inside a for-loop does not survive the loop. #}
+   uses (by title). Only pages, not folders. Two quirks of Grav's Twig:
+   `sort` keeps the original array keys (so loop.previtem/nextitem and index
+   lookups fail), and a `set` inside a for-loop does not survive the loop —
+   hence sorting first, then re-indexing via merge, and rendering inside the
+   loop. #}
 {% set siblings = [] %}
-{% for s in page.parent.children|filter(p => p.published) %}
+{% for s in page.parent.children|filter(p => p.published)|sort((a, b) => a.title <=> b.title) %}
     {% if s.children|filter(p => p.published)|length == 0 %}
         {% set siblings = siblings|merge([s]) %}
     {% endif %}
 {% endfor %}
-{% set siblings = siblings|sort((a, b) => a.title <=> b.title) %}
 
 {% for s in siblings %}
     {% if s.url == page.url %}
