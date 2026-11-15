@@ -197,6 +197,12 @@ html:not(.wiki-js) .wiki-branch {
   color: var(--q2-text-muted);
 }
 
+/* Folder intros repeat the section title in their own markdown; the section
+   heading above already shows it. */
+.wiki-section-intro h1:first-child {
+  display: none;
+}
+
 /* Listing entries in the main column */
 .wiki-section {
   margin: 1.75rem 0 0;
