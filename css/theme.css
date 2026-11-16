@@ -600,6 +600,9 @@ body.layout-fluid #body-wrapper > .container > .content-item {
   top: 0;
   z-index: 50;
   padding-block: 0;
+  /* Chrome on Android (edge-to-edge since 135): the address bar overlays
+     the top of the viewport; keep the navbar clear of it and the status bar. */
+  padding-top: env(safe-area-inset-top, 0px);
   background: var(--q2-nav-bg);
   backdrop-filter: saturate(180%) blur(12px);
   -webkit-backdrop-filter: saturate(180%) blur(12px);
@@ -986,7 +989,7 @@ button.theme-toggle:hover {
 .mobile-menu {
   display: none;
   position: fixed;
-  top: 10px;
+  top: calc(10px + env(safe-area-inset-top, 0px));
   right: 14px;
   z-index: 70;
   transition: top 0.2s ease;
@@ -1131,7 +1134,7 @@ button.button_container:focus-visible {
   }
   /* header-animated shrinks the navbar to 60px: (60 - 44) / 2 */
   .header-animated.scrolled .mobile-menu {
-    top: 8px;
+    top: calc(8px + env(safe-area-inset-top, 0px));
   }
   .navbar-section.actions {
     display: none;
