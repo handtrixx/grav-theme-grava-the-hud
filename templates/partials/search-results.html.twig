@@ -2,29 +2,43 @@
 
 {# Site-wide search rows, grouped by section. SimpleSearch hands us every
    published page; the search page itself never lists itself. Routes carry the
-   language prefix (en/wiki/...), so the section is read from the URL: the
-   first segment after en/de. Blog reads newest first, everything else by
-   title. Row rendering lives in wiki-macros (same rows as wiki listings). #}
+   language prefix (en/wiki/...), so the section comes from the URL: the first
+   segment after en/de. No computed-key array merge (Twig here evaluates
+   `(expr)` keys literally) - four buckets instead. Blog newest first, the
+   rest by title; rows are wiki-macros search_row, same as wiki listings. #}
 {% set results = search_results|default([])|filter(p => p.published and p.url != '/search') %}
 
-{% set groups = {} %}
+{% set posts = [] %}
+{% set wiki = [] %}
+{% set zoo = [] %}
+{% set pages = [] %}
 {% for p in results %}
     {% set parts = p.url|split('/')|filter(x => x is not empty) %}
     {% set root = parts[0] in ['en', 'de'] ? parts[1]|default(parts[0]) : parts[0] %}
-    {% set groups = groups|merge({ (root): groups[root]|default([])|merge([p]) }) %}
+    {% if root == 'blog' %}
+        {% set posts = posts|merge([p]) %}
+    {% elif root == 'wiki' %}
+        {% set wiki = wiki|merge([p]) %}
+    {% elif root == 'zoo' %}
+        {% set zoo = zoo|merge([p]) %}
+    {% else %}
+        {% set pages = pages|merge([p]) %}
+    {% endif %}
 {% endfor %}
 
-{% set known = ['blog', 'wiki', 'zoo'] %}
 {% set sections = [] %}
-{% for key in known|filter(k => groups[k] is defined)|merge(groups|keys|filter(k => k not in known)|sort) %}
-    {% set items = groups[key] %}
-    {% set items = key == 'blog' ? items|sort((a, b) => b.date <=> a.date) : items|sort((a, b) => a.title <=> b.title) %}
-    {% set label = key == 'blog' ? 'THEME_GRAVA_HUD.SEARCH.GROUP_POSTS'
-        : key == 'wiki' ? 'THEME_GRAVA_HUD.SEARCH.GROUP_WIKI'
-        : key == 'zoo' ? 'THEME_GRAVA_HUD.SEARCH.GROUP_ZOO'
-        : 'THEME_GRAVA_HUD.SEARCH.GROUP_PAGES' %}
-    {% set sections = sections|merge([{ key: key, label: label, items: items }]) %}
-{% endfor %}
+{% if posts|length %}
+    {% set sections = sections|merge([{ label: 'THEME_GRAVA_HUD.SEARCH.GROUP_POSTS', items: posts|sort((a, b) => b.date <=> a.date) }]) %}
+{% endif %}
+{% if wiki|length %}
+    {% set sections = sections|merge([{ label: 'THEME_GRAVA_HUD.SEARCH.GROUP_WIKI', items: wiki|sort((a, b) => a.title <=> b.title) }]) %}
+{% endif %}
+{% if zoo|length %}
+    {% set sections = sections|merge([{ label: 'THEME_GRAVA_HUD.SEARCH.GROUP_ZOO', items: zoo|sort((a, b) => a.title <=> b.title) }]) %}
+{% endif %}
+{% if pages|length %}
+    {% set sections = sections|merge([{ label: 'THEME_GRAVA_HUD.SEARCH.GROUP_PAGES', items: pages|sort((a, b) => a.title <=> b.title) }]) %}
+{% endif %}
 
 {% if query %}
     <p class="wiki-search-summary">
