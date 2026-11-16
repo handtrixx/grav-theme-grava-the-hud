@@ -1,0 +1,30 @@
+{% extends 'partials/base.html.twig' %}
+{# Home page: hero from the page content, then teasers for the main sections.
+   Teasers are derived from the section pages themselves (title, auto excerpt,
+   modified date), so they stay correct in en and de. #}
+{% import 'partials/wiki-macros.html.twig' as wm %}
+
+{% block content %}
+    <article class="content-item">
+        {{ page.content|raw }}
+
+        {% set de = grav.language.getActive == 'de' %}
+        {% set go = de ? 'öffnen' : 'open' %}
+        <section class="hud-teasers" aria-label="{{ de ? 'Seitenbereiche' : 'Site sections' }}">
+            {% for route in ['/blog', '/wiki', '/zoo', '/about'] %}
+                {% set s = page.find(route) %}
+                {% if s and s.published %}
+                    <a class="hud-teaser" href="{{ s.url }}">
+                        <span class="hud-teaser-kicker">$ cd {{ s.route|split('/')|last|lower }}/</span>
+                        <h2>{{ wm.clean_title(s) }}</h2>
+                        {{ wm.excerpt(s) }}
+                        <span class="hud-teaser-foot">
+                            {{ wm.date(s) }}
+                            <span class="hud-teaser-go">{{ go }} →</span>
+                        </span>
+                    </a>
+                {% endif %}
+            {% endfor %}
+        </section>
+    </article>
+{% endblock %}
