@@ -974,6 +974,10 @@ body.hud-flat #body-wrapper > .container > .content-item p {
   display: flex;
   align-items: center;
   gap: 0.5rem;
+  /* desktop-menu stretches to fill the navbar; the pill must not ride that
+     width and push the row into two lines */
+  flex: 0 0 auto;
+  width: fit-content;
   margin-left: clamp(0.8rem, 2vw, 1.4rem);
   padding: 0.42rem 0.75rem;
   border: 1px solid var(--q2-divider);
