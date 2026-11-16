@@ -420,6 +420,35 @@ body.hud-home #body-wrapper > .container > .content-item {
   color: var(--hud-accent);
 }
 
+/* ---------- Home: recent transmissions + inventory readout ---------- */
+.hud-recent-list {
+  margin-bottom: 1.5rem;
+}
+.hud-recent-list:last-child {
+  margin-bottom: 0;
+}
+.hud-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1.6rem;
+  margin-top: clamp(2rem, 5vw, 3rem);
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--q2-divider);
+  font-family: var(--hud-mono);
+  font-size: 0.82rem;
+  letter-spacing: 0.05em;
+  color: var(--q2-text-muted);
+}
+.hud-stat em {
+  font-style: normal;
+  color: color-mix(in oklab, var(--hud-accent) 60%, var(--q2-text-muted));
+  margin-right: 0.45rem;
+}
+.hud-stat b {
+  color: var(--q2-text);
+  margin-right: 0.25rem;
+}
+
 .hud-footer-links {
   font-family: var(--hud-mono);
   font-size: 0.8rem;

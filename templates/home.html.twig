@@ -1,7 +1,8 @@
 {% extends 'partials/base.html.twig' %}
-{# Home page: hero from the page content, then teasers for the main sections.
-   Teasers are derived from the section pages themselves (title, auto excerpt,
-   modified date), so they stay correct in en and de. #}
+{# Home page: hero from the page content, then teasers for the main sections,
+   a recent-transmissions list (newest blog posts, most recently edited wiki
+   articles) and a readout of what the site holds. All derived from the
+   section pages, so it stays correct in en and de and needs no maintenance. #}
 {% import 'partials/wiki-macros.html.twig' as wm %}
 
 {% block content %}
@@ -10,6 +11,27 @@
 
         {% set de = grav.language.getActive == 'de' %}
         {% set go = de ? 'öffnen' : 'open' %}
+
+        {% set blog = page.find('/blog') %}
+        {% set wiki = page.find('/wiki') %}
+        {% set zoo = page.find('/zoo') %}
+
+        {# Wiki articles live one and two folders below /wiki; collect them all
+           so the recent list shows articles, not section pages. #}
+        {% set wiki_articles = [] %}
+        {% for sec in wiki.children %}
+            {% for p in sec.children %}
+                {% if p.published %}
+                    {% set wiki_articles = wiki_articles|merge([p]) %}
+                {% endif %}
+                {% for q in p.children %}
+                    {% if q.published %}
+                        {% set wiki_articles = wiki_articles|merge([q]) %}
+                    {% endif %}
+                {% endfor %}
+            {% endfor %}
+        {% endfor %}
+
         <p class="hud-ls-head"><span class="prompt">$</span> ls -al ~/sites</p>
         <section class="hud-teasers" aria-label="{{ de ? 'Seitenbereiche' : 'Site sections' }}">
             {% for route in ['/blog', '/wiki', '/zoo', '/about'] %}
@@ -27,5 +49,30 @@
                 {% endif %}
             {% endfor %}
         </section>
+
+        {% set posts = blog ? blog.collection|slice(0, 3) : [] %}
+        {% set recent_wiki = wiki_articles|sort(attribute='modified')|reverse|slice(0, 3) %}
+
+        <section class="hud-recent" aria-label="{{ de ? 'Das Neueste' : 'Latest' }}">
+            {% if posts %}
+                <p class="hud-ls-head"><span class="prompt">$</span> tail -n 3 ~/blog</p>
+                <ul class="hud-recent-list">
+                    {% for p in posts %}{{ wm.search_row(p) }}{% endfor %}
+                </ul>
+            {% endif %}
+
+            {% if recent_wiki %}
+                <p class="hud-ls-head"><span class="prompt">$</span> git log --oneline -3 ~/wiki</p>
+                <ul class="hud-recent-list">
+                    {% for p in recent_wiki %}{{ wm.search_row(p) }}{% endfor %}
+                </ul>
+            {% endif %}
+        </section>
+
+        <div class="hud-stats" aria-label="{{ de ? 'Bestand' : 'What this site holds' }}">
+            <span class="hud-stat"><em>~/blog</em><b>{{ blog ? blog.collection.count : 0 }}</b>{{ de ? ' Beiträge' : ' posts' }}</span>
+            <span class="hud-stat"><em>~/wiki</em><b>{{ wiki_articles|length }}</b>{{ de ? ' Seiten' : ' pages' }}</span>
+            <span class="hud-stat"><em>~/zoo</em><b>{{ zoo ? zoo.collection.count : 0 }}</b>{{ de ? ' Projekte' : ' projects' }}</span>
+        </div>
     </article>
 {% endblock %}

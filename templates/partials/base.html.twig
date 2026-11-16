@@ -79,8 +79,9 @@
         {% endif %}
     {% endif %}
     {% do assets.addCss('theme://css/custom.css', 80) %}
-    {# Wiki docs layout (sidebar, tree, TOC) only on wiki + search pages. #}
-    {% if page.template in ['wiki', 'wiki-article', 'wiki-search', 'search'] %}
+    {# Wiki docs layout (sidebar, tree, TOC) on wiki + search pages; the
+       entry-row styles also carry the home page's recent lists. #}
+    {% if page.template in ['wiki', 'wiki-article', 'wiki-search', 'search', 'home'] %}
         {% do assets.addCss('theme://css/wiki-docs.css', 75) %}
     {% endif %}
 {% endblock %}
