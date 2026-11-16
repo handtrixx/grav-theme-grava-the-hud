@@ -209,22 +209,28 @@ html:not(.wiki-js) .wiki-branch {
   line-height: 1.5;
   max-width: 62ch;
 }
-.wiki-entry-path {
+/* Search rows stack trail + date in one cell on the right. */
+.wiki-entry-meta {
   grid-column: 2;
-  grid-row: 1;
+  grid-row: 1 / span 2;
   justify-self: end;
+  align-self: start;
+  display: flex;
+  flex-direction: column;
+  align-items: end;
+  gap: 0.15rem;
   font-family: var(--hud-mono);
   font-size: 0.72rem;
   color: var(--q2-text-muted);
 }
 .wiki-entry-date {
-  grid-column: 2;
-  grid-row: 1 / span 2;
-  align-self: start;
   font-family: var(--hud-mono);
   font-size: 0.72rem;
   color: var(--q2-text-muted);
   white-space: nowrap;
+  grid-column: 2;
+  grid-row: 1 / span 2;
+  align-self: start;
 }
 .wiki-entry-standalone {
   margin: 1.5rem 0 0;
@@ -334,10 +340,12 @@ html:not(.wiki-js) .wiki-branch {
     grid-column: 1;
     grid-row: auto;
   }
-  .wiki-entry-path {
+  .wiki-entry-meta {
     grid-column: 1;
     grid-row: auto;
     justify-self: start;
+    align-items: start;
+    flex-direction: row;
   }
 }
 @media (prefers-reduced-motion: reduce) {

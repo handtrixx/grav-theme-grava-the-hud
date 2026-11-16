@@ -27,10 +27,11 @@
             {% endif %}
         {% endfor %}
         {% set text = _self.clean_text(clean|join(' '))|trim %}
-        {% if text|lower starts with p.title|lower %}
-            {% set text = text|slice(p.title|length)|trim %}
+        {% set plain = _self.clean_title(p) %}
+        {% if text|lower starts with plain|lower %}
+            {% set text = text|slice(plain|length)|trim %}
         {% endif %}
-        {% if text and text|lower != p.title|lower %}
+        {% if text and text|lower != plain|lower %}
             <p class="wiki-entry-excerpt">{{ text|length > 220 ? text|slice(0, 220) ~ '…' : text }}</p>
         {% endif %}
     {% endif %}
@@ -55,14 +56,17 @@
     {% endif %}
 {% endmacro %}
 
-{# One search-result row: title, folder trail, excerpt, modified date. #}
+{# One search-result row: title, folder trail + modified date stacked on the
+   right, excerpt. Listing rows use entry_row, which has no path. #}
 {% macro search_row(p) %}
     <li class="wiki-entry">
         <a class="wiki-entry-title" href="{{ p.url }}">{{ _self.clean_title(p) }}</a>
-        {% if p.parent and p.parent.route != '' %}
-            <span class="wiki-entry-path">{{ _self.trail(p.parent, 5) }}</span>
-        {% endif %}
+        <span class="wiki-entry-meta">
+            {% if p.parent and p.parent.route != '' %}
+                <span class="wiki-entry-path">{{ _self.trail(p.parent, 5) }}</span>
+            {% endif %}
+            {{ _self.date(p) }}
+        </span>
         {{ _self.excerpt(p) }}
-        {{ _self.date(p) }}
     </li>
 {% endmacro %}
