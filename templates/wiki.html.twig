@@ -11,19 +11,17 @@
 {% block body %}
     <section id="body-wrapper" class="section{{ children|length ? ' wiki-listing' : ' wiki-article' }}">
         <div class="container">
-            {% if show_breadcrumbs %}
-                {% include 'partials/wiki-breadcrumbs.html.twig' %}
-            {% endif %}
-
-            {# One terminal header band at the container edge, like the blog
-               listing; the tree and the text start below it. The markdown's
-               own leading `#` heading is dropped — the band says it already. #}
+            {# The band opens every page at the same spot below the navbar;
+               the breadcrumb trail reads as a location line beneath it. #}
             <header class="wiki-page-header">
                 <h1>{{ wm.clean_title(page) }}</h1>
                 {% if page.header.subtitle %}
                     <p class="lead">{{ page.header.subtitle }}</p>
                 {% endif %}
             </header>
+            {% if show_breadcrumbs %}
+                {% include 'partials/wiki-breadcrumbs.html.twig' %}
+            {% endif %}
 
             {% embed 'partials/wiki-layout.html.twig' %}
                 {% block item %}

@@ -10,15 +10,15 @@
 {% block body %}
     <section id="body-wrapper" class="section wiki-article">
         <div class="container">
-            {% if show_breadcrumbs %}
-                {% include 'partials/wiki-breadcrumbs.html.twig' %}
-            {% endif %}
             <header class="wiki-page-header">
                 <h1>{{ wm.clean_title(page) }}</h1>
                 {% if page.header.subtitle %}
                     <p class="lead">{{ page.header.subtitle }}</p>
                 {% endif %}
             </header>
+            {% if show_breadcrumbs %}
+                {% include 'partials/wiki-breadcrumbs.html.twig' %}
+            {% endif %}
             {% embed 'partials/wiki-layout.html.twig' %}
                 {% block item %}
                     <article class="content-item">

@@ -216,6 +216,10 @@ a:hover {
   font-size: 0.78rem;
   letter-spacing: 0.04em;
 }
+/* The trail sits under the title band, not above it. */
+.breadcrumbs {
+  margin: 0.75rem 0 1.4rem;
+}
 
 .prev-next .btn {
   font-family: var(--hud-mono);
@@ -435,6 +439,21 @@ body.hud-home #body-wrapper > .container > .content-item {
 /* About (hud-flat content-item), Blog/Wiki listing headers and the Zoo hero
    speak the same voice: accent title, hairline underline, "//" suffix.
    The home hero (hud-home) keeps its plain display face. */
+/* Every page opens with the band at the same distance below the navbar; the
+   breadcrumb trail sits beneath it, so pages with and without a trail line up. */
+body.hud-flat #body-wrapper,
+.blog-listing#body-wrapper,
+.wiki-listing#body-wrapper,
+.wiki-article#body-wrapper,
+.wiki-search-page#body-wrapper {
+  padding-top: clamp(2.5rem, 5vw, 4rem);
+}
+body.hud-flat #body-wrapper > .container > .content-item > h1,
+body.hud-flat:not(.hud-home) .hud-hero,
+body.hud-flat #body-wrapper > .container > .content-item {
+  margin-top: 0;
+  padding-top: 0;
+}
 body.hud-flat #body-wrapper > .container > .content-item > h1,
 body.hud-flat:not(.hud-home) .hud-hero .display,
 .blog-page-header h1,
