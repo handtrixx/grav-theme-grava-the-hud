@@ -3,19 +3,21 @@
    summaries only: feeds are read by parsers, not rendered as HTML. #}
 <?xml version="1.0" encoding="utf-8"?>
 {% set lang = grav.language.getActive ?: grav.config.site.default_lang %}
-{% set blog = grav.pages.find('/' ~ lang ~ '/blog') %}
+{% set blog = grav.pages.find('/blog') %}
 {% set items = blog ? blog.children|sort((a, b) => b.date <=> a.date) : [] %}
 {% set latest = items|first %}
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>{{ site.title }}</title>
-    <link>{{ base_url }}</link>
-    <description>{{ 'Blog feed of Niklas Stephan' }}</description>
+    <link>{{ site.url }}</link>
+    <description>{% if lang == 'de' %}Blog-Feed von Niklas Stephan{% else %}Blog feed of Niklas Stephan{% endif %}</description>
     <language>{{ lang }}</language>
     <managingEditor>{{ site.author.email }} ({{ site.author.name }})</managingEditor>
     <webMaster>{{ site.author.email }} ({{ site.author.name }})</webMaster>
-    {% if latest %}<lastBuildDate>{{ latest.date|date('r') }}</lastBuildDate>{% endif %}
-    <atom:link href="{{ page.url(true, true) }}" rel="self" type="application/rss+xml"/>
+    {% if latest %}
+    <lastBuildDate>{{ latest.date|date('r') }}</lastBuildDate>
+    {% endif %}
+    <atom:link href="{{ page.url(true, true) }}.rss" rel="self" type="application/rss+xml"/>
     {% for item in items|slice(0, 20) %}
     <item>
       <title>{{ item.title|strip_emoji }}</title>
