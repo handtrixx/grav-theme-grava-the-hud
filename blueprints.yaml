@@ -39,6 +39,18 @@ form:
       help: Tints links and focus rings. Leave blank for the pure monochrome palette.
       default: '#242424'
 
+    code_highlighting:
+      type: toggle
+      label: Code Highlighting
+      help: Highlight fenced code blocks server-side with the highlight-php plugin's library. Off means plain monospace code.
+      highlight: 1
+      default: 1
+      options:
+        1: PLUGIN_ADMIN.ENABLED
+        0: PLUGIN_ADMIN.DISABLED
+      validate:
+        type: bool
+
     header_section:
       type: section
       title: Header

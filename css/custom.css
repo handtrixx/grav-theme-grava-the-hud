@@ -1446,6 +1446,154 @@ body.hud-flat #body-wrapper > .container > .content-item p {
   color: var(--hud-accent);
 }
 
+/* ---------- Server-side syntax highlighting (highlight-php) ---------- */
+/* The plugin emits <pre class="hljs"><code class="hljs language-x"> with
+   token classes. Its own stylesheet is switched off (style: None), so the
+   palette below follows the HUD theme in both light and dark mode. */
+
+.hljs {
+  --hl-comment: #6b7280;
+  --hl-key: #0e7a63;
+  --hl-string: #b45309;
+  --hl-number: #2563eb;
+  --hl-title: #7c3aed;
+  --hl-attr: #0369a3;
+  --hl-meta: #6b7280;
+}
+:root[data-theme='dark'] .hljs {
+  --hl-comment: #8b93a1;
+  --hl-key: #35c9a8;
+  --hl-string: #e0a458;
+  --hl-number: #7dd3fc;
+  --hl-title: #b083f0;
+  --hl-attr: #67b7e8;
+  --hl-meta: #8b93a1;
+}
+
+.hljs .hljs-comment,
+.hljs .hljs-quote {
+  color: var(--hl-comment);
+  font-style: italic;
+}
+.hljs .hljs-keyword,
+.hljs .hljs-selector-tag,
+.hljs .hljs-literal,
+.hljs .hljs-deletion {
+  color: var(--hl-key);
+  font-weight: 600;
+}
+.hljs .hljs-string,
+.hljs .hljs-addition {
+  color: var(--hl-string);
+}
+.hljs .hljs-number,
+.hljs .hljs-link {
+  color: var(--hl-number);
+}
+.hljs .hljs-title,
+.hljs .hljs-title.function_,
+.hljs .hljs-class_.hljs-title {
+  color: var(--hl-title);
+}
+.hljs .hljs-attr,
+.hljs .hljs-attribute,
+.hljs .hljs-selector-id,
+.hljs .hljs-selector-class,
+.hljs .hljs-name,
+.hljs .hljs-tag {
+  color: var(--hl-attr);
+}
+.hljs .hljs-variable,
+.hljs .hljs-template-variable,
+.hljs .hljs-symbol,
+.hljs .hljs-bullet,
+.hljs .hljs-built_in {
+  color: var(--hl-key);
+}
+.hljs .hljs-meta {
+  color: var(--hl-meta);
+}
+.hljs .hljs-emphasis {
+  font-style: italic;
+}
+.hljs .hljs-strong {
+  font-weight: 700;
+}
+
+/* ---------- Tag index ---------- */
+
+.tag-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 0.6rem;
+  margin: 1.5rem 0 2rem;
+}
+.tag-pill {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--q2-divider);
+  border-radius: var(--q2-radius-sm);
+  background: var(--q2-bg-elev);
+  color: var(--q2-text);
+  text-decoration: none;
+  font-family: var(--hud-mono);
+  font-size: 0.82rem;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+.tag-pill:hover {
+  border-color: var(--hud-accent-line);
+  box-shadow: 0 0 14px -6px var(--hud-accent-glow);
+  color: var(--hud-accent);
+}
+.tag-pill .tag-count {
+  color: var(--q2-text-muted);
+  font-size: 0.72rem;
+  letter-spacing: 0.04em;
+}
+
+/* ---------- Related posts on blog items ---------- */
+
+.related-posts {
+  margin-top: 2.5rem;
+  border-top: 1px solid var(--q2-divider);
+  padding-top: 1.25rem;
+}
+.related-posts-headline {
+  font-family: var(--hud-mono);
+  font-size: 0.8rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--q2-text-muted);
+  margin: 0 0 0.75rem;
+}
+.related-posts .related-pages {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+.related-posts .related-pages a {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.4rem 0.7rem;
+  border: 1px solid var(--q2-divider);
+  border-radius: var(--q2-radius-sm);
+  font-family: var(--hud-mono);
+  font-size: 0.82rem;
+  text-decoration: none;
+  color: var(--q2-text);
+}
+.related-posts .related-pages a:hover {
+  border-color: var(--hud-accent-line);
+  color: var(--hud-accent);
+}
+
 
 
 

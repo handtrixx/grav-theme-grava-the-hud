@@ -9,6 +9,7 @@ layout-fluid: false
 theme-mode: auto
 accent-color: '#8428DF'
 blog-page: '/blog'
+code_highlighting: true
 fontawesome:
   enabled: true
   local: false

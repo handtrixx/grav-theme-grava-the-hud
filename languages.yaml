@@ -78,6 +78,11 @@ en:
       FORK: "fork"
       ARCHIVE_HEAD: "Archived — no longer maintained"
       ARCHIVED: "archived"
+    TAGS:
+      ARIA: "Tags used in the blog"
+      ONE: "one post"
+      MANY: "%s posts"
+      NONE: "No tags yet."
 
 de:
   THEME_GRAVA_HUD:
@@ -119,6 +124,15 @@ de:
       FORK: "Fork"
       ARCHIVE_HEAD: "Archiviert — wird nicht mehr gepflegt"
       ARCHIVED: "archiviert"
+    TAGS:
+      ARIA: "Schlagworte im Blog"
+      ONE: "ein Beitrag"
+      MANY: "%s Beiträge"
+      NONE: "Noch keine Schlagworte."
+
+    SIDEBAR:
+      RELATED_POSTS:
+        HEADLINE: "Verwandte Beiträge"
 
     HEADER:
       SEARCH_LABEL: "Seite durchsuchen"

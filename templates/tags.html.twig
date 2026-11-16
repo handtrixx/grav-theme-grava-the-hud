@@ -1,0 +1,35 @@
+{% extends 'partials/base.html.twig' %}
+
+{# Tag index: every tag the blog uses, with how many posts carry it. The
+   counts come from the taxonomylist plugin, scoped to its configured route
+   (/blog); each pill links to the taxonomy filter page /blog/tag:<tag>. #}
+
+{% block body %}
+    <section id="body-wrapper" class="section tags-page">
+        <div class="container">
+            <header class="hud-hero">
+                <h1 class="display">{{ page.title|strip_emoji }}</h1>
+                {% if page.header.description %}<p class="lead">{{ page.header.description }}</p>{% endif %}
+            </header>
+
+            {% set blog_url = theme_var('blog-page')|default('/blog') %}
+            {% set taxlist = taxonomylist.get() %}
+            {% set tags = taxlist['tag']|default({}) %}
+
+            {% if tags %}
+                <nav class="tag-grid" aria-label="{{ 'THEME_GRAVA_HUD.TAGS.ARIA'|t }}">
+                    {% for tag in tags|keys|sort %}
+                        <a class="tag-pill" href="{{ blog_url|url }}/tag{{ config.system.param_sep }}{{ tag }}">
+                            <span class="tag-name">{{ tag }}</span>
+                            <span class="tag-count">
+                                {{ tags[tag] == 1 ? 'THEME_GRAVA_HUD.TAGS.ONE'|t : 'THEME_GRAVA_HUD.TAGS.MANY'|t(tags[tag]) }}
+                            </span>
+                        </a>
+                    {% endfor %}
+                </nav>
+            {% else %}
+                <p class="lead">{{ 'THEME_GRAVA_HUD.TAGS.NONE'|t }}</p>
+            {% endif %}
+        </div>
+    </section>
+{% endblock %}

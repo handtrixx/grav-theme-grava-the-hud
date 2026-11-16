@@ -11,6 +11,7 @@ class GravaTheHud extends Theme
         return [
             'onThemeInitialized' => ['onThemeInitialized', 0],
             'onPageInitialized'  => ['onPageInitialized', 0],
+            'onPageContentProcessed' => ['highlightCodeBlocks', 0],
             'onTwigLoader'       => ['onTwigLoader', 0],
             'onTwigInitialized'  => ['onTwigInitialized', 0],
         ];
@@ -45,6 +46,62 @@ class GravaTheHud extends Theme
         if ($parent && basename((string) $parent->route()) === 'blog') {
             $page->template('item');
         }
+    }
+
+    /**
+     * Server-side syntax highlighting for fenced code blocks.
+     *
+     * Grav's markdown turns ```lang fences into
+     * `<pre><code class="language-x">` with the code HTML-escaped.
+     * highlight.php wants raw code and escapes its own output, so the block is
+     * decoded, highlighted and re-wrapped in the markup the plugin's shortcodes
+     * produce (`<pre class="hljs"><code class="hljs language-x">`); the token
+     * classes are colored by custom.css in both theme states. Diagrams and
+     * unsupported languages are left as plain code. Requires the highlight-php
+     * plugin (it provides the library); disable with `code_highlighting: false`
+     * in the theme config.
+     */
+    public function highlightCodeBlocks()
+    {
+        if ($this->isAdmin()) {
+            return;
+        }
+        if (!$this->config->get('themes.grava-the-hud.code_highlighting', true)) {
+            return;
+        }
+        if (!class_exists('\Highlight\Highlighter')) {
+            return; // highlight-php not installed: nothing to highlight with
+        }
+
+        $page = $this->grav['page'];
+        $content = (string) $page->content();
+        if (strpos($content, '<pre><code class="language-') === false) {
+            return;
+        }
+
+        // Languages that must keep their own rendering (or have no grammar).
+        $skip = ['', 'text', 'plaintext', 'none', 'mermaid'];
+
+        $highlighted = preg_replace_callback(
+            '/<pre><code class="language-([A-Za-z0-9+#._-]+)">(.*?)<\/code><\/pre>/s',
+            static function (array $m) use ($skip) {
+                $lang = strtolower($m[1]);
+                if (in_array($lang, $skip, true)) {
+                    return $m[0];
+                }
+                $code = html_entity_decode($m[2], ENT_QUOTES | ENT_HTML5, 'UTF-8');
+                try {
+                    $result = (new \Highlight\Highlighter())->highlight($lang, $code);
+                    return '<pre class="hljs"><code class="hljs language-' . $result->language
+                        . '">' . $result->value . '</code></pre>';
+                } catch (\Throwable $e) {
+                    return $m[0]; // no grammar for this language: leave it plain
+                }
+            },
+            $content
+        );
+
+        $page->content($highlighted);
     }
 
     public function onTwigLoader()
