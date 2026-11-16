@@ -41,7 +41,7 @@
 {% endif %}
 
 {% if uri.query('dbg') %}
-<pre style="white-space:pre-wrap">{% for p in results %}{% set parts = p.url|split('/')|filter(x => x is not empty) %}{% set root = parts[0] in ['en', 'de'] ? parts[1]|default(parts[0]) : parts[0] %}{{ p.url }} root={{ root }} prefix={{ parts[0] }}\n{% endfor %}</pre>
+<pre style="white-space:pre-wrap">{% for p in results %}{% set parts = p.url|split('/') %}{{ p.url }} raw-split={{ parts|join('|') }} filtered={{ parts|filter(x => x != '')|join('|') }}\n{% endfor %}</pre>
 {% endif %}
 
 {% if query %}
