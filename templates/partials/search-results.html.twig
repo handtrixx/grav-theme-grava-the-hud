@@ -40,7 +40,7 @@
     {% set sections = sections|merge([{ label: 'THEME_GRAVA_HUD.SEARCH.GROUP_PAGES', items: pages|sort((a, b) => a.title <=> b.title) }]) %}
 {% endif %}
 
-{% if uri.param('dbg') %}
+{% if uri.query('dbg') %}
 <pre style="white-space:pre-wrap">{% for p in results %}{% set parts = p.url|split('/')|filter(x => x is not empty) %}{% set root = parts[0] in ['en', 'de'] ? parts[1]|default(parts[0]) : parts[0] %}{{ p.url }} root={{ root }} prefix={{ parts[0] }}\n{% endfor %}</pre>
 {% endif %}
 
