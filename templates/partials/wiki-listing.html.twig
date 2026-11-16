@@ -11,8 +11,9 @@
                 <a href="{{ section.url }}">{{ wm.clean_title(section) }}</a>
                 <span class="wiki-section-count">{{ entries|length }}</span>
             </h2>
-            {% if section.content|striptags|trim is not empty %}
-                <div class="wiki-section-intro">{{ section.content|raw }}</div>
+            {% set intro = section.content|without_first_heading %}
+            {% if intro|striptags|trim is not empty %}
+                <div class="wiki-section-intro">{{ intro|raw }}</div>
             {% endif %}
             <ul class="wiki-entry-list">
                 {% for p in entries %}

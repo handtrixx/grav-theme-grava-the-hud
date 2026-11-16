@@ -22,8 +22,9 @@
                     {% if page.header.subtitle %}
                         <p class="lead">{{ page.header.subtitle }}</p>
                     {% endif %}
-                    {% if page.content|striptags|trim is not empty %}
-                        <div class="blog-page-intro">{{ page.content|raw }}</div>
+                    {% set intro = page.content|without_first_heading %}
+                    {% if intro|striptags|trim is not empty %}
+                        <div class="blog-page-intro">{{ intro|raw }}</div>
                     {% endif %}
                 </header>
             {% endif %}

@@ -22,7 +22,9 @@
     {% if text %}
         {% set clean = [] %}
         {% for line in text|split('\n') %}
-            {% if line|trim and not (line starts with ':::') and not ('![' in line) %}
+            {# Drop markdown headings (the auto-prepended title), alert
+               markers and image lines; striptags alone leaves `#` markdown. #}
+            {% if line|trim and not (line starts with ':::') and not (line starts with '#') and not ('![' in line) %}
                 {% set clean = clean|merge([line|trim]) %}
             {% endif %}
         {% endfor %}
