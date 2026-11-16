@@ -103,7 +103,7 @@ class GravaTheHud extends Theme
         $key = 'theme-github-repos';
         $ttl = 21600; // 6h
 
-        $repos = $cache->get($key, $ttl);
+        $repos = $cache->fetch($key);
         if (is_array($repos)) {
             return $repos;
         }
@@ -143,7 +143,7 @@ class GravaTheHud extends Theme
             return strcmp($b['pushed'], $a['pushed']);
         });
 
-        $cache->set($key, $repos, $ttl);
+        $cache->save($key, $repos, $ttl);
         return $repos;
     }
 
