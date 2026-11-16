@@ -30,25 +30,25 @@ class GravaTheHud extends Theme
     {
         $page = $this->grav['page'];
         $route = (string) $page->route();
-
-        $this->addSeoMetadata();
-
         $header = $page->header();
-        if (isset($header->template)) {
-            return;
+
+        if (!isset($header->template)) {
+            if (strpos($route, '/wiki') === 0) {
+                $page->template('wiki');
+            } else {
+                // Blog posts carry no `template:` header (only title and date), so
+                // without this they fall back to default.html.twig. Anything living
+                // in a blog folder renders with the item template: header band,
+                // date/tags, prev-next. The blog index itself stays on `blog`.
+                $parent = $page->parent();
+                if ($parent && basename((string) $parent->route()) === 'blog') {
+                    $page->template('item');
+                }
+            }
         }
-        if (strpos($route, '/wiki') === 0) {
-            $page->template('wiki');
-            return;
-        }
-        // Blog posts carry no `template:` header (only title and date), so
-        // without this they fall back to default.html.twig. Anything living
-        // in a blog folder renders with the item template: header band,
-        // date/tags, prev-next. The blog index itself stays on `blog`.
-        $parent = $page->parent();
-        if ($parent && basename((string) $parent->route()) === 'blog') {
-            $page->template('item');
-        }
+
+        // After the template decision: og:type and JSON-LD depend on it.
+        $this->addSeoMetadata();
     }
 
     /**
@@ -94,9 +94,15 @@ class GravaTheHud extends Theme
         if ($description === '') {
             $description = trim(preg_replace('/\s+/', ' ', (string) $page->summary(280, true)));
         }
-        // The summary keeps entities from page markup (`&nbsp;`); decode before
-        // escaping so the meta tag shows plain text.
-        $description = html_entity_decode($description, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+        // Grav's summary builder escapes entities, so page markup leaks `&amp;`
+        // (and `&amp;amp;`) into the text. Decode until stable, then escape once.
+        for ($i = 0; $i < 3; $i++) {
+            $decoded = html_entity_decode($description, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+            if ($decoded === $description) {
+                break;
+            }
+            $description = $decoded;
+        }
         $meta = array_values(array_filter(
             $meta,
             static fn ($entry) => !is_array($entry) || (($entry['name'] ?? $entry['property'] ?? '') !== 'description')
@@ -264,6 +270,20 @@ class GravaTheHud extends Theme
             'json_ld',
             static fn (array $data) => json_encode($data, JSON_HEX_TAG | JSON_HEX_AMP | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES)
         ));
+
+        // Plain text for structured data: Grav's summary builder escapes
+        // entities from page markup; decode until stable.
+        $twig->twig->addFilter(new \Twig\TwigFilter('plain_text', static function ($text) {
+            $text = (string) $text;
+            for ($i = 0; $i < 3; $i++) {
+                $decoded = html_entity_decode($text, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+                if ($decoded === $text) {
+                    break;
+                }
+                $text = $decoded;
+            }
+            return trim(preg_replace('/\s+/', ' ', $text));
+        }));
     }
 
     /**

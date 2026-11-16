@@ -25,7 +25,7 @@
       <guid isPermaLink="true">{{ item.url(true, true) }}</guid>
       <pubDate>{{ item.date|date('r') }}</pubDate>
       {% for tag in item.taxonomy.tag|default([]) %}<category>{{ tag }}</category>{% endfor %}
-      <description>{{ item.summary(400, true) }}</description>
+      <description>{{ item.summary(400, true)|plain_text }}</description>
     </item>
     {% endfor %}
   </channel>
