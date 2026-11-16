@@ -1,9 +1,11 @@
 {% extends 'partials/base.html.twig' %}
 {% import 'partials/zoo-macros.html.twig' as zm %}
 
-{# Zoo portfolio index: one card per published child page (template
-   zoo-item), newest first via the page's collection header. Cards link to
-   the project page; repository/live links come from each item's front matter. #}
+{# Zoo portfolio index: every GitHub repository of the owner, active ones
+   first (newest push), archived ones in their own marked section below.
+   Repos that have a curated write-up under pages/zoo/ link to that page;
+   all others link to the repository itself. If the GitHub API is
+   unreachable, the curated item pages alone are listed. #}
 
 {% block body %}
     <section id="body-wrapper" class="section zoo-page">
@@ -13,17 +15,84 @@
                 {% if page.header.description %}<p class="lead">{{ page.header.description }}</p>{% endif %}
             </header>
 
-            <div class="zoo-grid">
-                {% for p in page.collection %}
-                    <div class="zoo-card">
-                        <span class="zoo-index">{{ loop.index < 10 ? '0' ~ loop.index : loop.index }}</span>
-                        {% if p.header.kicker %}<span class="zoo-kicker">{{ p.header.kicker }}</span>{% endif %}
-                        <h3><a href="{{ p.url }}">{{ p.title|strip_emoji }}</a></h3>
-                        {% if p.header.description %}<p>{{ p.header.description }}</p>{% endif %}
-                        {% if p.header.links %}{{ zm.links(p.header.links) }}{% endif %}
-                    </div>
-                {% endfor %}
-            </div>
+            {% set de = grav.language.getActive == 'de' %}
+            {% set repos = github_repos() %}
+
+            {# Curated write-ups, keyed by repository name so a repo card can
+               link into its own page. |merge keys stay distinct per repo. #}
+            {% set writeups = {} %}
+            {% for p in page.collection %}
+                {% if p.header.repo %}
+                    {% set writeups = writeups|merge({ (p.header.repo|lower): p }) %}
+                {% endif %}
+            {% endfor %}
+
+            {% set active = [] %}
+            {% set archived = [] %}
+            {% for r in repos %}
+                {% if r.archived %}
+                    {% set archived = archived|merge([r]) %}
+                {% else %}
+                    {% set active = active|merge([r]) %}
+                {% endif %}
+            {% endfor %}
+
+            {% if active %}
+                <div class="zoo-grid">
+                    {% for r in active %}
+                        {% set w = writeups[r.name|lower] %}
+                        <div class="zoo-card">
+                            <span class="zoo-index">{{ loop.index < 10 ? '0' ~ loop.index : loop.index }}</span>
+                            <span class="zoo-kicker">{{ r.language|default(de ? 'verschiedenes' : 'misc') }}{% if r.fork %} · {{ 'THEME_GRAVA_HUD.ZOO.FORK'|t }}{% endif %} · {{ r.pushed|date('Y-m-d') }}</span>
+                            <h3>
+                                <a href="{{ w ? w.url : r.url }}"{% if not w %} target="_blank" rel="noopener noreferrer"{% endif %}>{{ w ? w.title|strip_emoji : r.name }}</a>
+                            </h3>
+                            {% if r.description %}<p>{{ r.description|strip_emoji }}</p>{% endif %}
+                            <div class="zoo-links">
+                                <a href="{{ r.url }}" target="_blank" rel="noopener noreferrer"><i class="fa-brands fa-github" aria-hidden="true"></i> {{ 'THEME_GRAVA_HUD.ZOO.REPO'|t }}</a>
+                                {% if w %}<a href="{{ w.url }}"><i class="fa-solid fa-book" aria-hidden="true"></i> {{ 'THEME_GRAVA_HUD.ZOO.WRITEUP'|t }}</a>{% endif %}
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            {% if archived %}
+                <p class="zoo-archive-head"><span class="prompt">$</span> {{ 'THEME_GRAVA_HUD.ZOO.ARCHIVE_HEAD'|t }}</p>
+                <div class="zoo-grid zoo-grid-archived">
+                    {% for r in archived %}
+                        {% set w = writeups[r.name|lower] %}
+                        <div class="zoo-card is-archived">
+                            <span class="zoo-index">{{ loop.index < 10 ? '0' ~ loop.index : loop.index }}</span>
+                            <span class="zoo-kicker">{{ r.language|default(de ? 'verschiedenes' : 'misc') }} · {{ r.pushed|date('Y-m-d') }} <span class="zoo-tag-archived">{{ 'THEME_GRAVA_HUD.ZOO.ARCHIVED'|t }}</span></span>
+                            <h3>
+                                <a href="{{ w ? w.url : r.url }}"{% if not w %} target="_blank" rel="noopener noreferrer"{% endif %}>{{ w ? w.title|strip_emoji : r.name }}</a>
+                            </h3>
+                            {% if r.description %}<p>{{ r.description|strip_emoji }}</p>{% endif %}
+                            <div class="zoo-links">
+                                <a href="{{ r.url }}" target="_blank" rel="noopener noreferrer"><i class="fa-brands fa-github" aria-hidden="true"></i> {{ 'THEME_GRAVA_HUD.ZOO.REPO'|t }}</a>
+                                {% if w %}<a href="{{ w.url }}"><i class="fa-solid fa-book" aria-hidden="true"></i> {{ 'THEME_GRAVA_HUD.ZOO.WRITEUP'|t }}</a>{% endif %}
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            {# Fallback when the GitHub API gave nothing: list the curated
+               pages the way the static index did. #}
+            {% if not active and not archived %}
+                <div class="zoo-grid">
+                    {% for p in page.collection %}
+                        <div class="zoo-card">
+                            <span class="zoo-index">{{ loop.index < 10 ? '0' ~ loop.index : loop.index }}</span>
+                            {% if p.header.kicker %}<span class="zoo-kicker">{{ p.header.kicker }}</span>{% endif %}
+                            <h3><a href="{{ p.url }}">{{ p.title|strip_emoji }}</a></h3>
+                            {% if p.header.description %}<p>{{ p.header.description }}</p>{% endif %}
+                            {% if p.header.links %}{{ zm.links(p.header.links) }}{% endif %}
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
         </div>
     </section>
 {% endblock %}

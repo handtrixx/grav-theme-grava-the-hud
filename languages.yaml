@@ -73,6 +73,11 @@ en:
     ZOO:
       NAV: "Zoo navigation"
       BACK: "Back to zoo"
+      REPO: "Repository"
+      WRITEUP: "Write-up"
+      FORK: "fork"
+      ARCHIVE_HEAD: "Archived — no longer maintained"
+      ARCHIVED: "archived"
 
 de:
   THEME_GRAVA_HUD:
@@ -109,6 +114,11 @@ de:
     ZOO:
       NAV: "Zoo-Navigation"
       BACK: "Zurück zum Zoo"
+      REPO: "Repository"
+      WRITEUP: "Beschreibung"
+      FORK: "Fork"
+      ARCHIVE_HEAD: "Archiviert — wird nicht mehr gepflegt"
+      ARCHIVED: "archiviert"
 
     HEADER:
       SEARCH_LABEL: "Seite durchsuchen"

@@ -35,6 +35,11 @@
   --hud-accent: #18a98a;
   --hud-accent-glow: color-mix(in oklab, var(--hud-accent) 35%, transparent);
   --hud-accent-line: color-mix(in oklab, var(--hud-accent) 45%, transparent);
+  --hud-warning: #9a6700; /* archived / caution tone, matches markdown alerts */
+}
+
+:root[data-theme="dark"] {
+  --hud-warning: #c69026;
 }
 
 /* ---------- Ambient background: grid + aurora + grain ---------- */
@@ -1358,6 +1363,43 @@ body.hud-flat #body-wrapper > .container > .content-item p {
 }
 .zoo-links i {
   font-size: 0.85rem;
+}
+
+/* Archived repos: dimmed, dashed border, no hover lift or glow. */
+.zoo-archive-head {
+  margin: clamp(2rem, 4vw, 3rem) 0 0;
+  font-family: var(--hud-mono);
+  font-size: 0.8rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--q2-text-muted);
+}
+.zoo-archive-head .prompt {
+  color: var(--hud-accent);
+}
+.zoo-grid-archived .zoo-card.is-archived {
+  border-style: dashed;
+  background: color-mix(in oklab, var(--q2-bg-elev) 55%, transparent);
+  opacity: 0.75;
+}
+.zoo-grid-archived .zoo-card.is-archived:hover {
+  transform: none;
+  box-shadow: none;
+  border-color: var(--q2-divider-strong, var(--q2-divider));
+}
+.zoo-grid-archived .zoo-index {
+  color: var(--q2-text-muted);
+}
+.zoo-tag-archived {
+  font-family: var(--hud-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--hud-warning, var(--q2-text-muted));
+  border: 1px solid currentColor;
+  border-radius: 999px;
+  padding: 0.12rem 0.5rem;
+  margin-left: 0.5rem;
 }
 
 /* Zoo card titles link to the project page */

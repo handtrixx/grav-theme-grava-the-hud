@@ -409,11 +409,13 @@ blockquote footer {
 
 /* ---------- GitHub-style Markdown Alerts ---------- */
 /* Emitted by the `github-markdown-alerts` plugin as:
- *   <div class="markdown-alert markdown-alert-{note|tip|important|warning|caution}">
- *     <p class="markdown-alert-title"><svg>…</svg> Note</p>
- *     <p>…body…</p>
+ *   <div class="md-alert md-alert--{note|tip|important|warning|caution}">
+ *     <p class="md-alert-title"><svg>…</svg> Note</p>
+ *     <div class="md-alert-body">…</div>
  *   </div>
+ * The older `markdown-alert-*` naming is kept as an alias.
  */
+.md-alert,
 .markdown-alert {
   --alert-accent: var(--q2-text);
   --alert-bg: color-mix(in oklab, var(--alert-accent) 6%, var(--q2-bg-elev));
@@ -429,13 +431,16 @@ blockquote footer {
   letter-spacing: 0;
   color: var(--q2-text);
 }
+.md-alert > :first-child,
 .markdown-alert > :first-child {
   margin-top: 0;
 }
+.md-alert > :last-child,
 .markdown-alert > :last-child {
   margin-bottom: 0;
 }
 
+.md-alert .md-alert-title,
 .markdown-alert .markdown-alert-title {
   display: inline-flex;
   align-items: center;
@@ -449,6 +454,8 @@ blockquote footer {
   color: var(--alert-accent);
   text-transform: none;
 }
+.md-alert .md-alert-title svg,
+.md-alert .md-alert-title .octicon,
 .markdown-alert .markdown-alert-title svg,
 .markdown-alert .markdown-alert-title .octicon {
   width: 16px;
@@ -457,42 +464,54 @@ blockquote footer {
   flex: 0 0 auto;
 }
 
+.md-alert .md-alert-body p,
 .markdown-alert p {
   margin: 0 0 0.375rem;
 }
+.md-alert .md-alert-body p:last-child,
 .markdown-alert p:last-child {
   margin-bottom: 0;
 }
 
 /* Accent per alert type — matches GitHub's light-mode palette */
+.md-alert--note,
 .markdown-alert-note {
   --alert-accent: #0969da;
 }
+.md-alert--tip,
 .markdown-alert-tip {
   --alert-accent: #1a7f37;
 }
+.md-alert--important,
 .markdown-alert-important {
   --alert-accent: #8250df;
 }
+.md-alert--warning,
 .markdown-alert-warning {
   --alert-accent: #9a6700;
 }
+.md-alert--caution,
 .markdown-alert-caution {
   --alert-accent: #cf222e;
 }
 
+:root[data-theme="dark"] .md-alert--note,
 :root[data-theme="dark"] .markdown-alert-note {
   --alert-accent: #539bf5;
 }
+:root[data-theme="dark"] .md-alert--tip,
 :root[data-theme="dark"] .markdown-alert-tip {
   --alert-accent: #57ab5a;
 }
+:root[data-theme="dark"] .md-alert--important,
 :root[data-theme="dark"] .markdown-alert-important {
   --alert-accent: #b083f0;
 }
+:root[data-theme="dark"] .md-alert--warning,
 :root[data-theme="dark"] .markdown-alert-warning {
   --alert-accent: #c69026;
 }
+:root[data-theme="dark"] .md-alert--caution,
 :root[data-theme="dark"] .markdown-alert-caution {
   --alert-accent: #e5534b;
 }

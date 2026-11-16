@@ -81,6 +81,70 @@ class GravaTheHud extends Theme
         $twig->twig->addFilter(new \Twig\TwigFilter('without_first_heading', [$this, 'withoutFirstHeading']));
         $twig->twig->addFilter(new \Twig\TwigFilter('strip_images', [$this, 'stripImages']));
         $twig->twig->addFilter(new \Twig\TwigFilter('strip_emoji', [$this, 'stripEmoji']));
+
+        // The zoo index lists the owner's GitHub repositories; the template
+        // calls this function, so the fetch only happens on zoo pages.
+        $twig->twig->addFunction(new \Twig\TwigFunction('github_repos', [$this, 'githubRepos']));
+    }
+
+    /**
+     * Public repositories of handtrixx, active ones first (newest push),
+     * archived ones last. Fetched from the GitHub API and cached for 6 hours;
+     * unauthenticated calls are limited to 60/h, one cached fetch per window
+     * stays far below that. When the API is unreachable the zoo index falls
+     * back to the curated item pages alone.
+     *
+     * @return array<int, array{name: string, url: string, description: string,
+     *     language: string, pushed: string, archived: bool, fork: bool}>
+     */
+    public function githubRepos(): array
+    {
+        $cache = Grav::instance()['cache'];
+        $key = 'theme-github-repos';
+        $ttl = 21600; // 6h
+
+        $repos = $cache->get($key, $ttl);
+        if (is_array($repos)) {
+            return $repos;
+        }
+
+        $context = stream_context_create([
+            'http' => [
+                'timeout' => 6,
+                'header' => "Accept: application/vnd.github+json\r\nUser-Agent: niklas-stephan.de-zoo",
+            ],
+        ]);
+        $json = @file_get_contents('https://api.github.com/users/handtrixx/repos?per_page=100&sort=pushed', false, $context);
+        $data = $json !== false ? json_decode($json, true) : null;
+        if (!is_array($data) || !isset($data[0])) {
+            return [];
+        }
+
+        $repos = [];
+        foreach ($data as $r) {
+            if (!is_array($r) || !isset($r['name'])) {
+                continue;
+            }
+            $repos[] = [
+                'name' => (string) $r['name'],
+                'url' => (string) ($r['html_url'] ?? ''),
+                'description' => (string) ($r['description'] ?? ''),
+                'language' => (string) ($r['language'] ?? ''),
+                'pushed' => (string) ($r['pushed_at'] ?? ''),
+                'archived' => (bool) ($r['archived'] ?? false),
+                'fork' => (bool) ($r['fork'] ?? false),
+            ];
+        }
+
+        usort($repos, static function (array $a, array $b) {
+            if ($a['archived'] !== $b['archived']) {
+                return $a['archived'] <=> $b['archived'];
+            }
+            return strcmp($b['pushed'], $a['pushed']);
+        });
+
+        $cache->set($key, $repos, $ttl);
+        return $repos;
     }
 
     /**
