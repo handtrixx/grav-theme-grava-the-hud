@@ -29,7 +29,8 @@
             {% endif %}
         {% endfor %}
         {% set text = _self.clean_text(clean|join(' '))|trim %}
-        {% set plain = _self.clean_title(p) %}
+        {# Macro output carries the body's indentation, so trim before comparing #}
+        {% set plain = _self.clean_title(p)|trim %}
         {% if text|lower starts with plain|lower %}
             {% set text = text|slice(plain|length)|trim %}
         {% endif %}
