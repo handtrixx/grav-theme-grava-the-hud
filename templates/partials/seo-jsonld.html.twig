@@ -4,6 +4,8 @@
 {% set lang = grav.language.getActive ?: grav.config.site.default_lang %}
 {% set absolute = page.url(true, true) %}
 {% set img = page.media.images|first %}
+{# Front-matter `modified:` wins over the file mtime (which every deploy bumps). #}
+{% set mod = page.header.modified ?: page.modified %}
 {% if page.template == 'home' %}
     <script type="application/ld+json">{{ json_ld({
         '@context': 'https://schema.org',
@@ -26,7 +28,7 @@
         description: (page.header.description ?: page.summary(280, true))|plain_text,
         inLanguage: lang,
         datePublished: page.date|date('c'),
-        dateModified: (page.modified ? page.modified|date('c') : page.date|date('c')),
+        dateModified: (page.header.modified ?: page.date)|date('c'),
         author: { '@type': 'Person', name: site.author.name },
         publisher: { '@type': 'Person', name: site.author.name },
         mainEntityOfPage: { '@type': 'WebPage', '@id': absolute },
@@ -39,7 +41,7 @@
         headline: page.title|strip_emoji,
         description: (page.header.description ?: page.summary(280, true))|plain_text,
         inLanguage: lang,
-        dateModified: (page.modified ? page.modified|date('c') : null),
+        dateModified: mod ? mod|date('c') : null,
         author: { '@type': 'Person', name: site.author.name },
         mainEntityOfPage: { '@type': 'WebPage', '@id': absolute },
         image: img ? [img.url(true, true)] : []
