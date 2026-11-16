@@ -13,8 +13,11 @@
 {% set zoo = [] %}
 {% set pages = [] %}
 {% for p in results %}
-    {% set parts = p.url|split('/')|filter(x => x is not empty) %}
-    {% set root = parts[0] in ['en', 'de'] ? parts[1]|default(parts[0]) : parts[0] %}
+    {# Grav's Twig build drops everything on `x is not empty` inside an arrow
+       filter, so compare against ''. URL parts: ['', 'en', 'wiki', ...] —
+       the section is the segment after the language prefix. #}
+    {% set parts = p.url|split('/')|filter(x => x != '') %}
+    {% set root = parts[0] in ['en', 'de'] ? parts[1] : parts[0] %}
     {% if root == 'blog' %}
         {% set posts = posts|merge([p]) %}
     {% elseif root == 'wiki' %}
@@ -40,9 +43,6 @@
     {% set sections = sections|merge([{ label: 'THEME_GRAVA_HUD.SEARCH.GROUP_PAGES', items: pages|sort((a, b) => a.title <=> b.title) }]) %}
 {% endif %}
 
-{% if uri.query('dbg') %}
-<pre style="white-space:pre-wrap">{% for p in results %}{% set parts = p.url|split('/') %}{{ p.url }} raw-split={{ parts|join('|') }} filtered={{ parts|filter(x => x != '')|join('|') }}\n{% endfor %}</pre>
-{% endif %}
 
 {% if query %}
     <p class="wiki-search-summary">
