@@ -17,7 +17,7 @@
        filter, so compare against ''. URL parts: ['', 'en', 'wiki', ...] —
        the section is the segment after the language prefix. #}
     {% set parts = p.url|split('/')|filter(x => x != '') %}
-    {% set root = parts[0] in ['en', 'de'] ? parts[1] : parts[0] %}
+    {% set root = (parts[0] in ['en', 'de']) ? parts[1] : parts[0] %}
     {% if root == 'blog' %}
         {% set posts = posts|merge([p]) %}
     {% elseif root == 'wiki' %}
