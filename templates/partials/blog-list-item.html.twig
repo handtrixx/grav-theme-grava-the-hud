@@ -1,7 +1,8 @@
 {% set image = page.media.images|first %}
+{% import 'partials/wiki-macros.html.twig' as wm %}
 {# News-site row: one article per row, preview image on the left.
    Posts without media get a terminal placeholder tile instead of a gap.
-   The summary never carries images (strip_images). Layout in css/custom.css. #}
+   Layout in css/custom.css. #}
 <article class="blog-row h-entry">
     {% if image %}
     <a class="blog-row-media" href="{{ page.url }}" tabindex="-1" aria-hidden="true">
@@ -23,14 +24,11 @@
         </div>
         {% include 'partials/blog/title.html.twig' with {title_level: 'h3'} %}
         <div class="blog-row-summary">
-            {# Grav auto-prepends `<h1>Title</h1>` to the body, so the summary
-               repeats the row heading. Drop it: one heading per row, and the
-               listing keeps a single h1 (the page title). #}
-            {% if page.summary != page.content %}
-                {{ page.summary|without_first_heading|strip_images|raw }}
-            {% else %}
-                {{ page.content|without_first_heading|strip_images|truncate(280)|raw }}
-            {% endif %}
+            {# One muted line, not the article's own summary: Grav builds that
+               from the body, so it repeats the title and drags in headings and
+               lists. wm.excerpt uses header.description when present, otherwise
+               the stripped summary, and cuts at 220 characters. #}
+            {{ wm.excerpt(page) }}
         </div>
         <div class="blog-row-tags">
             {% include 'partials/blog/taxonomy.html.twig' %}

@@ -1179,11 +1179,11 @@ body.hud-flat #body-wrapper > .container > .content-item p {
 .blog-row-summary p {
   margin: 0;
 }
-/* Grav builds the summary from the article's own content, which starts with
-   its `#` heading — the row already shows the title, so hide it in the summary. */
-.blog-row-summary h1,
-.blog-row-summary h2 {
-  display: none;
+/* The row preview comes from the shared excerpt macro, which is sized for
+   wiki rows; blog rows read a little larger. */
+.blog-row-summary .wiki-entry-excerpt {
+  font-size: 0.95rem;
+  max-width: 62ch;
 }
 .blog-row-tags {
   margin-top: 0.6rem;
