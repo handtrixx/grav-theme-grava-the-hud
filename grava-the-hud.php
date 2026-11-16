@@ -92,6 +92,11 @@ class GravaTheHud extends Theme
             }
         }
         if ($description === '') {
+            // `description:` as a plain front-matter field (not nested under
+            // `metadata:`) is how the content files carry it.
+            $description = (string) ($page->header()->description ?? '');
+        }
+        if ($description === '') {
             $description = trim(preg_replace('/\s+/', ' ', (string) $page->summary(280, true)));
         }
         // Grav's summary builder escapes entities, so page markup leaks `&amp;`
