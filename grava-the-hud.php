@@ -73,16 +73,37 @@ class GravaTheHud extends Theme
 
         $meta = (array) ($page->metadata() ?? []);
 
-        $description = $meta['description'] ?? '';
+        // metadata() returns normalized entries ({name|property, content}),
+        // merged from site.yaml and the page's own front matter. Drop the
+        // generic site description and rebuild it per page: front matter wins,
+        // otherwise the plain-text page summary.
+        $headerMeta = (array) ($page->header()->metadata ?? []);
+        $description = '';
+        foreach ($headerMeta as $key => $value) {
+            if (is_array($value)) {
+                $name = $value['name'] ?? $value['property'] ?? '';
+                if ($name === 'description') {
+                    $description = (string) ($value['content'] ?? '');
+                    break;
+                }
+            } elseif (is_string($value) && $key === 'description') {
+                $description = $value;
+                break;
+            }
+        }
         if ($description === '') {
             $description = trim(preg_replace('/\s+/', ' ', (string) $page->summary(280, true)));
         }
+        $meta = array_values(array_filter(
+            $meta,
+            static fn ($entry) => !is_array($entry) || (($entry['name'] ?? $entry['property'] ?? '') !== 'description')
+        ));
         if ($description !== '') {
-            $meta['description'] = htmlspecialchars($description, ENT_QUOTES);
+            $meta[] = ['name' => 'description', 'content' => htmlspecialchars($description, ENT_QUOTES)];
         }
 
         if (basename($route) === 'search') {
-            $meta['robots'] = 'noindex, follow';
+            $meta[] = ['name' => 'robots', 'content' => 'noindex, follow'];
         }
 
         $title = $this->stripEmoji((string) $page->title());
