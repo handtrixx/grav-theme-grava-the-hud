@@ -19,10 +19,7 @@
        auto-prepended title are stripped; nothing shown when what remains
        repeats the title. #}
     {% set text = p.header.description ?: (p.summary|striptags|trim) %}
-    {# Auto-generated summaries are escaped HTML (&#039;, &quot;, &amp;);
-       decoded here so excerpts read as plain text. #}
     {% if text %}
-        {% set text = text|replace({'&#039;': "'", '&quot;': '"', '&amp;': '&', '&#39;': "'"}) %}
         {% set clean = [] %}
         {% for line in text|split('\n') %}
             {# Drop markdown headings (the auto-prepended title), alert
@@ -32,6 +29,9 @@
             {% endif %}
         {% endfor %}
         {% set text = _self.clean_text(clean|join(' '))|trim %}
+        {# Macro output is escaped HTML (&#039;, &quot;); decode here, after
+           clean_text, and print raw below. #}
+        {% set text = text|replace({'&#039;': "'", '&quot;': '"', '&#39;': "'", '&amp;': '&'}) %}
         {# Macro output carries the body's indentation, so trim before comparing #}
         {% set plain = _self.clean_title(p)|trim %}
         {% if text|lower starts with plain|lower %}
