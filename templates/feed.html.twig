@@ -1,0 +1,13 @@
+{# Landing page for /{lang}/feed (no extension). The feed itself is
+   feed.rss.twig, reached at /{lang}/feed.rss. #}
+{% extends 'partials/base.html.twig' %}
+
+{% block content %}
+    <article class="content-item">
+        <h1>{{ page.title|e('html') }}</h1>
+        {{ page.content|raw }}
+        <p>
+            <a href="{{ page.url(true, true) }}.rss">RSS 2.0 ({{ page.url(true, true) }}.rss)</a>
+        </p>
+    </article>
+{% endblock %}

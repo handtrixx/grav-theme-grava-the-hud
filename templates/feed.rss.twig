@@ -1,0 +1,30 @@
+{# RSS 2.0 feed for the blog, served at /{lang}/feed.rss (Grav picks this
+   template from the URL extension and sends application/rss+xml). Plain-text
+   summaries only: feeds are read by parsers, not rendered as HTML. #}
+<?xml version="1.0" encoding="utf-8"?>
+{% set lang = grav.language.getActive ?: grav.config.site.default_lang %}
+{% set blog = grav.pages.find('/' ~ lang ~ '/blog') %}
+{% set items = blog ? blog.children|sort((a, b) => b.date <=> a.date) : [] %}
+{% set latest = items|first %}
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>{{ site.title|e('xml') }}</title>
+    <link>{{ base_url }}</link>
+    <description>{{ 'Blog feed of Niklas Stephan'|e('xml') }}</description>
+    <language>{{ lang }}</language>
+    <managingEditor>{{ site.author.email|e('xml') }} ({{ site.author.name|e('xml') }})</managingEditor>
+    <webMaster>{{ site.author.email|e('xml') }} ({{ site.author.name|e('xml') }})</webMaster>
+    {% if latest %}<lastBuildDate>{{ latest.date|date('r') }}</lastBuildDate>{% endif %}
+    <atom:link href="{{ page.url(true, true) }}" rel="self" type="application/rss+xml"/>
+    {% for item in items|slice(0, 20) %}
+    <item>
+      <title>{{ item.title|strip_emoji|e('xml') }}</title>
+      <link>{{ item.url(true, true) }}</link>
+      <guid isPermaLink="true">{{ item.url(true, true) }}</guid>
+      <pubDate>{{ item.date|date('r') }}</pubDate>
+      {% for tag in item.taxonomy('tag') %}<category>{{ tag|e('xml') }}</category>{% endfor %}
+      <description>{{ item.summary(400, true)|e('xml') }}</description>
+    </item>
+    {% endfor %}
+  </channel>
+</rss>

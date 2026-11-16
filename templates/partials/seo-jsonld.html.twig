@@ -1,0 +1,47 @@
+{# JSON-LD structured data. Only pages that mean something to a parser get
+   schema: the home page describes the site, blog posts are BlogPostings,
+   wiki articles are Articles. Everything else stays without markup. #}
+{% set lang = grav.language.getActive ?: grav.config.site.default_lang %}
+{% set absolute = page.url(true, true) %}
+{% set img = page.media.images|first %}
+{% if page.template == 'home' %}
+    <script type="application/ld+json">{{ json_ld({
+        '@context': 'https://schema.org',
+        '@type': 'WebSite',
+        name: site.title,
+        url: absolute,
+        inLanguage: lang,
+        creator: { '@type': 'Person', name: site.author.name },
+        potentialAction: {
+            '@type': 'SearchAction',
+            target: { '@type': 'EntryPoint', url_template: base_url ~ '/' ~ lang ~ '/search?q={search_term_string}' },
+            'query-input': 'required name=search_term_string'
+        }
+    })|raw }}</script>
+{% elseif page.template == 'item' %}
+    <script type="application/ld+json">{{ json_ld({
+        '@context': 'https://schema.org',
+        '@type': 'BlogPosting',
+        headline: page.title|strip_emoji,
+        description: page.summary(280, true),
+        inLanguage: lang,
+        datePublished: page.date|date('c'),
+        dateModified: (page.modified ? page.modified|date('c') : page.date|date('c')),
+        author: { '@type': 'Person', name: site.author.name },
+        publisher: { '@type': 'Person', name: site.author.name },
+        mainEntityOfPage: { '@type': 'WebPage', '@id': absolute },
+        image: img ? [img.url(true, true)] : []
+    })|raw }}</script>
+{% elseif page.template == 'wiki-article' %}
+    <script type="application/ld+json">{{ json_ld({
+        '@context': 'https://schema.org',
+        '@type': 'Article',
+        headline: page.title|strip_emoji,
+        description: page.summary(280, true),
+        inLanguage: lang,
+        dateModified: (page.modified ? page.modified|date('c') : null),
+        author: { '@type': 'Person', name: site.author.name },
+        mainEntityOfPage: { '@type': 'WebPage', '@id': absolute },
+        image: img ? [img.url(true, true)] : []
+    })|raw }}</script>
+{% endif %}
