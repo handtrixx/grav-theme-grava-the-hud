@@ -21,17 +21,29 @@ class GravaTheHud extends Theme
     }
 
     /**
-     * Give every page under /wiki the docs layout without touching the
-     * content files. Pages that set a template themselves (Admin Next, the
-     * search page) keep it.
+     * Give every page under /wiki the docs layout and every blog post the
+     * item layout, without touching the content files. Pages that set a
+     * template themselves (Admin Next, the search page) keep it.
      */
     public function onPageInitialized()
     {
         $page = $this->grav['page'];
         $route = (string) $page->route();
         $header = $page->header();
-        if (!isset($header->template) && strpos($route, '/wiki') === 0) {
+        if (isset($header->template)) {
+            return;
+        }
+        if (strpos($route, '/wiki') === 0) {
             $page->template('wiki');
+            return;
+        }
+        // Blog posts carry no `template:` header (only title and date), so
+        // without this they fall back to default.html.twig. Anything living
+        // in a blog folder renders with the item template: header band,
+        // date/tags, prev-next. The blog index itself stays on `blog`.
+        $parent = $page->parent();
+        if ($parent && basename((string) $parent->route()) === 'blog') {
+            $page->template('item');
         }
     }
 
@@ -68,6 +80,7 @@ class GravaTheHud extends Theme
         $twig->twig->addFilter(new \Twig\TwigFilter('fa_icon', [$this, 'faIconClass']));
         $twig->twig->addFilter(new \Twig\TwigFilter('without_first_heading', [$this, 'withoutFirstHeading']));
         $twig->twig->addFilter(new \Twig\TwigFilter('strip_images', [$this, 'stripImages']));
+        $twig->twig->addFilter(new \Twig\TwigFilter('strip_emoji', [$this, 'stripEmoji']));
     }
 
     /**
@@ -143,6 +156,17 @@ class GravaTheHud extends Theme
         $content = preg_replace('/<img\b[^>]*>/i', '', $content) ?? $content;
         $content = preg_replace('/<(p|div)\b[^>]*>\s*(?:<br\s*\/?>\s*)*<\/\1>/i', '', $content) ?? $content;
         return $content;
+    }
+
+    /**
+     * Remove emoji and other decorative symbols (and the zero-width joiners
+     * and variation selectors glued to them) from titles and excerpts, so
+     * the terminal header band reads as plain text.
+     */
+    public function stripEmoji(string $text): string
+    {
+        $text = preg_replace('/[\p{So}\p{Sk}\p{Cf}]/u', '', $text) ?? $text;
+        return trim($text);
     }
 
     public function mixWithWhite(string $hex, int $pct): string

@@ -4,7 +4,9 @@
    available inside other macro bodies. #}
 
 {% macro clean_text(text) %}
-    {{ text|replace({'🌲 ': '', '🎵 ': '', '💬 ': '', '📁 ': '', '🔑 ': '', '🔒 ': '', '🔍 ': '', '📖 ': '', '🗄️ ': '', '🖥️ ': '', '🛡️ ': '', '🎬 ': '', '📚 ': '', '🧰 ': '', '🎯 ': '', '🔧 ': '', '🐳 ': '', '📝 ': '', '🌐 ': '', '⚙️ ': '', '📡 ': '', '🅿️ ': '', '🏕️ ': '', '💡 ': '', '🖨️ ': '', '🌲': '', '🎵': '', '💬': '', '📁': '', '🔑': '', '🔒': '', '🔍': '', '📖': '', '🗄️': '', '🖥️': '', '🛡️': '', '🎬': '', '📚': '', '🧰': '', '🎯': '', '🔧': '', '🐳': '', '📝': '', '🌐': '', '⚙️': '', '📡': '', '🅿️': '', '🏕️': '', '💡': '', '🖨️': ''})|trim }}
+    {# strip_emoji (grava-the-hud.php) drops any symbol, pictogram or zero-width
+       joiner/variation selector, instead of a hand-written emoji list. #}
+    {{ text|strip_emoji }}
 {% endmacro %}
 
 {% macro clean_title(p) %}
