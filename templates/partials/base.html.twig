@@ -28,6 +28,10 @@
     <link rel="icon" type="{{ favicon_type }}" href="{{ favicon_url ?: url('theme://images/favicon.png') }}" />
     <link rel="canonical" href="{{ page.url(true, true) }}" />
 
+    {# Feed autodiscovery + structured data (see partials/seo-jsonld.html.twig) #}
+    <link rel="alternate" type="application/rss+xml" title="{{ site.title|e('html_attr') }} — Blog" href="{{ base_url ~ '/' ~ (grav.language.getActive ?: grav.config.site.default_lang) ~ '/feed.rss' }}" />
+    {% include 'partials/seo-jsonld.html.twig' %}
+
     {# Preload the critical latin subsets so headings + body text render in-font on first paint #}
     <link rel="preload" as="font" type="font/woff2" crossorigin href="{{ url('theme://fonts/cal-sans/cal-sans-latin.woff2') }}" />
     <link rel="preload" as="font" type="font/woff2" crossorigin href="{{ url('theme://fonts/inter/inter-latin.woff2') }}" />

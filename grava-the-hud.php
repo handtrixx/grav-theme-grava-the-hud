@@ -30,6 +30,9 @@ class GravaTheHud extends Theme
     {
         $page = $this->grav['page'];
         $route = (string) $page->route();
+
+        $this->addSeoMetadata();
+
         $header = $page->header();
         if (isset($header->template)) {
             return;
@@ -46,6 +49,87 @@ class GravaTheHud extends Theme
         if ($parent && basename((string) $parent->route()) === 'blog') {
             $page->template('item');
         }
+    }
+
+    /**
+     * SEO metadata, set here instead of in the content files so every page
+     * gets the same treatment:
+     * - a per-page `<meta name="description">` (front matter wins, otherwise
+     *   the plain-text page summary);
+     * - Open Graph + Twitter card tags, with the page's first image as og:image;
+     * - `noindex` for the search route, whose result pages are thin queries
+     *   (the sitemap already leaves them out).
+     *
+     * `partials/metadata.html.twig` prints `content` unescaped, so every
+     * value is escaped here.
+     */
+    protected function addSeoMetadata()
+    {
+        if ($this->isAdmin()) {
+            return;
+        }
+        $page = $this->grav['page'];
+        $route = (string) $page->route();
+
+        $meta = (array) ($page->metadata() ?? []);
+
+        $description = $meta['description'] ?? '';
+        if ($description === '') {
+            $description = trim(preg_replace('/\s+/', ' ', (string) $page->summary(280, true)));
+        }
+        if ($description !== '') {
+            $meta['description'] = htmlspecialchars($description, ENT_QUOTES);
+        }
+
+        if (basename($route) === 'search') {
+            $meta['robots'] = 'noindex, follow';
+        }
+
+        $title = $this->stripEmoji((string) $page->title());
+        $ogType = in_array((string) $page->template(), ['item', 'wiki-article'], true) ? 'article' : 'website';
+        $lang = $this->grav['language']->getActive();
+        $image = $this->firstPageImage($page);
+
+        $tags = [
+            ['property' => 'og:site_name', 'content' => (string) $this->config->get('site.title')],
+            ['property' => 'og:type', 'content' => $ogType],
+            ['property' => 'og:title', 'content' => $title],
+            ['property' => 'og:description', 'content' => $description],
+            ['property' => 'og:url', 'content' => $page->url(true, true)],
+            ['property' => 'og:locale', 'content' => $lang === 'de' ? 'de_DE' : 'en_US'],
+            ['name' => 'twitter:card', 'content' => $image ? 'summary_large_image' : 'summary'],
+            ['name' => 'twitter:title', 'content' => $title],
+            ['name' => 'twitter:description', 'content' => $description],
+            ['name' => 'author', 'content' => (string) $this->config->get('site.author.name')],
+        ];
+        if ($image) {
+            $tags[] = ['property' => 'og:image', 'content' => $image];
+            $tags[] = ['name' => 'twitter:image', 'content' => $image];
+        }
+        foreach ($tags as &$tag) {
+            $tag['content'] = htmlspecialchars($tag['content'], ENT_QUOTES);
+        }
+
+        $page->metadata(array_merge($meta, $tags));
+    }
+
+    /**
+     * Absolute URL of the page's first media image, or null. Original file,
+     * not a processed derivative, so it is large enough for social cards.
+     */
+    protected function firstPageImage($page)
+    {
+        try {
+            foreach ($page->getMedia()->images() as $image) {
+                $url = $image->url(true, true);
+                if ($url !== '' && $url !== null) {
+                    return $url;
+                }
+            }
+        } catch (\Throwable $e) {
+            // Media parsing must never break the page render.
+        }
+        return null;
     }
 
     /**
@@ -142,6 +226,13 @@ class GravaTheHud extends Theme
         // The zoo index lists the owner's GitHub repositories; the template
         // calls this function, so the fetch only happens on zoo pages.
         $twig->twig->addFunction(new \Twig\TwigFunction('github_repos', [$this, 'githubRepos']));
+
+        // JSON-LD serializer for the structured-data partial. HEX_TAG keeps a
+        // literal `</script>` inside a value from closing the script element.
+        $twig->twig->addFunction(new \Twig\TwigFunction(
+            'json_ld',
+            static fn (array $data) => json_encode($data, JSON_HEX_TAG | JSON_HEX_AMP | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES)
+        ));
     }
 
     /**
