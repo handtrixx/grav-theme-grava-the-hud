@@ -66,6 +66,8 @@ class GravaTheHud extends Theme
         $twig->twig->addFunction(new \Twig\TwigFunction('q2_mix_white', [$this, 'mixWithWhite']));
         $twig->twig->addFunction(new \Twig\TwigFunction('q2_mix_alpha', [$this, 'mixWithAlpha']));
         $twig->twig->addFilter(new \Twig\TwigFilter('fa_icon', [$this, 'faIconClass']));
+        $twig->twig->addFilter(new \Twig\TwigFilter('without_first_heading', [$this, 'withoutFirstHeading']));
+        $twig->twig->addFilter(new \Twig\TwigFilter('strip_images', [$this, 'stripImages']));
     }
 
     /**
@@ -117,6 +119,30 @@ class GravaTheHud extends Theme
         }
 
         return ($family !== '' ? $family : 'fa-solid') . ' fa-' . $name;
+    }
+
+    /**
+     * Drop the first `<h1>` from rendered content.
+     *
+     * Pages carry their title in the markdown body (`# git`), but every page
+     * now speaks with one terminal header band above the layout columns, so
+     * the body heading would repeat it inside the content column.
+     */
+    public function withoutFirstHeading(string $content): string
+    {
+        return preg_replace('/<h1\b[^>]*>.*?<\/h1>/is', '', $content, 1) ?? $content;
+    }
+
+    /**
+     * Remove images (and the figures and empty paragraphs they leave behind)
+     * from rendered content, so listing previews never draw a picture.
+     */
+    public function stripImages(string $content): string
+    {
+        $content = preg_replace('/<figure\b[^>]*>.*?<\/figure>/is', '', $content) ?? $content;
+        $content = preg_replace('/<img\b[^>]*>/i', '', $content) ?? $content;
+        $content = preg_replace('/<(p|div)\b[^>]*>\s*(?:<br\s*\/?>\s*)*<\/\1>/i', '', $content) ?? $content;
+        return $content;
     }
 
     public function mixWithWhite(string $hex, int $pct): string

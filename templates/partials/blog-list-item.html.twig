@@ -1,11 +1,21 @@
 {% set image = page.media.images|first %}
 {# News-site row: one article per row, preview image on the left.
-   Layout lives in css/custom.css (.blog-row). #}
+   Posts without media get a terminal placeholder tile instead of a gap.
+   The summary never carries images (strip_images). Layout in css/custom.css. #}
 <article class="blog-row h-entry">
     {% if image %}
     <a class="blog-row-media" href="{{ page.url }}" tabindex="-1" aria-hidden="true">
         {{ image.cropZoom(480, 300).html|raw }}
     </a>
+    {% else %}
+    <div class="blog-row-media blog-row-placeholder">
+        <svg viewBox="0 0 480 300" aria-hidden="true" focusable="false">
+            <rect x="40" y="44" width="400" height="200" rx="10" fill="none" stroke="currentColor" stroke-width="2"/>
+            <circle cx="122" cy="104" r="22" fill="none" stroke="currentColor" stroke-width="2"/>
+            <path d="M62 224 L172 136 L248 194 L318 128 L418 224" fill="none" stroke="currentColor" stroke-width="2"/>
+            <text x="240" y="274" text-anchor="middle" font-size="15" fill="currentColor">// no preview</text>
+        </svg>
+    </div>
     {% endif %}
     <div class="blog-row-body">
         <div class="blog-row-meta">
@@ -14,9 +24,9 @@
         {% include 'partials/blog/title.html.twig' with {title_level: 'h3'} %}
         <div class="blog-row-summary">
             {% if page.summary != page.content %}
-                {{ page.summary|raw }}
+                {{ page.summary|strip_images|raw }}
             {% else %}
-                {{ page.content|truncate(280)|raw }}
+                {{ page.content|strip_images|truncate(280)|raw }}
             {% endif %}
         </div>
         <div class="blog-row-tags">

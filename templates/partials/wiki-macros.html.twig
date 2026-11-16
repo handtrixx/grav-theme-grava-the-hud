@@ -41,13 +41,14 @@
     {% endif %}
 {% endmacro %}
 
-{# Folder trail for search rows: "Wiki / Projects" without emoji decoration. #}
+{# Folder trail for search rows: "Wiki / Projects" without emoji decoration,
+   for any section — blog posts read as "Blog". Stops at the site root. #}
 {% macro trail(p, depth) %}
     {% if p and depth > 0 and p.route != '' %}
-        {% if p.route == '/wiki' %}
-            {{ _self.clean_title(p) }}
-        {% else %}
+        {% if p.parent and p.parent.route != '' %}
             {{ _self.trail(p.parent, depth - 1) }} / {{ _self.clean_title(p) }}
+        {% else %}
+            {{ _self.clean_title(p) }}
         {% endif %}
     {% endif %}
 {% endmacro %}
@@ -56,7 +57,7 @@
 {% macro search_row(p) %}
     <li class="wiki-entry">
         <a class="wiki-entry-title" href="{{ p.url }}">{{ _self.clean_title(p) }}</a>
-        {% if p.parent and p.parent.route != '' and p.parent.route != '/wiki' %}
+        {% if p.parent and p.parent.route != '' %}
             <span class="wiki-entry-path">{{ _self.trail(p.parent, 5) }}</span>
         {% endif %}
         {{ _self.excerpt(p) }}

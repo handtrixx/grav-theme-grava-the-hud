@@ -739,7 +739,18 @@ body.hud-flat #body-wrapper > .container > .content-item {
   box-shadow: none;
   backdrop-filter: none;
   -webkit-backdrop-filter: none;
-  padding-inline: clamp(1rem, 4vw, 3.25rem);
+  /* The sheet spans the container instead of sitting as a centred column,
+     so its headline lands where the blog listing band does. */
+  max-width: none;
+  margin-inline: 0;
+  padding-inline: 0;
+}
+/* Body text keeps a readable measure; the WebGL head keeps the right gutter. */
+body.hud-flat #body-wrapper > .container > .content-item > p,
+body.hud-flat #body-wrapper > .container > .content-item > ul,
+body.hud-flat #body-wrapper > .container > .content-item > ol,
+body.hud-flat #body-wrapper > .container > .content-item .hud-trivia {
+  max-width: 62ch;
 }
 /* theme.css paints a card shadow under :root[data-theme="dark"], whose
    selector is more specific than the flat override above (extra class-level
@@ -922,6 +933,86 @@ body.hud-flat #body-wrapper > .container > .content-item p {
   }
 }
 
+/* ---------- Header search ----------
+   A pill in the navbar (and at the top of the mobile overlay menu) that
+   submits to SimpleSearch's route, with the keyboard shortcut shown as a kbd
+   hint — the mkdocs / GitHub shape. js/site.js rewrites the hint to ⌘ K on
+   macOS and binds Ctrl/⌘ K and / to focus the field. */
+.hud-search {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-left: clamp(0.8rem, 2vw, 1.4rem);
+  padding: 0.42rem 0.75rem;
+  border: 1px solid var(--q2-divider);
+  border-radius: 999px;
+  background: var(--q2-bg-elev);
+  color: var(--q2-text-muted);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+.hud-search:hover {
+  border-color: var(--hud-accent-line);
+}
+.hud-search:focus-within {
+  border-color: var(--hud-accent-line);
+  box-shadow: 0 0 18px -6px var(--hud-accent-glow);
+}
+.hud-search i {
+  font-size: 0.85rem;
+}
+.hud-search-input {
+  flex: 0 1 auto;
+  width: 8em;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: none;
+  background: transparent;
+  font-family: var(--hud-mono);
+  font-size: 0.82rem;
+  color: var(--q2-text);
+}
+.hud-search-input:focus {
+  outline: none;
+  box-shadow: none;
+  width: 14em;
+}
+.hud-search-input::-webkit-search-cancel-button {
+  -webkit-appearance: none;
+}
+.hud-search-input::placeholder {
+  color: var(--q2-text-muted);
+}
+.hud-search-kbd {
+  font-family: var(--hud-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.06em;
+  padding: 0.14rem 0.42rem;
+  border: 1px solid var(--q2-divider);
+  border-radius: 6px;
+  color: var(--q2-text-muted);
+  background: color-mix(in oklab, var(--q2-bg) 45%, transparent);
+}
+/* The hint only makes sense while the field is idle. */
+.hud-search:focus-within .hud-search-kbd {
+  display: none;
+}
+@media (max-width: 960px) {
+  .hud-search-kbd {
+    display: none;
+  }
+}
+/* Mobile overlay menu: the pill spans the menu width. */
+.overlay-menu .hud-search {
+  margin: 0 0 1.2rem;
+  width: 100%;
+}
+.overlay-menu .hud-search-input,
+.overlay-menu .hud-search-input:focus {
+  flex: 1;
+  width: 100%;
+}
+
 /* ---------- Blog listing: news-site rows ----------
    One article per row, preview image on the left, meta + title + summary on
    the right. Rows are divided by hairlines instead of cards (news feel); on
@@ -930,6 +1021,11 @@ body.hud-flat #body-wrapper > .container > .content-item p {
 .blog-listing .blog-page-header {
   text-align: left;
   margin-inline: 0;
+  max-width: none;
+}
+/* Post pages: date and tags read as terminal meta under the band. */
+.blog-page-meta {
+  margin-top: 0.9rem;
 }
 .blog-listing .blog-grid {
   grid-template-columns: minmax(0, 1fr);
@@ -972,6 +1068,16 @@ body.hud-flat #body-wrapper > .container > .content-item p {
 }
 .blog-row:hover .blog-row-media img {
   transform: scale(1.03);
+}
+/* Posts without media: a terminal placeholder tile in the same box. */
+.blog-row-placeholder svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 480 / 300;
+  font-family: var(--hud-mono);
+  letter-spacing: 0.08em;
+  color: color-mix(in oklab, var(--q2-text-muted) 75%, transparent);
 }
 .blog-row-meta {
   font-family: var(--hud-mono);
@@ -1031,7 +1137,7 @@ body.hud-flat #body-wrapper > .container > .content-item p {
   margin: 0 0 0.5rem;
 }
 .wiki-page-intro {
-  margin-top: 1rem;
+  margin: 0 0 1.25rem;
   color: var(--q2-text-muted);
   font-size: 1rem;
   line-height: 1.6;

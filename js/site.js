@@ -134,4 +134,51 @@
       if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
     });
   }
+
+  // Header search shortcut, the mkdocs / GitHub shape: Ctrl K (⌘ K on macOS)
+  // and `/` focus the field, Escape leaves it. The kbd hint in the pill says
+  // whichever combo this machine uses. Two pills exist (navbar + overlay
+  // menu); the shortcut drives the visible one and opens the overlay when
+  // that is the one on screen.
+  var searchInputs = document.querySelectorAll('.hud-search-input');
+  var isMac = /Mac|iPhone|iPad|iPod/.test(navigator.platform || navigator.userAgent);
+  document.querySelectorAll('[data-search-shortcut]').forEach(function (kbd) {
+    kbd.textContent = isMac ? '⌘ K' : 'Ctrl K';
+  });
+
+  function visibleSearchInput() {
+    for (var i = 0; i < searchInputs.length; i++) {
+      if (searchInputs[i].offsetParent !== null) return searchInputs[i];
+    }
+    return searchInputs[0] || null;
+  }
+
+  function focusSearch() {
+    var input = visibleSearchInput();
+    if (!input) return;
+    if (overlay && !overlay.classList.contains('open') && input.closest('.overlay-menu')) {
+      if (toggle) toggle.classList.add('active');
+      overlay.classList.add('open');
+      body.classList.add('overlay-open');
+    }
+    input.focus();
+    input.select();
+  }
+
+  document.addEventListener('keydown', function (e) {
+    if (e.isComposing || e.altKey) return;
+    // Inside a field these keys must type, not hijack the caret.
+    if (e.target.closest && e.target.closest('input, textarea, select, [contenteditable="true"]')) return;
+    var combo = (e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k';
+    var slash = e.key === '/' && !e.ctrlKey && !e.metaKey;
+    if (!combo && !slash) return;
+    e.preventDefault();
+    focusSearch();
+  });
+
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape' && e.target && e.target.classList && e.target.classList.contains('hud-search-input')) {
+      e.target.blur();
+    }
+  });
 })();

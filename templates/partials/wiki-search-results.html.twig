@@ -2,8 +2,10 @@
 
 {# Result rows for the search page. Kept as a partial so the macros resolve:
    inside an {% embed %} block, `import _self` points at the embedded
-   template, not the outer one. Row rendering lives in wiki-macros. #}
-{% set results = search_results|default([])|filter(p => p.published and p.route starts with '/wiki') %}
+   template, not the outer one. Row rendering lives in wiki-macros. The
+   header search covers the whole site, so rows come from every published
+   page; the trail says which section each belongs to. #}
+{% set results = search_results|default([])|filter(p => p.published) %}
 
 {% if query %}
     <p class="wiki-search-summary">

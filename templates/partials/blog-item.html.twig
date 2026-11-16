@@ -1,18 +1,9 @@
 <article class="content-item h-entry">
 
-{% if not hero_image_name %}
-    <header class="content-title text-center">
-        {% include 'partials/blog/title.html.twig' with {title_level: 'h1'} %}
-        {% if page.header.subtitle %}
-            <p class="lead">{{ page.header.subtitle }}</p>
-        {% endif %}
-        {% include 'partials/blog/date.html.twig' %}
-        {% include 'partials/blog/taxonomy.html.twig' %}
-    </header>
-{% endif %}
-
+    {# Title, date and tags live in the page header band above (item.html.twig);
+       the markdown's own leading `#` heading is dropped so it doesn't repeat. #}
     <div class="e-content">
-        {{ page.content|raw }}
+        {{ page.content|without_first_heading|raw }}
     </div>
 
     {% if page.header.continue_link is same as(true) and config.plugins.comments.enabled %}

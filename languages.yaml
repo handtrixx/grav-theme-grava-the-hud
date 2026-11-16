@@ -27,6 +27,9 @@ en:
       # translatable so word order can differ from English.
       ARIA_LABEL: "Appearance: %s"
       TITLE: "Appearance: %s (click to switch)"
+    HEADER:
+      SEARCH_LABEL: "Search the site"
+      SEARCH_PLACEHOLDER: "Search"
     ARIA:
       PRIMARY_NAV: "Primary"
       MOBILE_NAV: "Mobile"
@@ -80,6 +83,10 @@ de:
         TOC: "Inhaltsverzeichnis"
         PREVNEXT: "Vorherige und nächste Seite"
 
+    HEADER:
+      SEARCH_LABEL: "Seite durchsuchen"
+      SEARCH_PLACEHOLDER: "Suchen"
+
 es:
   THEME_GRAVA_HUD:
     ERROR:
@@ -109,6 +116,9 @@ es:
       # es traducible para que el orden de las palabras pueda diferir del inglés.
       ARIA_LABEL: "Apariencia: %s"
       TITLE: "Apariencia: %s (clic para cambiar)"
+    HEADER:
+      SEARCH_LABEL: "Buscar en el sitio"
+      SEARCH_PLACEHOLDER: "Buscar"
     ARIA:
       PRIMARY_NAV: "Principal"
       MOBILE_NAV: "Móvil"

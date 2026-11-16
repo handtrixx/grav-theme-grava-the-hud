@@ -1,4 +1,5 @@
 {% extends 'partials/base.html.twig' %}
+{% import 'partials/wiki-macros.html.twig' as wm %}
 
 {# Wiki pages in the docs layout. Pages with children render as a listing
    (sections with entries, excerpts and dates); pages without children render
@@ -10,25 +11,31 @@
 {% block body %}
     <section id="body-wrapper" class="section{{ children|length ? ' wiki-listing' : ' wiki-article' }}">
         <div class="container">
+            {% if show_breadcrumbs %}
+                {% include 'partials/wiki-breadcrumbs.html.twig' %}
+            {% endif %}
+
+            {# One terminal header band at the container edge, like the blog
+               listing; the tree and the text start below it. The markdown's
+               own leading `#` heading is dropped — the band says it already. #}
+            <header class="wiki-page-header">
+                <h1>{{ wm.clean_title(page) }}</h1>
+                {% if page.header.subtitle %}
+                    <p class="lead">{{ page.header.subtitle }}</p>
+                {% endif %}
+            </header>
+
             {% embed 'partials/wiki-layout.html.twig' %}
                 {% block item %}
-                    {% if show_breadcrumbs %}
-                        {% include 'partials/wiki-breadcrumbs.html.twig' %}
-                    {% endif %}
                     {% if children|length %}
-                        <header class="wiki-page-header">
-                            <h1>{{ page.title }}</h1>
-                            {% if page.header.subtitle %}
-                                <p class="lead">{{ page.header.subtitle }}</p>
-                            {% endif %}
-                            {% if page.content|striptags|trim is not empty %}
-                                <div class="wiki-page-intro">{{ page.content|raw }}</div>
-                            {% endif %}
-                        </header>
+                        {% set intro = page.content|without_first_heading %}
+                        {% if intro|striptags|trim is not empty %}
+                            <div class="wiki-page-intro">{{ intro|raw }}</div>
+                        {% endif %}
                         {% include 'partials/wiki-listing.html.twig' %}
                     {% else %}
                         <article class="content-item">
-                            {{ page.content|raw }}
+                            {{ page.content|without_first_heading|raw }}
                         </article>
                         {% include 'partials/wiki-prevnext.html.twig' %}
                     {% endif %}
