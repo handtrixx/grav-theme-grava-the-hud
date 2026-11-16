@@ -24,7 +24,7 @@
       <link>{{ item.url(true, true) }}</link>
       <guid isPermaLink="true">{{ item.url(true, true) }}</guid>
       <pubDate>{{ item.date|date('r') }}</pubDate>
-      {% for tag in item.taxonomy('tag') %}<category>{{ tag }}</category>{% endfor %}
+      {% for tag in item.taxonomy.tag|default([]) %}<category>{{ tag }}</category>{% endfor %}
       <description>{{ item.summary(400, true) }}</description>
     </item>
     {% endfor %}
