@@ -23,10 +23,13 @@
         </div>
         {% include 'partials/blog/title.html.twig' with {title_level: 'h3'} %}
         <div class="blog-row-summary">
+            {# Grav auto-prepends `<h1>Title</h1>` to the body, so the summary
+               repeats the row heading. Drop it: one heading per row, and the
+               listing keeps a single h1 (the page title). #}
             {% if page.summary != page.content %}
-                {{ page.summary|strip_images|raw }}
+                {{ page.summary|without_first_heading|strip_images|raw }}
             {% else %}
-                {{ page.content|strip_images|truncate(280)|raw }}
+                {{ page.content|without_first_heading|strip_images|truncate(280)|raw }}
             {% endif %}
         </div>
         <div class="blog-row-tags">
