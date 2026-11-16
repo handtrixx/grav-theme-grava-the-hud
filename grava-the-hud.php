@@ -94,6 +94,9 @@ class GravaTheHud extends Theme
         if ($description === '') {
             $description = trim(preg_replace('/\s+/', ' ', (string) $page->summary(280, true)));
         }
+        // The summary keeps entities from page markup (`&nbsp;`); decode before
+        // escaping so the meta tag shows plain text.
+        $description = html_entity_decode($description, ENT_QUOTES | ENT_HTML5, 'UTF-8');
         $meta = array_values(array_filter(
             $meta,
             static fn ($entry) => !is_array($entry) || (($entry['name'] ?? $entry['property'] ?? '') !== 'description')
@@ -102,12 +105,17 @@ class GravaTheHud extends Theme
             $meta[] = ['name' => 'description', 'content' => htmlspecialchars($description, ENT_QUOTES)];
         }
 
-        if (basename($route) === 'search') {
+        // SimpleSearch dispatches its own synthetic page under the language
+        // root, so match the template as well as the route name.
+        if (basename($route) === 'search' || $page->template() === 'search') {
             $meta[] = ['name' => 'robots', 'content' => 'noindex, follow'];
         }
 
         $title = $this->stripEmoji((string) $page->title());
-        $ogType = in_array((string) $page->template(), ['item', 'wiki-article'], true) ? 'article' : 'website';
+        // Wiki folders are listings, wiki articles have no children: the theme
+        // renders both with the `wiki` template, so tell them apart here.
+        $isWikiArticle = (string) $page->template() === 'wiki' && $page->children()->visible()->count() === 0;
+        $ogType = in_array((string) $page->template(), ['item', 'wiki-article'], true) || $isWikiArticle ? 'article' : 'website';
         $lang = $this->grav['language']->getActive();
         $image = $this->firstPageImage($page);
 
@@ -115,14 +123,16 @@ class GravaTheHud extends Theme
             ['property' => 'og:site_name', 'content' => (string) $this->config->get('site.title')],
             ['property' => 'og:type', 'content' => $ogType],
             ['property' => 'og:title', 'content' => $title],
-            ['property' => 'og:description', 'content' => $description],
             ['property' => 'og:url', 'content' => $page->url(true, true)],
             ['property' => 'og:locale', 'content' => $lang === 'de' ? 'de_DE' : 'en_US'],
             ['name' => 'twitter:card', 'content' => $image ? 'summary_large_image' : 'summary'],
             ['name' => 'twitter:title', 'content' => $title],
-            ['name' => 'twitter:description', 'content' => $description],
             ['name' => 'author', 'content' => (string) $this->config->get('site.author.name')],
         ];
+        if ($description !== '') {
+            $tags[] = ['property' => 'og:description', 'content' => $description];
+            $tags[] = ['name' => 'twitter:description', 'content' => $description];
+        }
         if ($image) {
             $tags[] = ['property' => 'og:image', 'content' => $image];
             $tags[] = ['name' => 'twitter:image', 'content' => $image];

@@ -32,7 +32,7 @@
         mainEntityOfPage: { '@type': 'WebPage', '@id': absolute },
         image: img ? [img.url(true, true)] : []
     })|raw }}</script>
-{% elseif page.template == 'wiki-article' %}
+{% elseif page.template == 'wiki-article' or (page.template == 'wiki' and not page.children.visible|length) %}
     <script type="application/ld+json">{{ json_ld({
         '@context': 'https://schema.org',
         '@type': 'Article',

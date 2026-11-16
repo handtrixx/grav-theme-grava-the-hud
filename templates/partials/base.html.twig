@@ -29,7 +29,7 @@
     <link rel="canonical" href="{{ page.url(true, true) }}" />
 
     {# Feed autodiscovery + structured data (see partials/seo-jsonld.html.twig) #}
-    <link rel="alternate" type="application/rss+xml" title="{{ site.title }} — Blog" href="{{ base_url ~ '/feed.rss' }}" />
+    <link rel="alternate" type="application/rss+xml" title="{{ site.title }} — Blog" href="{{ site.url ~ base_url ~ '/feed.rss' }}" />
     {% include 'partials/seo-jsonld.html.twig' %}
 
     {# Preload the critical latin subsets so headings + body text render in-font on first paint #}
