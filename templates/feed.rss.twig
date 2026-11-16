@@ -8,22 +8,22 @@
 {% set latest = items|first %}
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>{{ site.title|e('xml') }}</title>
+    <title>{{ site.title }}</title>
     <link>{{ base_url }}</link>
-    <description>{{ 'Blog feed of Niklas Stephan'|e('xml') }}</description>
+    <description>{{ 'Blog feed of Niklas Stephan' }}</description>
     <language>{{ lang }}</language>
-    <managingEditor>{{ site.author.email|e('xml') }} ({{ site.author.name|e('xml') }})</managingEditor>
-    <webMaster>{{ site.author.email|e('xml') }} ({{ site.author.name|e('xml') }})</webMaster>
+    <managingEditor>{{ site.author.email }} ({{ site.author.name }})</managingEditor>
+    <webMaster>{{ site.author.email }} ({{ site.author.name }})</webMaster>
     {% if latest %}<lastBuildDate>{{ latest.date|date('r') }}</lastBuildDate>{% endif %}
     <atom:link href="{{ page.url(true, true) }}" rel="self" type="application/rss+xml"/>
     {% for item in items|slice(0, 20) %}
     <item>
-      <title>{{ item.title|strip_emoji|e('xml') }}</title>
+      <title>{{ item.title|strip_emoji }}</title>
       <link>{{ item.url(true, true) }}</link>
       <guid isPermaLink="true">{{ item.url(true, true) }}</guid>
       <pubDate>{{ item.date|date('r') }}</pubDate>
-      {% for tag in item.taxonomy('tag') %}<category>{{ tag|e('xml') }}</category>{% endfor %}
-      <description>{{ item.summary(400, true)|e('xml') }}</description>
+      {% for tag in item.taxonomy('tag') %}<category>{{ tag }}</category>{% endfor %}
+      <description>{{ item.summary(400, true) }}</description>
     </item>
     {% endfor %}
   </channel>
