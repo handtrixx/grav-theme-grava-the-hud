@@ -92,7 +92,8 @@ class GravaTheHud extends Theme
      * archived ones last. Fetched from the GitHub API and cached for 6 hours;
      * unauthenticated calls are limited to 60/h, one cached fetch per window
      * stays far below that. When the API is unreachable the zoo index falls
-     * back to the curated item pages alone.
+     * back to the curated item pages alone. A longer-lived copy (60 days) is
+ * kept so a rate-limited fetch still shows the last known list.
      *
      * @return array<int, array{name: string, url: string, description: string,
      *     language: string, pushed: string, archived: bool, fork: bool}>
@@ -101,6 +102,7 @@ class GravaTheHud extends Theme
     {
         $cache = Grav::instance()['cache'];
         $key = 'theme-github-repos';
+        $staleKey = 'theme-github-repos-stale';
         $ttl = 21600; // 6h
 
         $repos = $cache->fetch($key);
@@ -117,7 +119,9 @@ class GravaTheHud extends Theme
         $json = @file_get_contents('https://api.github.com/users/handtrixx/repos?per_page=100&sort=pushed', false, $context);
         $data = $json !== false ? json_decode($json, true) : null;
         if (!is_array($data) || !isset($data[0])) {
-            return [];
+            // API unreachable or rate-limited: serve the last good list, however old.
+            $stale = $cache->fetch($staleKey);
+            return is_array($stale) ? $stale : [];
         }
 
         $repos = [];
@@ -144,6 +148,7 @@ class GravaTheHud extends Theme
         });
 
         $cache->save($key, $repos, $ttl);
+        $cache->save($staleKey, $repos, 5184000); // 60d fallback
         return $repos;
     }
 
