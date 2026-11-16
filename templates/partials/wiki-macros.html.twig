@@ -24,7 +24,7 @@
                 {% set clean = clean|merge([line|trim]) %}
             {% endif %}
         {% endfor %}
-        {% set text = _self.clean_text(clean|join(' ')) %}
+        {% set text = _self.clean_text(clean|join(' '))|trim %}
         {% if text|lower starts with p.title|lower %}
             {% set text = text|slice(p.title|length)|trim %}
         {% endif %}

@@ -334,6 +334,8 @@ code:not(pre code) {
   }
   .hud-terminal {
     grid-column: 2;
+    /* pin to the first grid row so the terminal starts at the heading */
+    grid-row: 1 / span 2;
   }
 }
 
