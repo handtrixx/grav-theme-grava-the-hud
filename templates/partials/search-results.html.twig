@@ -6,7 +6,7 @@
    segment after en/de. No computed-key array merge (Twig here evaluates
    `(expr)` keys literally) - four buckets instead. Blog newest first, the
    rest by title; rows are wiki-macros search_row, same as wiki listings. #}
-{% set results = search_results|default([])|filter(p => p.published and p.url != '/search') %}
+{% set results = search_results|default([])|filter(p => p.published and p.route != 'search' and p.route != 'de/search') %}
 
 {% set posts = [] %}
 {% set wiki = [] %}
@@ -17,7 +17,8 @@
        filter, so compare against ''. URL parts: ['', 'en', 'wiki', ...] —
        the section is the segment after the language prefix. #}
     {% set parts = p.url|split('/')|filter(x => x != '') %}
-    {% set root = (parts[0] in ['en', 'de']) ? parts[1] : parts[0] %}
+    {% set lang = parts[0] == 'en' or parts[0] == 'de' %}
+    {% set root = lang ? parts[1] : parts[0] %}
     {% if root == 'blog' %}
         {% set posts = posts|merge([p]) %}
     {% elseif root == 'wiki' %}
