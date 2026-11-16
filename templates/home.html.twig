@@ -73,10 +73,12 @@
             {% endif %}
         </section>
 
+        {# The blog collection is paginated (10 per page), so its count says
+           "posts on this page". Count the children instead: the whole blog. #}
         <div class="hud-stats" aria-label="{{ de ? 'Bestand' : 'What this site holds' }}">
-            <span class="hud-stat"><em>~/blog</em><b>{{ blog ? blog.collection.count : 0 }}</b>{{ de ? ' Beiträge' : ' posts' }}</span>
+            <span class="hud-stat"><em>~/blog</em><b>{{ blog ? blog.children.visible.count : 0 }}</b>{{ de ? ' Beiträge' : ' posts' }}</span>
             <span class="hud-stat"><em>~/wiki</em><b>{{ wiki_articles|length }}</b>{{ de ? ' Seiten' : ' pages' }}</span>
-            <span class="hud-stat"><em>~/zoo</em><b>{{ zoo ? zoo.collection.count : 0 }}</b>{{ de ? ' Projekte' : ' projects' }}</span>
+            <span class="hud-stat"><em>~/zoo</em><b>{{ zoo ? zoo.children.visible.count : 0 }}</b>{{ de ? ' Projekte' : ' projects' }}</span>
         </div>
     </article>
 {% endblock %}
