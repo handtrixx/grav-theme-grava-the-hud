@@ -1,0 +1,29 @@
+{% extends 'partials/base.html.twig' %}
+{% import 'partials/zoo-macros.html.twig' as zm %}
+
+{# Zoo project page: hero with kicker and date, the write-up, then the
+   link pills. Flat HUD body like the zoo index. #}
+
+{% block body %}
+    <section id="body-wrapper" class="section zoo-item-page">
+        <div class="container">
+            <header class="hud-hero">
+                {% if page.header.kicker %}<p class="zoo-kicker">{{ page.header.kicker }}</p>{% endif %}
+                <h1 class="display">{{ page.title }}</h1>
+                {% if page.description %}<p class="lead">{{ page.description }}</p>{% endif %}
+                {% if page.date %}<p class="zoo-item-date">{{ page.date|date('Y-m-d') }}</p>{% endif %}
+            </header>
+
+            <div class="zoo-item-body">
+                {{ page.content|raw }}
+            </div>
+
+            {% if page.header.links %}{{ zm.links(page.header.links) }}{% endif %}
+
+            <nav class="zoo-back" aria-label="{{ 'THEME_GRAVA_HUD.ZOO.NAV'|t }}">
+                {% set zoo_index = page.find('/zoo') %}
+                <a href="{{ zoo_index.url|default('/zoo') }}"><i class="fa-solid fa-arrow-left" aria-hidden="true"></i> {{ 'THEME_GRAVA_HUD.ZOO.BACK'|t }}</a>
+            </nav>
+        </div>
+    </section>
+{% endblock %}

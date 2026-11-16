@@ -1,0 +1,29 @@
+{% extends 'partials/base.html.twig' %}
+{% import 'partials/zoo-macros.html.twig' as zm %}
+
+{# Zoo portfolio index: one card per published child page (template
+   zoo-item), newest first. Cards link to the project page; the repository
+   and live links come from each item's front matter. #}
+
+{% block body %}
+    <section id="body-wrapper" class="section zoo-page">
+        <div class="container">
+            <header class="hud-hero">
+                <h1 class="display">{{ page.title }}</h1>
+                {% if page.description %}<p class="lead">{{ page.description }}</p>{% endif %}
+            </header>
+
+            <div class="zoo-grid">
+                {% for p in page.collection %}
+                    <div class="zoo-card">
+                        <span class="zoo-index">{{ loop.index < 10 ? '0' ~ loop.index : loop.index }}</span>
+                        {% if p.header.kicker %}<span class="zoo-kicker">{{ p.header.kicker }}</span>{% endif %}
+                        <h3><a href="{{ p.url }}">{{ p.title }}</a></h3>
+                        {% if p.header.description %}<p>{{ p.header.description }}</p>{% endif %}
+                        {% if p.header.links %}{{ zm.links(p.header.links) }}{% endif %}
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+{% endblock %}

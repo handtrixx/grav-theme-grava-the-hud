@@ -1,0 +1,31 @@
+{# Zoo helpers: icon classes and link pills, shared by zoo.html.twig and
+   zoo-item.html.twig. This file defines macros only — importing it renders
+   nothing of its own. #}
+
+{% macro icon_class(name) %}
+    {# Front matter link icons map to FontAwesome; unknown names fall back
+       to a plain external-link arrow. #}
+    {% set map = {
+        github: 'fa-brands fa-github',
+        gitlab: 'fa-brands fa-gitlab',
+        docker: 'fa-brands fa-docker',
+        web: 'fa-solid fa-globe',
+        eye: 'fa-solid fa-eye',
+        book: 'fa-solid fa-book',
+        code: 'fa-solid fa-code',
+        terminal: 'fa-solid fa-terminal',
+        server: 'fa-solid fa-server',
+        download: 'fa-solid fa-download'
+    } %}
+    {{ map[name]|default('fa-solid fa-arrow-up-right-from-square') }}
+{% endmacro %}
+
+{% macro links(list) %}
+    {# Link pills from front matter `links: [{url, label, icon}]`.
+       Relative URLs stay in-site; everything else opens in a new tab. #}
+    <div class="zoo-links">
+        {% for l in list %}
+            <a href="{{ l.url }}"{% if not (l.url starts with '/') %} target="_blank" rel="noopener noreferrer"{% endif %}><i class="{{ _self.icon_class(l.icon) }}" aria-hidden="true"></i> {{ l.label }}</a>
+        {% endfor %}
+    </div>
+{% endmacro %}

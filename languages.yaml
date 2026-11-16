@@ -70,6 +70,9 @@ en:
       GROUP_WIKI: "Wiki"
       GROUP_ZOO: "Zoo"
       GROUP_PAGES: "Pages"
+    ZOO:
+      NAV: "Zoo navigation"
+      BACK: "Back to zoo"
 
 de:
   THEME_GRAVA_HUD:
@@ -103,6 +106,9 @@ de:
       GROUP_WIKI: "Wiki"
       GROUP_ZOO: "Zoo"
       GROUP_PAGES: "Seiten"
+    ZOO:
+      NAV: "Zoo-Navigation"
+      BACK: "Zurück zum Zoo"
 
     HEADER:
       SEARCH_LABEL: "Seite durchsuchen"
