@@ -17,9 +17,9 @@
     {% set root = parts[0] in ['en', 'de'] ? parts[1]|default(parts[0]) : parts[0] %}
     {% if root == 'blog' %}
         {% set posts = posts|merge([p]) %}
-    {% elif root == 'wiki' %}
+    {% elseif root == 'wiki' %}
         {% set wiki = wiki|merge([p]) %}
-    {% elif root == 'zoo' %}
+    {% elseif root == 'zoo' %}
         {% set zoo = zoo|merge([p]) %}
     {% else %}
         {% set pages = pages|merge([p]) %}
