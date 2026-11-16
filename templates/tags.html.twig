@@ -12,7 +12,11 @@
                 {% if page.header.description %}<p class="lead">{{ page.header.description }}</p>{% endif %}
             </header>
 
-            {% set blog_url = theme_var('blog-page')|default('/blog') %}
+            {# The blog route in the language of this page, so a pill links
+               straight to /de/blog/tag:x instead of bouncing through a
+               redirect from /blog. #}
+            {% set blog_page = page.find('/blog') %}
+            {% set blog_url = blog_page ? blog_page.url : theme_var('blog-page')|default('/blog') %}
             {% set taxlist = taxonomylist.get() %}
             {% set tags = taxlist['tag']|default({}) %}
 
