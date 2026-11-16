@@ -10,7 +10,7 @@
             <header class="hud-hero">
                 {% if page.header.kicker %}<p class="zoo-kicker">{{ page.header.kicker }}</p>{% endif %}
                 <h1 class="display">{{ page.title }}</h1>
-                {% if page.description %}<p class="lead">{{ page.description }}</p>{% endif %}
+                {% if page.header.description %}<p class="lead">{{ page.header.description }}</p>{% endif %}
                 {% if page.date %}<p class="zoo-item-date">{{ page.date|date('Y-m-d') }}</p>{% endif %}
             </header>
 
