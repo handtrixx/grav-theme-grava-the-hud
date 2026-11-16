@@ -60,6 +60,16 @@ en:
         TOGGLE: "Open or close this section"
         TOC: "Table of contents"
         PREVNEXT: "Previous and next page"
+    SEARCH:
+      HEADLINE: "Search"
+      HINT: "Type at least three characters to search blog posts, wiki and zoo."
+      RESULTS_ONE: "Query “%s” — one result"
+      RESULTS_MANY: "Query “%s” — %s results"
+      RESULTS_NONE: "Query “%s” found nothing. Try another word, or browse the blog and wiki."
+      GROUP_POSTS: "Blog posts"
+      GROUP_WIKI: "Wiki"
+      GROUP_ZOO: "Zoo"
+      GROUP_PAGES: "Pages"
 
 de:
   THEME_GRAVA_HUD:
@@ -82,6 +92,17 @@ de:
         TOGGLE: "Diesen Abschnitt öffnen oder schließen"
         TOC: "Inhaltsverzeichnis"
         PREVNEXT: "Vorherige und nächste Seite"
+
+    SEARCH:
+      HEADLINE: "Suche"
+      HINT: "Mindestens drei Zeichen eingeben, um Blog-Beiträge, Wiki und Zoo zu durchsuchen."
+      RESULTS_ONE: "Suche „%s“ — ein Ergebnis"
+      RESULTS_MANY: "Suche „%s“ — %s Ergebnisse"
+      RESULTS_NONE: "Suche „%s“ fand nichts. Versuch ein anderes Wort oder blättere im Blog und Wiki."
+      GROUP_POSTS: "Blog-Beiträge"
+      GROUP_WIKI: "Wiki"
+      GROUP_ZOO: "Zoo"
+      GROUP_PAGES: "Seiten"
 
     HEADER:
       SEARCH_LABEL: "Seite durchsuchen"

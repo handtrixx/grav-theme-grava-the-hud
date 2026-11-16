@@ -80,7 +80,7 @@
     {% endif %}
     {% do assets.addCss('theme://css/custom.css', 80) %}
     {# Wiki docs layout (sidebar, tree, TOC) only on wiki + search pages. #}
-    {% if page.template in ['wiki', 'wiki-article', 'wiki-search'] %}
+    {% if page.template in ['wiki', 'wiki-article', 'wiki-search', 'search'] %}
         {% do assets.addCss('theme://css/wiki-docs.css', 75) %}
     {% endif %}
 {% endblock %}

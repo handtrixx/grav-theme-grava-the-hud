@@ -15,6 +15,6 @@
            minlength="{{ min_chars }}"
            autocomplete="off"
            aria-label="{{ 'THEME_GRAVA_HUD.HEADER.SEARCH_LABEL'|t|e('html_attr') }}"
-           {% if page.template|default('') == 'wiki-search' %}autofocus{% endif %}>
+           {% if page.template in ['wiki-search', 'search'] %}autofocus{% endif %}>
     <kbd class="hud-search-kbd" data-search-shortcut>Ctrl K</kbd>
 </form>

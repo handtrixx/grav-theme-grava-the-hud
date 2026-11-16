@@ -1,0 +1,17 @@
+{% extends 'partials/base.html.twig' %}
+
+{# Site-wide search results (SimpleSearch plugin). Full width, no wiki
+   sidebar: results come from every section, so the wiki tree would be
+   misleading here. Rows are grouped by section in
+   partials/search-results.html.twig. #}
+
+{% block body %}
+    <section id="body-wrapper" class="section search-page">
+        <div class="container">
+            <header class="wiki-page-header">
+                <h1>{{ 'THEME_GRAVA_HUD.SEARCH.HEADLINE'|t }}</h1>
+            </header>
+            {% include 'partials/search-results.html.twig' %}
+        </div>
+    </section>
+{% endblock %}

@@ -290,6 +290,26 @@ html:not(.wiki-js) .wiki-branch {
   color: var(--q2-text-muted);
 }
 
+/* Site-wide search page: results grouped by section */
+.search-group {
+  margin: 1.75rem 0 0;
+}
+.search-group h2 {
+  font-family: var(--hud-mono);
+  font-size: 0.78rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: color-mix(in oklab, var(--q2-accent) 80%, var(--q2-text-muted));
+  margin: 0 0 0.9rem;
+}
+.search-group-count {
+  color: var(--q2-text-muted);
+  letter-spacing: 0.05em;
+}
+.search-group .wiki-entry-list {
+  margin: 0;
+}
+
 /* Mobile drawer */
 .wiki-drawer-toggle {
   display: none;

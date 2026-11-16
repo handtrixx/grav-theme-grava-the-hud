@@ -1,0 +1,39 @@
+{% import 'partials/wiki-macros.html.twig' as wm %}
+
+{# Site-wide search rows, grouped by section. SimpleSearch hands us every
+   published page; the search page itself never lists itself. Blog reads
+   newest first, wiki and zoo by title. Row rendering lives in wiki-macros
+   (same rows as the wiki listings). #}
+{% set results = search_results|default([])|filter(p => p.published and p.route != 'search') %}
+
+{% set groups = [
+    { label: 'THEME_GRAVA_HUD.SEARCH.GROUP_POSTS', items: results|filter(p => p.route starts with 'blog/')|sort((a, b) => b.date <=> a.date) },
+    { label: 'THEME_GRAVA_HUD.SEARCH.GROUP_WIKI',   items: results|filter(p => p.route starts with 'wiki/')|sort((a, b) => a.title <=> b.title) },
+    { label: 'THEME_GRAVA_HUD.SEARCH.GROUP_ZOO',    items: results|filter(p => p.route starts with 'zoo/')|sort((a, b) => a.title <=> b.title) },
+    { label: 'THEME_GRAVA_HUD.SEARCH.GROUP_PAGES',  items: results|filter(p => not (p.route starts with 'blog/' or p.route starts with 'wiki/' or p.route starts with 'zoo/'))|sort((a, b) => a.title <=> b.title) }
+] %}
+
+{% if query %}
+    <p class="wiki-search-summary">
+        {{ results|length == 1
+            ? 'THEME_GRAVA_HUD.SEARCH.RESULTS_ONE'|t(query)
+            : 'THEME_GRAVA_HUD.SEARCH.RESULTS_MANY'|t(query, results|length) }}
+    </p>
+
+    {% if results|length %}
+        {% for group in groups %}
+            {% if group.items|length %}
+                <section class="search-group">
+                    <h2>{{ group.label|t }} <span class="search-group-count">{{ group.items|length }}</span></h2>
+                    <ul class="wiki-entry-list">
+                        {% for p in group.items %}{{ wm.search_row(p) }}{% endfor %}
+                    </ul>
+                </section>
+            {% endif %}
+        {% endfor %}
+    {% else %}
+        <p class="wiki-search-empty">{{ 'THEME_GRAVA_HUD.SEARCH.RESULTS_NONE'|t(query) }}</p>
+    {% endif %}
+{% else %}
+    <p class="wiki-search-empty">{{ 'THEME_GRAVA_HUD.SEARCH.HINT'|t }}</p>
+{% endif %}
