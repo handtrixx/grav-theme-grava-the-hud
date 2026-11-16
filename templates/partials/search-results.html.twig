@@ -8,6 +8,11 @@
    rest by title; rows are wiki-macros search_row, same as wiki listings. #}
 {% set results = search_results|default([])|filter(p => p.published and p.route != 'search' and p.route != 'de/search') %}
 
+{% if uri.query('dbg') %}
+<pre style="white-space:pre-wrap">{% for p in results %}{% set parts = p.url|split('/')|filter(x => x != '') %}{% set lang = parts[0] == 'en' or parts[0] == 'de' %}{{ p.url }} parts={{ parts|join('|') }} lang={{ lang ? 'Y' : 'N' }} root={{ lang ? parts[1] : parts[0] }}
+{% endfor %}</pre>
+{% endif %}
+
 {% set posts = [] %}
 {% set wiki = [] %}
 {% set zoo = [] %}
