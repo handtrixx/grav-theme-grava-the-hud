@@ -21,11 +21,13 @@
         {% set wiki_articles = [] %}
         {% for sec in wiki.children %}
             {% for p in sec.children %}
-                {% if p.published %}
+                {# Only articles: section pages share the wiki template and are
+                   not content worth surfacing as "recent". #}
+                {% if p.published and p.template != 'wiki' %}
                     {% set wiki_articles = wiki_articles|merge([p]) %}
                 {% endif %}
                 {% for q in p.children %}
-                    {% if q.published %}
+                    {% if q.published and q.template != 'wiki' %}
                         {% set wiki_articles = wiki_articles|merge([q]) %}
                     {% endif %}
                 {% endfor %}
