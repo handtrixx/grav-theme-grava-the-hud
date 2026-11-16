@@ -19,7 +19,10 @@
        auto-prepended title are stripped; nothing shown when what remains
        repeats the title. #}
     {% set text = p.header.description ?: (p.summary|striptags|trim) %}
+    {# Auto-generated summaries are escaped HTML (&#039;, &quot;, &amp;);
+       decoded here so excerpts read as plain text. #}
     {% if text %}
+        {% set text = text|replace({'&#039;': "'", '&quot;': '"', '&amp;': '&', '&#39;': "'"}) %}
         {% set clean = [] %}
         {% for line in text|split('\n') %}
             {# Drop markdown headings (the auto-prepended title), alert
