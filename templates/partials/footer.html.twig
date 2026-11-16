@@ -8,5 +8,15 @@
                target="_blank" rel="noopener noreferrer"
                title="Beyond Code Generation: a developer's guide to agentic engineering">HDAE</a>.
         </p>
+        {% set imprint = page.find('/imprint') %}
+        {% set privacy = page.find('/privacy') %}
+        {% if imprint and privacy %}
+            <p class="hud-footer-links">
+                <span class="prompt">$</span> ./links →
+                <a href="{{ imprint.url }}">{{ imprint.title }}</a>
+                ·
+                <a href="{{ privacy.url }}">{{ privacy.title }}</a>
+            </p>
+        {% endif %}
     </div>
 </footer>

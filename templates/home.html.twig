@@ -10,6 +10,7 @@
 
         {% set de = grav.language.getActive == 'de' %}
         {% set go = de ? 'öffnen' : 'open' %}
+        <p class="hud-ls-head"><span class="prompt">$</span> ls -al ~/sites</p>
         <section class="hud-teasers" aria-label="{{ de ? 'Seitenbereiche' : 'Site sections' }}">
             {% for route in ['/blog', '/wiki', '/zoo', '/about'] %}
                 {% set s = page.find(route) %}

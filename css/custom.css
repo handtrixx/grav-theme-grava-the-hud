@@ -345,10 +345,21 @@ code:not(pre code) {
 body.hud-home #body-wrapper > .container > .content-item {
   max-width: none;
 }
-.hud-teasers {
+.hud-ls-head {
+  font-family: var(--hud-mono);
+  font-size: 0.85rem;
+  letter-spacing: 0.06em;
+  color: var(--pico-muted-color);
   margin-top: clamp(2rem, 5vw, 3rem);
   padding-top: clamp(1.25rem, 3vw, 1.75rem);
   border-top: 1px solid var(--q2-divider);
+  margin-bottom: 1rem;
+}
+.hud-ls-head .prompt {
+  color: var(--hud-accent);
+  font-weight: 700;
+}
+.hud-teasers {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(min(240px, 100%), 1fr));
   gap: clamp(0.75rem, 2vw, 1.1rem);
@@ -402,6 +413,21 @@ body.hud-home #body-wrapper > .container > .content-item {
   color: color-mix(in oklab, var(--pico-muted-color) 80%, transparent);
 }
 .hud-teaser-go {
+  color: var(--hud-accent);
+}
+
+.hud-footer-links {
+  font-family: var(--hud-mono);
+  font-size: 0.8rem;
+  letter-spacing: 0.06em;
+  color: var(--pico-muted-color);
+  margin-top: 0.6rem;
+}
+.hud-footer-links .prompt {
+  color: var(--hud-accent);
+  font-weight: 700;
+}
+.hud-footer-links a {
   color: var(--hud-accent);
 }
 
