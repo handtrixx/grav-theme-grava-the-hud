@@ -165,7 +165,9 @@ class GravaTheHud extends Theme
      */
     public function stripEmoji(string $text): string
     {
-        $text = preg_replace('/[\p{So}\p{Sk}\p{Cf}]/u', '', $text) ?? $text;
+        // Symbol/pictogram classes catch most emoji; variation selectors
+        // (FE00–FE0F), zero-width joiners and soft hyphens sit outside them.
+        $text = preg_replace('/[\p{So}\p{Sk}\p{Cf}\x{AD}\x{200B}-\x{200D}\x{FE00}-\x{FE0F}]/u', '', $text) ?? $text;
         return trim($text);
     }
 
