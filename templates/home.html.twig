@@ -55,7 +55,9 @@
         {% set posts = blog ? blog.collection|slice(0, 3) : [] %}
         {# This Grav's Twig build only accepts an arrow comparator for sort, not
            `attribute=`; newest first via spaceship, then take three. #}
-        {% set recent_wiki = wiki_articles|sort((a, b) => a.modified <=> b.modified)|reverse|slice(0, 3) %}
+        {# Sort on the front-matter date when present (mtime is bumped by every
+           GitSync deploy), else on the file mtime. #}
+        {% set recent_wiki = wiki_articles|sort((a, b) => (a.header.date ?: a.modified) <=> (b.header.date ?: b.modified))|reverse|slice(0, 3) %}
 
         <section class="hud-recent" aria-label="{{ de ? 'Das Neueste' : 'Latest' }}">
             {% if posts %}

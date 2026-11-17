@@ -41,7 +41,8 @@
         headline: page.title|strip_emoji,
         description: (page.header.description ?: page.summary(280, true))|plain_text,
         inLanguage: lang,
-        dateModified: mod ? mod|date('c') : null,
+        datePublished: (page.date ?: mod) ? (page.date ?: mod)|date('c') : null,
+        dateModified: mod ? mod|date('c') : (page.date ? page.date|date('c') : null),
         author: { '@type': 'Person', name: site.author.name },
         mainEntityOfPage: { '@type': 'WebPage', '@id': absolute },
         image: img ? [img.url(true, true)] : []

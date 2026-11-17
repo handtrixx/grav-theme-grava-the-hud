@@ -47,7 +47,9 @@
 {% endmacro %}
 
 {% macro date(p) %}
-    {% set updated = p.modified|default(null) %}
+    {# Front-matter dates win over the file mtime, which every GitSync deploy
+       bumps; `modified:` is the last content change, `date:` the publication. #}
+    {% set updated = p.header.modified ?: p.header.date ?: p.modified|default(null) %}
     {% if updated %}
         <span class="wiki-entry-date">{{ updated|date('d-m-Y') }}</span>
     {% endif %}
