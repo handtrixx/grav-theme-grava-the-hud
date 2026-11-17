@@ -41,8 +41,9 @@
         headline: page.title|strip_emoji,
         description: (page.header.description ?: page.summary(280, true))|plain_text,
         inLanguage: lang,
-        datePublished: (page.date ?: mod) ? (page.date ?: mod)|date('c') : null,
-        dateModified: mod ? mod|date('c') : (page.date ? page.date|date('c') : null),
+        datePublished: page.date ? page.date|date('c') : (mod ? mod|date('c') : null),
+        {# Same rule as BlogPosting: front-matter date beats deploy mtime. #}
+        dateModified: (page.header.modified ?: page.date ?: mod)|date('c'),
         author: { '@type': 'Person', name: site.author.name },
         mainEntityOfPage: { '@type': 'WebPage', '@id': absolute },
         image: img ? [img.url(true, true)] : []
