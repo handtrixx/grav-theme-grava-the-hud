@@ -47,6 +47,15 @@ class GravaTheHud extends Theme
             }
         }
 
+        // Front-matter dates over file mtime: GitSync re-checkouts every file
+        // on deploy, so page->modified() is the deploy timestamp. Sitemap
+        // lastmod, RSS feeds and date sorting all read it.
+        if (isset($header->modified)) {
+            $page->setModified(strtotime((string) $header->modified));
+        } elseif (isset($header->date)) {
+            $page->setModified(strtotime((string) $header->date));
+        }
+
         // After the template decision: og:type and JSON-LD depend on it.
         $this->addSeoMetadata();
     }
