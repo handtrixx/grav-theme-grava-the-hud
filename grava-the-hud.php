@@ -51,9 +51,9 @@ class GravaTheHud extends Theme
         // on deploy, so page->modified() is the deploy timestamp. Sitemap
         // lastmod, RSS feeds and date sorting all read it.
         if (isset($header->modified)) {
-            $page->setModified(strtotime((string) $header->modified));
+            $page->modified(strtotime((string) $header->modified));
         } elseif (isset($header->date)) {
-            $page->setModified(strtotime((string) $header->date));
+            $page->modified(strtotime((string) $header->date));
         }
 
         // After the template decision: og:type and JSON-LD depend on it.
