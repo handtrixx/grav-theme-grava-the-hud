@@ -52,6 +52,9 @@ class GravaTheHud extends Theme
         // lastmod, RSS feeds and date sorting all read it.
         if (isset($header->modified)) {
             $page->modified(strtotime((string) $header->modified));
+            // Sitemap date_type is page_date; let `modified:` win there too.
+            $header->sitemap = array_merge((array) ($header->sitemap ?? []),
+                ['lastmod' => (string) $header->modified]);
         } elseif (isset($header->date)) {
             $page->modified(strtotime((string) $header->date));
         }
