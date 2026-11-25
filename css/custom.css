@@ -1603,9 +1603,12 @@ body.hud-flat #body-wrapper > .container > .content-item p {
    Verified: an 8-column wiki table rendered 820px in a 390px viewport and
    made the WHOLE document horizontally scrollable (scrollWidth 836).
    Markdown cannot wrap tables in a scroll container, so let the table
-   scroll internally on narrow viewports; desktop rendering untouched. */
+   scroll internally on narrow viewports; desktop rendering untouched.
+   2026-11-25 follow-up: wiki index tables live outside <article> in the
+   custom .wiki-layout tree - include those too. */
 @media (max-width: 900px) {
-  article table {
+  article table,
+  .wiki-layout table {
     display: block;
     max-width: 100%;
     overflow-x: auto;
