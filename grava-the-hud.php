@@ -199,7 +199,7 @@ class GravaTheHud extends Theme
      * plugin (it provides the library); disable with `code_highlighting: false`
      * in the theme config.
      */
-    public function highlightCodeBlocks()
+    public function highlightCodeBlocks($event = null)
     {
         if ($this->isAdmin()) {
             return;
@@ -211,7 +211,15 @@ class GravaTheHud extends Theme
             return; // highlight-php not installed: nothing to highlight with
         }
 
-        $page = $this->grav['page'];
+        // The event carries the page whose content was just processed. grav['page']
+        // is the page currently being RENDERED: on listing pages (wiki index
+        // section excerpts, blog lists, related posts) the event also fires for
+        // every child whose content gets built there. Reading grav['page'] meant
+        // those child pages were page-content-cached un-highlighted, and every
+        // later request to them served the plain copy (found 2026-11-25: after
+        // /en/wiki rendered once, all its code fences site-wide stayed plain
+        // until the cache was cleared).
+        $page = $event !== null && isset($event['page']) ? $event['page'] : $this->grav['page'];
         $content = (string) $page->content();
         if (strpos($content, '<pre><code class="language-') === false) {
             return;
