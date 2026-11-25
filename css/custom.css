@@ -1598,3 +1598,16 @@ body.hud-flat #body-wrapper > .container > .content-item p {
 
 
 
+
+/* ---- Wide tables must not break the mobile view (2026-11-25) ----
+   Verified: an 8-column wiki table rendered 820px in a 390px viewport and
+   made the WHOLE document horizontally scrollable (scrollWidth 836).
+   Markdown cannot wrap tables in a scroll container, so let the table
+   scroll internally on narrow viewports; desktop rendering untouched. */
+@media (max-width: 900px) {
+  article table {
+    display: block;
+    max-width: 100%;
+    overflow-x: auto;
+  }
+}
