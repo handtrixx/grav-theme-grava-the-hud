@@ -7,7 +7,7 @@
 
 {% block content %}
     <article class="content-item">
-        {{ page.content|raw }}
+        {{ page.content|highlight_code|raw }}
 
         {% set de = grav.language.getActive == 'de' %}
         {% set go = de ? 'öffnen' : 'open' %}

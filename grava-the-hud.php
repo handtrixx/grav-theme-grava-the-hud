@@ -11,7 +11,6 @@ class GravaTheHud extends Theme
         return [
             'onThemeInitialized' => ['onThemeInitialized', 0],
             'onPageInitialized'  => ['onPageInitialized', 0],
-            'onPageContentProcessed' => ['highlightCodeBlocks', 0],
             'onTwigLoader'       => ['onTwigLoader', 0],
             'onTwigInitialized'  => ['onTwigInitialized', 0],
         ];
@@ -187,7 +186,8 @@ class GravaTheHud extends Theme
     }
 
     /**
-     * Server-side syntax highlighting for fenced code blocks.
+     * Server-side syntax highlighting for fenced code blocks, as a Twig filter
+     * (`|highlight_code`) applied where a template renders full page content.
      *
      * Grav's markdown turns ```lang fences into
      * `<pre><code class="language-x">` with the code HTML-escaped.
@@ -198,23 +198,30 @@ class GravaTheHud extends Theme
      * unsupported languages are left as plain code. Requires the highlight-php
      * plugin (it provides the library); disable with `code_highlighting: false`
      * in the theme config.
+     *
+     * Deliberately a render-time filter, NOT an onPageContentProcessed hook:
+     * that event also fires for child pages whose content a listing builds
+     * (wiki index section excerpts), where grav['page'] is the listing - each
+     * child was then page-content-cached UN-highlighted and served plain on
+     * every later hit (site-wide regression, 2026-11-25), and highlighting
+     * every child's full content during one index request blew the 60 s
+     * execution limit. Caching stays plain; templates highlight what they
+     * render; advanced-pagecache stores the highlighted HTML, so repeat
+     * visitors still skip all of it.
      */
-    public function highlightCodeBlocks()
+    public function highlightCode(string $content = ''): string
     {
-        if ($this->isAdmin()) {
-            return;
+        if ($content === '' || $this->isAdmin()) {
+            return $content;
         }
         if (!$this->config->get('themes.grava-the-hud.code_highlighting', true)) {
-            return;
+            return $content;
         }
         if (!class_exists('\Highlight\Highlighter')) {
-            return; // highlight-php not installed: nothing to highlight with
+            return $content; // highlight-php not installed: nothing to highlight with
         }
-
-        $page = $this->grav['page'];
-        $content = (string) $page->content();
         if (strpos($content, '<pre><code class="language-') === false) {
-            return;
+            return $content;
         }
 
         // Languages that must keep their own rendering (or have no grammar).
@@ -239,7 +246,7 @@ class GravaTheHud extends Theme
             $content
         );
 
-        $page->content($highlighted);
+        return $highlighted ?? $content;
     }
 
     public function onTwigLoader()
@@ -274,6 +281,7 @@ class GravaTheHud extends Theme
         $twig->twig->addFunction(new \Twig\TwigFunction('q2_mix_alpha', [$this, 'mixWithAlpha']));
         $twig->twig->addFilter(new \Twig\TwigFilter('fa_icon', [$this, 'faIconClass']));
         $twig->twig->addFilter(new \Twig\TwigFilter('without_first_heading', [$this, 'withoutFirstHeading']));
+        $twig->twig->addFilter(new \Twig\TwigFilter('highlight_code', [$this, 'highlightCode']));
         $twig->twig->addFilter(new \Twig\TwigFilter('strip_images', [$this, 'stripImages']));
         $twig->twig->addFilter(new \Twig\TwigFilter('strip_emoji', [$this, 'stripEmoji']));
 

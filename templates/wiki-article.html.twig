@@ -22,7 +22,7 @@
             {% embed 'partials/wiki-layout.html.twig' %}
                 {% block item %}
                     <article class="content-item">
-                        {{ page.content|without_first_heading|raw }}
+                        {{ page.content|highlight_code|without_first_heading|raw }}
                     </article>
                     {% include 'partials/wiki-prevnext.html.twig' %}
                 {% endblock %}

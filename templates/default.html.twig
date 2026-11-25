@@ -2,6 +2,6 @@
 
 {% block content %}
     <article class="content-item">
-        {{ page.content|raw }}
+        {{ page.content|highlight_code|raw }}
     </article>
 {% endblock %}

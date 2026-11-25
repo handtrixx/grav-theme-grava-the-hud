@@ -3,7 +3,7 @@
     {# Title, date and tags live in the page header band above (item.html.twig);
        the markdown's own leading `#` heading is dropped so it doesn't repeat. #}
     <div class="e-content">
-        {{ page.content|without_first_heading|raw }}
+        {{ page.content|highlight_code|without_first_heading|raw }}
     </div>
 
     {% if page.header.continue_link is same as(true) and config.plugins.comments.enabled %}
