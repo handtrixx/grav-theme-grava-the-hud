@@ -11,9 +11,25 @@
                 <a href="{{ section.url }}">{{ wm.clean_title(section) }}</a>
                 <span class="wiki-section-count">{{ entries|length }}</span>
             </h2>
-            {% set intro = section.content|without_first_heading %}
-            {% if intro|striptags|trim is not empty %}
-                <div class="wiki-section-intro">{{ intro|raw }}</div>
+            {# Section intros are EXCERPTS, never the full page: dumping whole
+               pages (tables and all) onto the index buried the listing
+               (Niklas, 2026-11-25). Same macro as the entry rows; falls back
+               to the first 220 plain chars when the section has no
+               description/summary. #}
+            {% if section.header.description or section.summary|trim %}
+                {{ wm.excerpt(section) }}
+            {% else %}
+                {% set lines = [] %}
+                {% for line in section.content|without_first_heading|striptags|split('\n') %}
+                    {% set line = line|trim %}
+                    {% if line and not (line starts with '#') and not (line starts with ':::') and not ('![' in line) and not (line starts with '|') %}
+                        {% set lines = lines|merge([line]) %}
+                    {% endif %}
+                {% endfor %}
+                {% set intro = lines|join(' ')|replace({'<': '&lt;', '>': '&gt;'}) %}
+                {% if intro|trim %}
+                    <p class="wiki-entry-excerpt">{{ (intro|length > 220 ? intro|slice(0, 220) ~ '…' : intro)|raw }}</p>
+                {% endif %}
             {% endif %}
             <ul class="wiki-entry-list">
                 {% for p in entries %}
