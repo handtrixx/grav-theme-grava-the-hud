@@ -1012,7 +1012,10 @@ body.hud-flat #body-wrapper > .container > .content-item p {
      width and push the row into two lines */
   flex: 0 0 auto;
   width: fit-content;
-  margin-left: clamp(0.8rem, 2vw, 1.4rem);
+  /* blades.min.css gives every form margin-bottom: var(--pico-spacing) (16px);
+     with align-items:center that floated the visible pill 8px above the
+     navbar's real center line. */
+  margin: 0 0 0 clamp(0.8rem, 2vw, 1.4rem);
   padding: 0.42rem 0.75rem;
   /* Pin the pill height: blades.min.css gives every input
      height: calc(1rem*line-height + 2*spacing + 2*border) (~52px), which made
