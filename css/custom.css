@@ -1014,6 +1014,10 @@ body.hud-flat #body-wrapper > .container > .content-item p {
   width: fit-content;
   margin-left: clamp(0.8rem, 2vw, 1.4rem);
   padding: 0.42rem 0.75rem;
+  /* Pin the pill height: blades.min.css gives every input
+     height: calc(1rem*line-height + 2*spacing + 2*border) (~52px), which made
+     this pill 67px and dwarfed the 36px header controls. */
+  height: 40px;
   border: 1px solid var(--q2-divider);
   border-radius: 999px;
   background: var(--q2-bg-elev);
@@ -1036,6 +1040,7 @@ body.hud-flat #body-wrapper > .container > .content-item p {
   flex: 0 1 auto;
   width: 8em;
   min-width: 0;
+  height: 100%; /* beats the calc() height blades.min.css forces on inputs */
   margin: 0;
   padding: 0;
   border: none;
@@ -1074,10 +1079,11 @@ body.hud-flat #body-wrapper > .container > .content-item p {
     display: none;
   }
 }
-/* Mobile overlay menu: the pill spans the menu width. */
+/* Mobile overlay menu: the pill spans the menu width; 44px = touch target. */
 .overlay-menu .hud-search {
   margin: 0 0 1.2rem;
   width: 100%;
+  height: 44px;
 }
 .overlay-menu .hud-search-input,
 .overlay-menu .hud-search-input:focus {
