@@ -7,6 +7,10 @@ custom_logo_mobile:
   - name: hb-mark.svg
     size: 806
     type: image/svg+xml
+custom_favicon:
+  - name: hb-favicon.png
+    size: 7506
+    type: image/png
 header-fixed: true
 header-animated: true
 header-transparent: false
