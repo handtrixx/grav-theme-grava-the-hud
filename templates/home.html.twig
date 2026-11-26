@@ -21,13 +21,14 @@
         {% set wiki_articles = [] %}
         {% for sec in wiki.children %}
             {% for p in sec.children %}
-                {# Only articles: section pages share the wiki template and are
-                   not content worth surfacing as "recent". #}
-                {% if p.published and p.template != 'wiki' %}
+                {# Only leaf articles: section pages share the wiki template,
+                   and some category pages (how-tos) carry neither a date nor
+                   that template — having children is what makes them sections. #}
+                {% if p.published and p.template != 'wiki' and p.children|length == 0 %}
                     {% set wiki_articles = wiki_articles|merge([p]) %}
                 {% endif %}
                 {% for q in p.children %}
-                    {% if q.published and q.template != 'wiki' %}
+                    {% if q.published and q.template != 'wiki' and q.children|length == 0 %}
                         {% set wiki_articles = wiki_articles|merge([q]) %}
                     {% endif %}
                 {% endfor %}

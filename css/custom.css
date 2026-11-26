@@ -445,12 +445,14 @@ body.hud-home #body-wrapper > .container > .content-item {
   content: none;
 }
 .hud-recent-list .wiki-entry {
+  position: relative; /* anchor for the stretched title link */
   grid-template-columns: 1fr;
   gap: 0.45rem;
   height: 100%;
   padding: 1.1rem 1.3rem;
   border: 1px solid var(--q2-divider);
   border-radius: 14px;
+  cursor: pointer;
   transition:
     border-color 0.15s ease,
     background 0.15s ease,
@@ -462,6 +464,13 @@ body.hud-home #body-wrapper > .container > .content-item {
   background: color-mix(in oklab, var(--hud-accent) 7%, transparent);
   box-shadow: 0 0 18px -6px var(--hud-accent-glow);
   transform: translateY(-2px);
+}
+/* Whole card clickable: the title anchor's ::after covers the card
+   (stretched-link), so every click on the card opens the article. */
+.hud-recent-list .wiki-entry-title::after {
+  content: '';
+  position: absolute;
+  inset: 0;
 }
 .hud-recent-list .wiki-entry-meta {
   grid-column: 1;
