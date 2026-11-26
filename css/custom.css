@@ -426,11 +426,49 @@ body.hud-home #body-wrapper > .container > .content-item {
 }
 
 /* ---------- Home: recent transmissions + inventory readout ---------- */
+/* The tail/git-log lists render as cards too — same shape and hover as the
+   section teasers above them, stacked single-column entries. */
 .hud-recent-list {
-  margin-bottom: 1.5rem;
+  list-style: none;
+  padding: 0;
+  margin: 0 0 1.5rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(260px, 100%), 1fr));
+  gap: clamp(0.75rem, 2vw, 1.1rem);
 }
 .hud-recent-list:last-child {
   margin-bottom: 0;
+}
+.hud-recent-list li::before {
+  content: none;
+}
+.hud-recent-list .wiki-entry {
+  grid-template-columns: 1fr;
+  gap: 0.45rem;
+  height: 100%;
+  padding: 1.1rem 1.3rem;
+  border: 1px solid var(--q2-divider);
+  border-radius: 14px;
+  transition:
+    border-color 0.15s ease,
+    background 0.15s ease,
+    box-shadow 0.15s ease,
+    transform 0.15s ease;
+}
+.hud-recent-list .wiki-entry:hover {
+  border-color: var(--hud-accent-line);
+  background: color-mix(in oklab, var(--hud-accent) 7%, transparent);
+  box-shadow: 0 0 18px -6px var(--hud-accent-glow);
+  transform: translateY(-2px);
+}
+.hud-recent-list .wiki-entry-meta {
+  grid-column: 1;
+  grid-row: auto;
+  justify-self: start;
+  align-items: start;
+}
+.hud-recent-list .wiki-entry-excerpt {
+  max-width: none;
 }
 .hud-stats {
   display: flex;
@@ -470,9 +508,9 @@ body.hud-home #body-wrapper > .container > .content-item {
 }
 
 /* ---------- Page titles: one terminal header band everywhere ---------- */
-/* About (hud-flat content-item), Blog/Wiki listing headers and the Zoo hero
-   speak the same voice: accent title, hairline underline, "//" suffix.
-   The home hero (hud-home) keeps its plain display face. */
+/* About (hud-flat content-item), Blog/Wiki listing headers, the Zoo hero and
+   the home hero all speak the same voice: accent title, hairline underline,
+   "//" suffix. */
 /* Every page opens with the band at the same distance below the navbar; the
    breadcrumb trail sits beneath it, so pages with and without a trail line up. */
 body.hud-flat #body-wrapper,
@@ -489,7 +527,7 @@ body.hud-flat #body-wrapper > .container > .content-item {
   padding-top: 0;
 }
 body.hud-flat #body-wrapper > .container > .content-item > h1,
-body.hud-flat:not(.hud-home) .hud-hero .display,
+.hud-hero .display,
 .blog-page-header h1,
 .wiki-page-header h1 {
   font-size: clamp(2.1rem, 5vw, 3.4rem);
@@ -498,7 +536,7 @@ body.hud-flat:not(.hud-home) .hud-hero .display,
   border-bottom: 1px solid color-mix(in oklab, var(--hud-accent) 35%, transparent);
 }
 body.hud-flat #body-wrapper > .container > .content-item > h1::after,
-body.hud-flat:not(.hud-home) .hud-hero .display::after,
+.hud-hero .display::after,
 .blog-page-header h1::after,
 .wiki-page-header h1::after {
   content: "//";
@@ -578,6 +616,43 @@ body.hud-flat:not(.hud-home) .hud-hero .display::after,
   color: var(--hud-accent);
   border-bottom-color: var(--hud-accent);
   text-shadow: 0 0 12px var(--hud-accent-glow);
+}
+
+/* Light mode: the terminal window flips with the page — it is a window, not
+   a fixed-black console. Keep the structure, swap the palette. */
+:root[data-theme="light"] .hud-terminal {
+  background: #fbfcfb;
+  border-color: color-mix(in oklab, var(--hud-accent) 30%, var(--q2-border-strong));
+  box-shadow:
+    0 18px 44px -20px rgba(15, 40, 30, 0.28),
+    0 0 34px -14px var(--hud-accent-glow);
+}
+:root[data-theme="light"] .hud-bar {
+  background: color-mix(in oklab, var(--hud-accent) 7%, #ffffff);
+  border-bottom-color: color-mix(in oklab, var(--hud-accent) 20%, var(--q2-divider));
+}
+:root[data-theme="light"] .hud-bar b {
+  background: #c3cfca;
+}
+:root[data-theme="light"] .hud-bar b:first-child {
+  background: var(--hud-accent);
+}
+:root[data-theme="light"] .hud-bar em {
+  color: #5a6b66;
+}
+:root[data-theme="light"] .hud-out {
+  color: #1f2a27;
+}
+:root[data-theme="light"] .hud-out .dir,
+:root[data-theme="light"] .hud-out a {
+  color: #0e7d63;
+}
+:root[data-theme="light"] .hud-out .muted {
+  color: #5a6b66;
+}
+:root[data-theme="light"] .hud-out a:hover {
+  color: var(--hud-accent);
+  text-shadow: none;
 }
 
 /* typewriter reveal of terminal lines */
