@@ -79,8 +79,9 @@
         image: img ? [img.url(true, true)] : []
     })|raw }}</script>
 {% endif %}
-{% if person_img %}
-{# og:image for every page: the page's own image if it has one, else the
-   about-page portrait - social cards and Google always get a face. #}
-    <meta property="og:image" content="{{ person_img.url(true, true)|e('html_attr') }}" />
+{% if person_img and not img %}
+{# Grav core already emits og:image for pages that carry their own media
+   (2026-11-26: the about page got it from core, duplicated ours); backfill
+   the about-page portrait on media-less pages so every share card has a face. #}
+    <meta property="og:image" content="{{ person_img.url(true, true)|e('html') }}" />
 {% endif %}
