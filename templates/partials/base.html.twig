@@ -26,6 +26,11 @@
     {% include 'partials/metadata.html.twig' %}
 
     <link rel="icon" type="{{ favicon_type }}" href="{{ favicon_url ?: url('theme://images/favicon.png') }}" />
+    {# Browser chrome color: without theme-color the browser samples the
+       artwork instead and picked the (old, purple) favicon. #}
+    {% if accent_is_hex %}
+    <meta name="theme-color" content="{{ accent }}" />
+    {% endif %}
     <link rel="canonical" href="{{ page.url(true, true) }}" />
 
     {# Feed autodiscovery + structured data (see partials/seo-jsonld.html.twig) #}

@@ -9,7 +9,7 @@ custom_logo_mobile:
     type: image/svg+xml
 custom_favicon:
   - name: hb-favicon.png
-    size: 7506
+    size: 7157
     type: image/png
 header-fixed: true
 header-animated: true
@@ -19,7 +19,7 @@ header-light: false
 sticky-footer: true
 layout-fluid: false
 theme-mode: auto
-accent-color: '#8428DF'
+accent-color: '#18A98A'
 blog-page: '/blog'
 code_highlighting: true
 fontawesome:
