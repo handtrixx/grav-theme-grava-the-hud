@@ -88,7 +88,7 @@
           var target = btn.getAttribute('data-lang-target');
           if (target) setStored(target);
         });
-      })(btn);
+      })(btns[i]);
     }
   });
 })();
