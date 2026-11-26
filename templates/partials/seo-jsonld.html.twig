@@ -20,7 +20,7 @@
     '@id': person_id,
     name: site.author.name,
     url: person_url,
-    sameAs: ['https://github.com/handtrixx']
+    sameAs: ['https://github.com/handtrixx', 'https://www.linkedin.com/in/niklas-stephan']
 } %}
 {% if site.author.email %}{% set person = person|merge({email: site.author.email}) %}{% endif %}
 {% if person_img %}{% set person = person|merge({image: [person_img.url(true, true)]}) %}{% endif %}
