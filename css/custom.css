@@ -370,7 +370,7 @@ body.hud-home #body-wrapper > .container > .content-item {
 }
 .hud-teasers {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(min(240px, 100%), 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(240px, 100%), 1fr));
   gap: clamp(0.75rem, 2vw, 1.1rem);
 }
 .hud-teaser {
@@ -433,7 +433,9 @@ body.hud-home #body-wrapper > .container > .content-item {
   padding: 0;
   margin: 0 0 1.5rem;
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(min(260px, 100%), 1fr));
+  /* auto-fit (not -fill): with only 3 rows the empty tracks collapse, so the
+     three cards stretch over the full width instead of leaving a gap. */
+  grid-template-columns: repeat(auto-fit, minmax(min(260px, 100%), 1fr));
   gap: clamp(0.75rem, 2vw, 1.1rem);
 }
 .hud-recent-list:last-child {
