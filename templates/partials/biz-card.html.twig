@@ -1,0 +1,27 @@
+{# Business card block, rendered at the end of a page that has front-matter
+   `card:` (see pages/about). Photo comes from the page's own media. #}
+{% set card = page.header.card %}
+{% if card and card.photo and page.media[card.photo] %}
+{% set photo = page.media[card.photo] %}
+<section class="hud-biz-card" aria-label="{{ 'Contact'|t }}">
+    <div class="biz-photo">
+        <img src="{{ photo.url() }}" alt="{{ site.author.name }}" width="700" height="1240" loading="lazy" />
+    </div>
+    <div class="biz-body">
+        <div class="biz-name">{{ site.author.name }}</div>
+        {% if card.role %}
+        <div class="biz-role">{{ card.role }}</div>
+        {% endif %}
+        {% if card.social %}
+        <ul class="biz-links">
+            {% for link in card.social %}
+            <li>
+                <span class="biz-link-label">{{ link.name }}</span>
+                <a href="{{ link.url }}"{% if link.url starts with 'http' %} target="_blank" rel="me noopener"{% endif %}>{{ link.display|default(link.url) }}</a>
+            </li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+    </div>
+</section>
+{% endif %}

@@ -3,5 +3,6 @@
 {% block content %}
     <article class="content-item">
         {{ page.content|highlight_code|raw }}
+        {% include 'partials/biz-card.html.twig' %}
     </article>
 {% endblock %}

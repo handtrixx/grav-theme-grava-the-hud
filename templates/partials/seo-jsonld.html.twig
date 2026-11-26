@@ -1,25 +1,55 @@
 {# JSON-LD structured data. Only pages that mean something to a parser get
-   schema: the home page describes the site, blog posts are BlogPostings,
-   wiki articles are Articles. Everything else stays without markup. #}
+   schema: the home page describes the site + the person behind it, the about
+   page is that person's profile page, blog posts are BlogPostings, wiki
+   articles are Articles. Everything else stays without markup. #}
 {% set lang = grav.language.getActive ?: grav.config.site.default_lang %}
 {% set absolute = page.url(true, true) %}
 {% set img = page.media.images|first %}
 {# Front-matter `modified:` wins over the file mtime (which every deploy bumps). #}
 {% set mod = page.header.modified ?: page.modified %}
+
+{# The Person entity lives on the about page: its photo (media) and its
+   front-matter `card:` feed the schema. Every page can reference it. #}
+{% set about = page.find('/about') %}
+{% set card = about ? about.header.card : null %}
+{% set person_img = img ?: (about ? about.media.images|first) %}
+{% set person_url = about ? about.url(true, true) : site.url ~ base_url %}
+{% set person_id = person_url ~ '#niklas-stephan' %}
+{% set person = {
+    '@type': 'Person',
+    '@id': person_id,
+    name: site.author.name,
+    url: person_url,
+    sameAs: ['https://github.com/handtrixx']
+} %}
+{% if site.author.email %}{% set person = person|merge({email: site.author.email}) %}{% endif %}
+{% if person_img %}{% set person = person|merge({image: [person_img.url(true, true)]}) %}{% endif %}
+{% if card and card.job_title %}{% set person = person|merge({jobTitle: card.job_title}) %}{% endif %}
+{% if card and card.role %}{% set person = person|merge({description: card.role}) %}{% endif %}
+
 {% if page.template == 'home' %}
     <script type="application/ld+json">{{ json_ld({
         '@context': 'https://schema.org',
-        '@type': 'WebSite',
-        name: site.title,
-        url: absolute,
-        inLanguage: lang,
-        creator: { '@type': 'Person', name: site.author.name },
-        potentialAction: {
-            '@type': 'SearchAction',
-            target: { '@type': 'EntryPoint', url_template: base_url ~ '/' ~ lang ~ '/search?q={search_term_string}' },
-            'query-input': 'required name=search_term_string'
-        }
+        '@graph': [
+            {
+                '@type': 'WebSite',
+                name: site.title,
+                url: absolute,
+                inLanguage: lang,
+                creator: { '@id': person_id },
+                potentialAction: {
+                    '@type': 'SearchAction',
+                    target: { '@type': 'EntryPoint', url_template: base_url ~ '/search?q={search_term_string}' },
+                    'query-input': 'required name=search_term_string'
+                }
+            },
+            person
+        ]
     })|raw }}</script>
+{% elseif about and page.path == about.path %}
+    {# The profile page itself: Person markup + the visible portrait is what
+       Google uses to attach the photo to name searches. #}
+    <script type="application/ld+json">{{ json_ld(person|merge({'@context': 'https://schema.org'}))|raw }}</script>
 {% elseif page.template == 'item' %}
     <script type="application/ld+json">{{ json_ld({
         '@context': 'https://schema.org',
@@ -29,8 +59,8 @@
         inLanguage: lang,
         datePublished: page.date|date('c'),
         dateModified: (page.header.modified ?: page.date)|date('c'),
-        author: { '@type': 'Person', name: site.author.name },
-        publisher: { '@type': 'Person', name: site.author.name },
+        author: { '@type': 'Person', name: site.author.name, url: person_url, sameAs: person.sameAs },
+        publisher: { '@type': 'Person', name: site.author.name, url: person_url, sameAs: person.sameAs },
         mainEntityOfPage: { '@type': 'WebPage', '@id': absolute },
         image: img ? [img.url(true, true)] : []
     })|raw }}</script>
@@ -44,8 +74,13 @@
         inLanguage: lang,
         datePublished: page.date ? page.date|date('c') : (mod ? mod|date('c') : null),
         dateModified: (page.header.modified ?: page.date ?: mod)|date('c'),
-        author: { '@type': 'Person', name: site.author.name },
+        author: { '@type': 'Person', name: site.author.name, url: person_url, sameAs: person.sameAs },
         mainEntityOfPage: { '@type': 'WebPage', '@id': absolute },
         image: img ? [img.url(true, true)] : []
     })|raw }}</script>
+{% endif %}
+{% if person_img %}
+{# og:image for every page: the page's own image if it has one, else the
+   about-page portrait - social cards and Google always get a face. #}
+    <meta property="og:image" content="{{ person_img.url(true, true)|e('html_attr') }}" />
 {% endif %}
