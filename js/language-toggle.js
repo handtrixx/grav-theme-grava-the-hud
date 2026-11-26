@@ -77,12 +77,18 @@
     }
   }
 
+  // Every rendered toggle (desktop + mobile) must store the choice: a click
+  // on an unlistened one navigates fine but leaves the stored language stale,
+  // and the head-swap above immediately bounces the visitor back.
   document.addEventListener('DOMContentLoaded', function () {
-    var btn = document.querySelector('.lang-toggle');
-    if (!btn) return;
-    btn.addEventListener('click', function () {
-      var target = btn.getAttribute('data-lang-target');
-      if (target) setStored(target);
-    });
+    var btns = document.querySelectorAll('.lang-toggle');
+    for (var i = 0; i < btns.length; i++) {
+      (function (btn) {
+        btn.addEventListener('click', function () {
+          var target = btn.getAttribute('data-lang-target');
+          if (target) setStored(target);
+        });
+      })(btn);
+    }
   });
 })();
