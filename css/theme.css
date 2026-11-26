@@ -757,6 +757,22 @@ body.header-light:not(.scrolled) #header .dropmenu > ul > li > a:hover:not(.acti
   fill: var(--q2-text-strong);
 }
 
+/* Responsive brand: logo.html.twig inlines both brand SVGs in the header;
+   they carry hb-desktop / hb-mobile root classes. Wordmark on wide screens,
+   mark on phones. The overlay menu (.mobile-logo) renders the mark variant
+   only and lives outside #header, so it is never swapped. */
+#header .navbar-brand svg.hb-mobile {
+  display: none;
+}
+@media (max-width: 639px) {
+  #header .navbar-brand svg.hb-desktop {
+    display: none;
+  }
+  #header .navbar-brand svg.hb-mobile {
+    display: block;
+  }
+}
+
 /* Desktop nav */
 .desktop-menu {
   flex: 1 1 auto;

@@ -1,4 +1,12 @@
 enabled: true
+custom_logo:
+  - name: hb-wordmark.svg
+    size: 9541
+    type: image/svg+xml
+custom_logo_mobile:
+  - name: hb-mark.svg
+    size: 806
+    type: image/svg+xml
 header-fixed: true
 header-animated: true
 header-transparent: false

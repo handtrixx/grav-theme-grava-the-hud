@@ -1,14 +1,27 @@
-{% set logo = theme_var(mobile ? 'custom_logo_mobile' : 'custom_logo') %}
-{% set logo_first = (logo is iterable and logo|length > 0) ? logo|first : null %}
-{% set logo_file = logo_first.name|default(null) %}
-<a href="{{ home_url }}" class="navbar-brand" aria-label="{{ site.title }}" title="{{ site.title }}">
-{% if logo_file %}
-    {% if logo_file|lower ends with '.svg' %}
-        {{ svg_image('theme://images/logo/' ~ logo_file)|raw }}
-    {% else %}
-        <img src="{{ url('theme://images/logo/' ~ logo_file) }}" alt="{{ site.title }}" />
-    {% endif %}
+{% set desktop = theme_var('custom_logo') %}
+{% set mobile_logo = theme_var('custom_logo_mobile') %}
+{% set desktop_file = (desktop is iterable and desktop|length > 0) ? (desktop|first.name|default(null)) : null %}
+{% set mobile_file = (mobile_logo is iterable and mobile_logo|length > 0) ? (mobile_logo|first.name|default(null)) : null %}
+
+{% if mobile %}
+    {% set files = [mobile_file ?: desktop_file] %}
 {% else %}
-    {% include '@images/grav-logo.svg' ignore missing %}
+    {% set files = [] %}
+    {% if desktop_file %}{% set files = files|merge([desktop_file]) %}{% endif %}
+    {% if mobile_file and mobile_file != desktop_file %}{% set files = files|merge([mobile_file]) %}{% endif %}
+    {% if files is empty %}{% set files = [null] %}{% endif %}
 {% endif %}
+
+<a href="{{ home_url }}" class="navbar-brand" aria-label="{{ site.title }}" title="{{ site.title }}">
+{% for logo_file in files %}
+    {% if logo_file %}
+        {% if logo_file|lower ends with '.svg' %}
+            {{ svg_image('theme://images/logo/' ~ logo_file)|raw }}
+        {% else %}
+            <img src="{{ url('theme://images/logo/' ~ logo_file) }}" alt="{{ site.title }}" />
+        {% endif %}
+    {% else %}
+        {% include '@images/grav-logo.svg' ignore missing %}
+    {% endif %}
+{% endfor %}
 </a>
