@@ -1,4 +1,0 @@
-[     775ms] [WARNING] [.WebGL-0x3c7c0495f800]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels @ https://niklas-stephan.de/en/about:1
-[     812ms] [WARNING] [.WebGL-0x3c7c0495f800]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels @ https://niklas-stephan.de/en/about:1
-[     845ms] [WARNING] [.WebGL-0x3c7c0495f800]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels @ https://niklas-stephan.de/en/about:1
-[     880ms] [WARNING] [.WebGL-0x3c7c0495f800]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels (this message will no longer repeat) @ https://niklas-stephan.de/en/about:1
