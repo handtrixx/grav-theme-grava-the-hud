@@ -1,9 +1,10 @@
 {% extends 'partials/base.html.twig' %}
+{% set q = grav.uri.query('query') ?: grav.uri.query('q') %}
 
-{# Site-wide search results (SimpleSearch plugin). Full width, no wiki
-   sidebar: results come from every section, so the wiki tree would be
-   misleading here. Rows are grouped by section in
-   partials/search-results.html.twig. #}
+{# Search is the palette (js/hud-search.js), not a results page. This shell
+   exists so /search deep links (and shared ?query= links) still work: the
+   marker element below makes the script open the palette, prefilled, right
+   after load. Without JS it degrades to the plain hint. #}
 
 {% block body %}
     <section id="body-wrapper" class="section search-page">
@@ -11,7 +12,8 @@
             <header class="wiki-page-header">
                 <h1>{{ 'THEME_GRAVA_HUD.SEARCH.HEADLINE'|t }}</h1>
             </header>
-            {% include 'partials/search-results.html.twig' %}
+            <p class="search-shell-hint">{{ 'THEME_GRAVA_HUD.SEARCH.HINT'|t }}</p>
+            <div data-palette-open{% if q %} data-palette-query="{{ q|e('html_attr') }}"{% endif %}></div>
         </div>
     </section>
 {% endblock %}

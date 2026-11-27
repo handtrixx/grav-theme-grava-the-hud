@@ -534,7 +534,6 @@ body.hud-flat #body-wrapper,
 .blog-listing#body-wrapper,
 .wiki-listing#body-wrapper,
 .wiki-article#body-wrapper,
-.wiki-search-page#body-wrapper {
   padding-top: clamp(2.5rem, 5vw, 4rem);
 }
 body.hud-flat #body-wrapper > .container > .content-item > h1,
@@ -1185,58 +1184,33 @@ body.hud-flat #body-wrapper > .container > .content-item p {
   align-items: center;
   gap: 0.5rem;
   /* desktop-menu stretches to fill the navbar; the pill must not ride that
-     width and push the row into two lines */
+     width and push the row into two lines. Pico styles button{width:100%}. */
   flex: 0 0 auto;
   width: fit-content;
-  /* blades.min.css gives every form margin-bottom: var(--pico-spacing) (16px);
-     with align-items:center that floated the visible pill 8px above the
-     navbar's real center line. */
   margin: 0 0 0 clamp(0.8rem, 2vw, 1.4rem);
   padding: 0.42rem 0.75rem;
-  /* Pin the pill height: blades.min.css gives every input
-     height: calc(1rem*line-height + 2*spacing + 2*border) (~52px), which made
-     this pill 67px and dwarfed the 36px header controls. */
   height: 40px;
   border: 1px solid var(--q2-divider);
   border-radius: 999px;
   background: var(--q2-bg-elev);
   color: var(--q2-text-muted);
+  font-family: var(--hud-mono);
+  font-size: 0.82rem;
+  text-align: left;
+  cursor: pointer;
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 .hud-search:hover {
   border-color: var(--hud-accent-line);
 }
-.hud-search:focus-within {
-  border-color: var(--hud-accent-line);
-  box-shadow: 0 0 18px -6px var(--hud-accent-glow);
+.hud-search:focus-visible {
+  outline: 2px solid var(--q2-focus-ring);
+  outline-offset: 2px;
 }
 .hud-search i {
   font-size: 0.85rem;
 }
-/* theme.css styles bare input[type="text"] (element+attribute, 0,1,1), so
-   these need a parent class to win; the pill supplies the only chrome. */
-.hud-search .hud-search-input {
-  flex: 0 1 auto;
-  width: 8em;
-  min-width: 0;
-  height: 100%; /* beats the calc() height blades.min.css forces on inputs */
-  margin: 0;
-  padding: 0;
-  border: none;
-  background: transparent;
-  font-family: var(--hud-mono);
-  font-size: 0.82rem;
-  color: var(--q2-text);
-}
-.hud-search .hud-search-input:focus {
-  outline: none;
-  box-shadow: none;
-  width: 14em;
-}
-.hud-search-input::-webkit-search-cancel-button {
-  -webkit-appearance: none;
-}
-.hud-search-input::placeholder {
+.hud-search-text {
   color: var(--q2-text-muted);
 }
 .hud-search-kbd {
@@ -1249,25 +1223,201 @@ body.hud-flat #body-wrapper > .container > .content-item p {
   color: var(--q2-text-muted);
   background: color-mix(in oklab, var(--q2-bg) 45%, transparent);
 }
-/* The hint only makes sense while the field is idle. */
-.hud-search:focus-within .hud-search-kbd {
-  display: none;
-}
 @media (max-width: 960px) {
   .hud-search-kbd {
     display: none;
   }
 }
+/* Between the hamburger handover (860px) and ~1120px the navbar row ran out
+   of room and .desktop-menu wrapped under the logo (header grew 72 -> 80px,
+   Niklas's "nav breaks into 2 lines"). Compress instead: the pill becomes an
+   icon-only button, which buys ~180px and keeps the full menu. */
+@media (max-width: 1120px) and (min-width: 861px) {
+  .desktop-menu .hud-search-text,
+  .desktop-menu .hud-search-kbd {
+    display: none;
+  }
+  .desktop-menu .hud-search {
+    padding: 0.42rem 0.65rem;
+    margin-left: 0.6rem;
+  }
+}
 /* Mobile overlay menu: the pill spans the menu width; 44px = touch target. */
 .overlay-menu .hud-search {
-  margin: 0 0 1.2rem;
+  margin: 0;
   width: 100%;
   height: 44px;
+  justify-content: flex-start;
 }
-.overlay-menu .hud-search-input,
-.overlay-menu .hud-search-input:focus {
+.overlay-menu .hud-search-text {
   flex: 1;
-  width: 100%;
+  text-align: left;
+}
+
+/* ---------- Search palette (roll-up modal, js/hud-search.js) ---------- */
+html.palette-open {
+  overflow: hidden;
+}
+.hud-palette {
+  position: fixed;
+  inset: 0;
+  z-index: 120; /* over header (fixed) and mobile overlay */
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: clamp(1rem, 14vh, 8rem) 1rem 1rem;
+}
+.hud-palette[hidden] {
+  display: none;
+}
+.hud-palette-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(8, 13, 12, 0.58);
+}
+.hud-palette-panel {
+  position: relative;
+  width: min(640px, 100%);
+  background: var(--q2-bg-elev);
+  border: 1px solid var(--q2-divider);
+  border-radius: 14px;
+  box-shadow: 0 24px 70px -20px rgba(0, 0, 0, 0.55);
+  overflow: hidden;
+  animation: hud-palette-in 0.16s ease-out;
+}
+@keyframes hud-palette-in {
+  from {
+    transform: translateY(-16px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .hud-palette-panel {
+    animation: none;
+  }
+}
+.hud-palette-form {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.85rem 1rem;
+  border-bottom: 1px solid var(--q2-divider);
+  color: var(--q2-text-muted);
+}
+.hud-palette-form i {
+  font-size: 0.95rem;
+}
+/* blades.min.css chrome again: the input lives inside our chrome, not its own */
+.hud-palette-input {
+  flex: 1 1 auto;
+  min-width: 0;
+  margin: 0;
+  padding: 0.2rem 0;
+  height: auto;
+  border: none;
+  background: transparent;
+  font-family: var(--hud-mono);
+  font-size: 1rem;
+  color: var(--q2-text);
+}
+.hud-palette-input:focus {
+  outline: none;
+  box-shadow: none;
+}
+.hud-palette-input::placeholder {
+  color: var(--q2-text-muted);
+}
+.hud-palette-close {
+  flex: 0 0 auto;
+  width: 30px;
+  height: 30px;
+  margin: 0;
+  padding: 0;
+  border: 1px solid var(--q2-divider);
+  border-radius: 8px;
+  background: transparent;
+  color: var(--q2-text-muted);
+  font-size: 1.1rem;
+  line-height: 1;
+  cursor: pointer;
+}
+.hud-palette-close:hover {
+  color: var(--q2-text);
+  border-color: var(--q2-divider-strong, var(--q2-divider));
+}
+.hud-palette-status {
+  margin: 0;
+  padding: 0.55rem 1rem 0;
+  font-family: var(--hud-mono);
+  font-size: 0.76rem;
+  letter-spacing: 0.05em;
+  color: var(--q2-text-muted);
+}
+.hud-palette-list {
+  list-style: none;
+  margin: 0;
+  padding: 0.5rem 0.55rem 0.6rem;
+  max-height: 52vh;
+  overflow-y: auto;
+}
+.hud-palette-group {
+  padding: 0.55rem 0.5rem 0.25rem;
+  font-family: var(--hud-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--hud-accent-text);
+}
+.hud-palette-item {
+  border-radius: 9px;
+}
+.hud-palette-item a {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  padding: 0.5rem 0.55rem;
+  border-radius: 9px;
+  text-decoration: none;
+}
+.hud-palette-item a[aria-selected="true"],
+.hud-palette-item:hover a {
+  background: color-mix(in oklab, var(--hud-accent) 14%, transparent);
+}
+.hud-palette-title {
+  font-size: 0.95rem;
+  color: var(--q2-text-strong);
+}
+.hud-palette-url {
+  font-family: var(--hud-mono);
+  font-size: 0.72rem;
+  color: var(--q2-text-muted);
+  overflow-wrap: anywhere;
+}
+.hud-palette-hint {
+  padding: 0.6rem 1.1rem 0.85rem;
+  border-top: 1px solid var(--q2-divider);
+  font-family: var(--hud-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+  color: var(--q2-text-muted);
+}
+@media (max-width: 639px) {
+  .hud-palette {
+    padding: 0;
+  }
+  .hud-palette-panel {
+    width: 100%;
+    min-height: 100dvh;
+    border: none;
+    border-radius: 0;
+  }
+  .hud-palette-list {
+    max-height: none;
+  }
 }
 
 /* ---------- Blog listing: news-site rows ----------

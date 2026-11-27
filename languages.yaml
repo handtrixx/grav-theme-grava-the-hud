@@ -64,7 +64,7 @@ en:
         PREVNEXT: "Previous and next page"
     SEARCH:
       HEADLINE: "Search"
-      HINT: "Type at least three characters to search blog posts, wiki and zoo."
+      HINT: "The search palette opens with Ctrl K (⌘ K on macOS) or / and searches blog posts, wiki and zoo as you type."
       RESULTS_ONE: "Query “%s” — one result"
       RESULTS_MANY: "Query “%s” — %s results"
       RESULTS_NONE: "Query “%s” found nothing. Try another word, or browse the blog and wiki."
@@ -72,6 +72,11 @@ en:
       GROUP_WIKI: "Wiki"
       GROUP_ZOO: "Zoo"
       GROUP_PAGES: "Pages"
+      PALETTE_PLACEHOLDER: "Search titles and text…"
+      PALETTE_LABEL: "Search the site"
+      PALETTE_HINT: "↑↓ select · Enter open · Esc close"
+      CLOSE: "Close search"
+      LOADING: "Loading index…"
     ZOO:
       NAV: "Zoo navigation"
       BACK: "Back to zoo"
@@ -110,7 +115,7 @@ de:
 
     SEARCH:
       HEADLINE: "Suche"
-      HINT: "Mindestens drei Zeichen eingeben, um Blog-Beiträge, Wiki und Zoo zu durchsuchen."
+      HINT: "Die Such-Palette öffnet mit Strg K (⌘ K auf macOS) oder / und durchsucht Blog, Wiki und Zoo beim Tippen."
       RESULTS_ONE: "Suche „%s“ — ein Ergebnis"
       RESULTS_MANY: "Suche „%s“ — %s Ergebnisse"
       RESULTS_NONE: "Suche „%s“ fand nichts. Versuch ein anderes Wort oder blättere im Blog und Wiki."
@@ -118,6 +123,11 @@ de:
       GROUP_WIKI: "Wiki"
       GROUP_ZOO: "Zoo"
       GROUP_PAGES: "Seiten"
+      PALETTE_PLACEHOLDER: "Titel und Texte durchsuchen…"
+      PALETTE_LABEL: "Seite durchsuchen"
+      PALETTE_HINT: "↑↓ auswählen · Enter öffnen · Esc schließen"
+      CLOSE: "Suche schließen"
+      LOADING: "Index wird geladen…"
     ZOO:
       NAV: "Zoo-Navigation"
       BACK: "Zurück zum Zoo"

@@ -10,11 +10,150 @@ class GravaTheHud extends Theme
     {
         return [
             'onThemeInitialized' => ['onThemeInitialized', 0],
+            'onPagesInitialized' => ['onPagesInitialized', 0],
             'onPageInitialized'  => ['onPageInitialized', 0],
             'onTwigLoader'       => ['onTwigLoader', 0],
             'onTwigInitialized'  => ['onTwigInitialized', 0],
             'onPageContentProcessed' => ['onPageContentProcessed', 0],
         ];
+    }
+
+    /**
+     * Client-side search palette (js/hud-search.js) reads its index from
+     * `<any language prefix>/search.json`. We serve it here: one pass over
+     * the page tree, cached (the deploy clears caches, TTL is the fallback).
+     * Runs on onPagesInitialized, after the route table exists and before
+     * routing would 404 the extensionless-unknown route.
+     */
+    public function onPagesInitialized()
+    {
+        // Uri::path() strips the extension, so match the route and check the
+        // extension separately; both /search.json and /en|de/search.json land.
+        $uri = $this->grav['uri'];
+        $path = (string) $uri->path();
+        if (!preg_match('#^(?:/(?:en|de))?/search$#', $path) || ($uri->extension() ?: '') !== 'json') {
+            return;
+        }
+
+        $cache = $this->grav['cache'];
+        $id = md5('hud-search-index|' . implode(',', $this->grav['language']->getLanguages()));
+        $json = $cache ? $cache->fetch($id) : false;
+        if (!is_string($json)) {
+            $json = json_encode($this->buildSearchIndex(), JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+            if ($cache) {
+                $cache->save($id, $json, 3600);
+            }
+        }
+
+        $response = new \Grav\Framework\Psr7\Response(200, [
+            'Content-Type'  => 'application/json; charset=utf-8',
+            // The file cache survives restarts and the deploy clears it, so a
+            // short browser TTL is plenty; the palette also revalidates per session.
+            'Cache-Control' => 'public, max-age=3600',
+        ], $json);
+        $this->grav->close($response);
+    }
+
+    /** One row per indexable page: title, url, section, lang, excerpt, date. */
+    protected function buildSearchIndex()
+    {
+        $rows = [];
+        $seen = [];
+        foreach ($this->grav['pages']->all() as $page) {
+            // published()/routable() work here, but visible() reads a property
+            // only set during per-page init, which has not happened for other
+            // pages yet - every child page reports false. Read the header.
+            if (!$page->published() || !$page->routable()
+                || !(bool) ($page->header()->visible ?? true)) {
+                continue;
+            }
+            $route = (string) $page->route();
+            $header = $page->header();
+            if (isset($header->redirect)) {
+                continue; // redirects are aliases
+            }
+            $parts = array_filter(explode('/', ltrim($route, '/')));
+            if (!$parts) {
+                continue; // site home is navigation
+            }
+            $section = match ($parts[0] ?? '') { 'blog' => 'blog', 'wiki' => 'wiki', 'zoo' => 'zoo', default => 'page' };
+            if (in_array(basename($route), ['search', 'error', 'simplesearch'], true)) {
+                continue;
+            }
+
+            // Language variants: translated() is unavailable this early in the
+            // page lifecycle, so look for the .<lang>.md sibling files and take
+            // title/body straight from them. Translated URLs are /<lang><route>.
+            $variants = [[
+                'u' => $page->url(false),
+                't' => (string) $page->title(),
+                'raw' => (string) $page->value('content'),
+                'd' => $page->date() ? date('Y-m-d', $page->date()) : '',
+            ]];
+            // Config keys carry their file prefix: system.languages.supported.
+            $sysConfig = $this->grav['config'];
+            $default = (string) $sysConfig->get('site.language', 'en');
+            $name = (string) $page->name();
+            if ($name !== '' && strpos($name, '.') === false) {
+                $name .= '.md';
+            }
+            foreach ((array) $sysConfig->get('system.languages.supported', []) as $tl) {
+                if ($tl === $default || $name === '' || !$page->path()) {
+                    continue;
+                }
+                $tf = $page->path() . '/' . preg_replace('/\.md$/', '.' . $tl . '.md', $name);
+                if ($tf === $page->path() . '/' . $name || !is_file($tf)) {
+                    continue;
+                }
+                $src = (string) file_get_contents($tf);
+                if (!preg_match('/^---\r?\n(.*?)\r?\n---\r?\n/s', $src, $m)) {
+                    continue;
+                }
+                $fm = $m[1];
+                if (preg_match('/^published:\s*false/m', $fm) || preg_match('/^visible:\s*false/m', $fm)) {
+                    continue;
+                }
+                $tTitle = $page->title();
+                if (preg_match('/^title:\s*(.+)$/m', $fm, $mt)) {
+                    $tTitle = trim(trim($mt[1]), "\"'");
+                }
+                $variants[] = [
+                    'u' => '/' . $tl . $route,
+                    't' => (string) $tTitle,
+                    'raw' => substr($src, strlen($m[0])),
+                    'd' => $page->date() ? date('Y-m-d', $page->date()) : '',
+                ];
+            }
+
+            foreach ($variants as $v) {
+                // Excerpt from the RAW markdown: summary()/content() are not
+                // processed yet at onPagesInitialized. Listings (blog/wiki/zoo
+                // indexes) have no prose - empty body means skip.
+                $raw = $v['raw'];
+                $cut = preg_split('/\n=+\n|<!--\s*more\s*-->/i', $raw)[0] ?? '';
+                $cut = preg_replace('/```.*?```/s', ' ', (string) $cut);   // code blocks
+                $cut = preg_replace('/!\[[^\]]*\]\([^)]*\)/', ' ', (string) $cut); // images
+                $cut = preg_replace('/\[([^\]]*)\]\([^)]*\)/', '$1', (string) $cut); // links
+                $cut = preg_replace('/[#>*_`|]/', ' ', (string) $cut);      // md markup
+                $excerpt = mb_substr(trim(preg_replace('/\s+/', ' ', strip_tags((string) $cut))), 0, 160);
+                if ($excerpt === '') {
+                    continue;
+                }
+                $url = $v['u'];
+                if (isset($seen[$url])) {
+                    continue; // all() may also surface translation objects
+                }
+                $seen[$url] = 1;
+                $rows[] = [
+                    't' => (string) $v['t'],
+                    'u' => $url,
+                    's' => $section,
+                    'e' => $excerpt,
+                    'd' => $v['d'],
+                ];
+            }
+        }
+        return ['v' => 1, 'pages' => $rows];
     }
 
     /**

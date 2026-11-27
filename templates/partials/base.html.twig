@@ -93,7 +93,7 @@
     {% do assets.addCss('theme://css/custom.css', 80) %}
     {# Wiki docs layout (sidebar, tree, TOC) on wiki + search pages; the
        entry-row styles also carry the home page's recent lists. #}
-    {% if page.template in ['wiki', 'wiki-article', 'wiki-search', 'search', 'home'] %}
+    {% if page.template in ['wiki', 'wiki-article', 'search', 'home'] %}
         {% do assets.addCss('theme://css/wiki-docs.css', 75) %}
     {% endif %}
 {% endblock %}
@@ -103,9 +103,12 @@
     {% do assets.addJs('theme://js/language-toggle.js', {group:'head', priority: 110}) %}
     {% do assets.addJs('theme://js/site.js', {group:'bottom', priority: 100}) %}
     {# Wiki tree: collapse, live filter, TOC, mobile drawer (wiki pages only). #}
-    {% if page.template in ['wiki', 'wiki-article', 'wiki-search'] %}
+    {% if page.template in ['wiki', 'wiki-article'] %}
         {% do assets.addJs('theme://js/wiki.js', {group:'bottom', priority: 110}) %}
     {% endif %}
+    {# Search palette (Ctrl K / "/"): small script, the page index is fetched
+       only when the palette first opens. No server-side results page. #}
+    {% do assets.addJs('theme://js/hud-search.js', {group:'bottom', priority: 130}) %}
     {# About-page wireframe head (hud-flat pages). Classic script on purpose:
        hud-head.js dynamic-imports three + GLTFLoader (resolved by the importmap
        in the bottom block) only when the stage is visible and near the viewport,
@@ -184,6 +187,37 @@
     {% block footer %}
         {% include 'partials/footer.html.twig' %}
     {% endblock %}
+
+    {# Search palette: a roll-up modal over the page (Ctrl K / "/"). Results
+       are filtered client-side from /search.json (theme PHP route). #}
+    <div class="hud-palette" id="hud-palette" hidden>
+        <div class="hud-palette-backdrop" data-palette-close></div>
+        <div class="hud-palette-panel" role="dialog" aria-modal="true"
+             aria-label="{{ 'THEME_GRAVA_HUD.SEARCH.HEADLINE'|t|e('html_attr') }}">
+            <div class="hud-palette-form">
+                <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
+                <input type="text" id="hud-palette-input" class="hud-palette-input"
+                       role="combobox" aria-expanded="false" aria-controls="hud-palette-list"
+                       autocomplete="off" autocapitalize="off" spellcheck="false"
+                       placeholder="{{ 'THEME_GRAVA_HUD.SEARCH.PALETTE_PLACEHOLDER'|t|e('html_attr') }}"
+                       aria-label="{{ 'THEME_GRAVA_HUD.SEARCH.PALETTE_LABEL'|t|e('html_attr') }}">
+                <button type="button" class="hud-palette-close" data-palette-close
+                        aria-label="{{ 'THEME_GRAVA_HUD.SEARCH.CLOSE'|t|e('html_attr') }}">&times;</button>
+            </div>
+            <p class="hud-palette-status" id="hud-palette-status" role="status" aria-live="polite"></p>
+            <ul class="hud-palette-list" id="hud-palette-list" role="listbox"
+                data-status-one="{{ 'THEME_GRAVA_HUD.SEARCH.RESULTS_ONE'|t|e('html_attr') }}"
+                data-status-many="{{ 'THEME_GRAVA_HUD.SEARCH.RESULTS_MANY'|t|e('html_attr') }}"
+                data-status-none="{{ 'THEME_GRAVA_HUD.SEARCH.RESULTS_NONE'|t|e('html_attr') }}"
+                data-loading="{{ 'THEME_GRAVA_HUD.SEARCH.LOADING'|t|e('html_attr') }}"
+                data-label-blog="{{ 'THEME_GRAVA_HUD.SEARCH.GROUP_POSTS'|t|e('html_attr') }}"
+                data-label-wiki="{{ 'THEME_GRAVA_HUD.SEARCH.GROUP_WIKI'|t|e('html_attr') }}"
+                data-label-zoo="{{ 'THEME_GRAVA_HUD.SEARCH.GROUP_ZOO'|t|e('html_attr') }}"
+                data-label-page="{{ 'THEME_GRAVA_HUD.SEARCH.GROUP_PAGES'|t|e('html_attr') }}"
+                aria-label="{{ 'THEME_GRAVA_HUD.SEARCH.HEADLINE'|t|e('html_attr') }}"></ul>
+            <div class="hud-palette-hint">{{ 'THEME_GRAVA_HUD.SEARCH.PALETTE_HINT'|t }}</div>
+        </div>
+    </div>
 
     {% block mobile %}
     <div class="mobile-container">

@@ -1,20 +1,11 @@
-{# Header search: a pill that sends the query to SimpleSearch's route, with
-   the keyboard shortcut drawn as a kbd hint (js/site.js rewrites it to ⌘ K
-   on macOS). Used in the desktop navbar and in the mobile overlay menu; the
-   shortcut focuses whichever one is visible. #}
-{% set route = config.plugins.simplesearch.route|default('/search') %}
-{% set min_chars = config.plugins.simplesearch.min_query_length|default(3) %}
-<form class="hud-search" action="{{ base_url ~ route }}" method="get" role="search">
+{# Header search: a pill button that opens the search palette (js/hud-search.js
+   owns the Ctrl K / "/" shortcut and draws the kbd hint, ⌘ K on macOS). Used
+   in the desktop navbar and in the mobile overlay menu. No form: search is
+   fully client-side, there is no results page to submit to. #}
+<button type="button" class="hud-search" data-open-search
+        aria-label="{{ 'THEME_GRAVA_HUD.HEADER.SEARCH_LABEL'|t|e('html_attr') }}"
+        aria-haspopup="dialog">
     <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
-    <span class="visually-hidden">{{ 'THEME_GRAVA_HUD.HEADER.SEARCH_LABEL'|t }}</span>
-    <input type="text"
-           name="query"
-           class="hud-search-input"
-           placeholder="{{ 'THEME_GRAVA_HUD.HEADER.SEARCH_PLACEHOLDER'|t|e('html_attr') }}"
-           value="{{ query|default('')|e('html_attr') }}"
-           minlength="{{ min_chars }}"
-           autocomplete="off"
-           aria-label="{{ 'THEME_GRAVA_HUD.HEADER.SEARCH_LABEL'|t|e('html_attr') }}"
-           {% if page.template in ['wiki-search', 'search'] %}autofocus{% endif %}>
+    <span class="hud-search-text">{{ 'THEME_GRAVA_HUD.HEADER.SEARCH_PLACEHOLDER'|t }}</span>
     <kbd class="hud-search-kbd" data-search-shortcut>Ctrl K</kbd>
-</form>
+</button>
