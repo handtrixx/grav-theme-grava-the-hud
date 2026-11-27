@@ -299,7 +299,7 @@ html:not(.wiki-js) .wiki-branch {
   font-size: 0.78rem;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: color-mix(in oklab, var(--q2-accent) 80%, var(--q2-text-muted));
+  color: var(--hud-accent-text); /* 80% accent mix landed at 3.27:1 */
   margin: 0 0 0.9rem;
 }
 .search-group-count {
