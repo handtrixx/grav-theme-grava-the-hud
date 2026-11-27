@@ -47,6 +47,18 @@
   --hud-accent-text: var(--hud-accent); /* ~6:1 on the near-black canvas - fine as-is */
 }
 
+/* github-markdown-alerts injects its own `:root { --gh-alert-*-title-color }`
+   AFTER our bundle and a nested `.md-alert--warning > .md-alert-title` rule
+   consumes it, beating the theme's --alert-accent token. Its default warning
+   amber #c69026 measures 2.63:1 on paper; #9a6700 (the GitHub light text
+   tone, = --hud-warning) reaches 4.52:1. html[data-theme=...] (0,1,1) wins
+   over the plugin's plain :root (0,1,0) regardless of order; :not() also
+   covers the no-JS case where data-theme is absent. The other four gh tones
+   measure 4.65-4.71:1 and stay. (axe color-contrast, 2026-11-27) */
+html:not([data-theme="dark"]) {
+  --gh-alert-warning-title-color: #9a6700;
+}
+
 /* ---------- Ambient background: grid + aurora + grain ---------- */
 
 /* theme.css paints solid backgrounds on body and #body-wrapper, which cover

@@ -446,7 +446,10 @@ class GravaTheHud extends Theme
         if (!class_exists('\Highlight\Highlighter')) {
             return $content; // highlight-php not installed: nothing to highlight with
         }
-        if (strpos($content, '<pre><code class="language-') === false) {
+        // NB: the onPageContentProcessed filter adds tabindex to every <pre>
+        // BEFORE this render-time filter sees the content - match <pre> with
+        // attributes, never bare <pre><code (issue #74, 2026-11-27).
+        if (!preg_match('/<pre[^>]*><code class="language-/', $content)) {
             return $content;
         }
 
@@ -454,7 +457,7 @@ class GravaTheHud extends Theme
         $skip = ['', 'text', 'plaintext', 'none', 'mermaid'];
 
         $highlighted = preg_replace_callback(
-            '/<pre><code class="language-([A-Za-z0-9+#._-]+)">(.*?)<\/code><\/pre>/s',
+            '/<pre[^>]*><code class="language-([A-Za-z0-9+#._-]+)">(.*?)<\/code><\/pre>/s',
             static function (array $m) use ($skip) {
                 $lang = strtolower($m[1]);
                 if (in_array($lang, $skip, true)) {
@@ -463,7 +466,9 @@ class GravaTheHud extends Theme
                 $code = html_entity_decode($m[2], ENT_QUOTES | ENT_HTML5, 'UTF-8');
                 try {
                     $result = (new \Highlight\Highlighter())->highlight($lang, $code);
-                    return '<pre class="hljs"><code class="hljs language-' . $result->language
+                    // keep the tabindex the content filter injected (axe
+                    // scrollable-region-focusable survives the rewrite)
+                    return '<pre class="hljs" tabindex="0"><code class="hljs language-' . $result->language
                         . '">' . $result->value . '</code></pre>';
                 } catch (\Throwable $e) {
                     return $m[0]; // no grammar for this language: leave it plain
