@@ -33,6 +33,10 @@
 :root {
   --hud-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
   --hud-accent: #18a98a;
+  /* AA-safe sibling of the accent for small accent-colored TEXT: #18a98a is
+     only ~2.96:1 on white, #0e7a61 reaches 5.3:1 (Lighthouse color-contrast
+     audit, home teasers + hero, 2026-11-27). Large text/decoration keeps --hud-accent. */
+  --hud-accent-text: #0e7a61;
   --hud-accent-glow: color-mix(in oklab, var(--hud-accent) 35%, transparent);
   --hud-accent-line: color-mix(in oklab, var(--hud-accent) 45%, transparent);
   --hud-warning: #9a6700; /* archived / caution tone, matches markdown alerts */
@@ -40,6 +44,7 @@
 
 :root[data-theme="dark"] {
   --hud-warning: #c69026;
+  --hud-accent-text: var(--hud-accent); /* ~6:1 on the near-black canvas - fine as-is */
 }
 
 /* ---------- Ambient background: grid + aurora + grain ---------- */
@@ -398,7 +403,7 @@ body.hud-home #body-wrapper > .container > .content-item {
   font-family: var(--hud-mono);
   font-size: 0.75rem;
   letter-spacing: 0.1em;
-  color: color-mix(in oklab, var(--hud-accent) 60%, var(--pico-muted-color));
+  color: color-mix(in oklab, var(--hud-accent-text) 60%, var(--pico-muted-color));
 }
 .hud-teaser h2 {
   margin: 0;
@@ -419,10 +424,11 @@ body.hud-home #body-wrapper > .container > .content-item {
   font-size: 0.78rem;
 }
 .hud-teaser .wiki-entry-date {
-  color: color-mix(in oklab, var(--pico-muted-color) 80%, transparent);
+  /* was muted at 80% opacity: ~3.8:1 on paper, failed AA for this small text */
+  color: var(--pico-muted-color);
 }
 .hud-teaser-go {
-  color: var(--hud-accent);
+  color: var(--hud-accent-text);
 }
 
 /* ---------- Home: recent transmissions + inventory readout ---------- */
@@ -495,7 +501,7 @@ body.hud-home #body-wrapper > .container > .content-item {
 }
 .hud-stat em {
   font-style: normal;
-  color: color-mix(in oklab, var(--hud-accent) 60%, var(--q2-text-muted));
+  color: color-mix(in oklab, var(--hud-accent-text) 60%, var(--q2-text-muted));
   margin-right: 0.45rem;
 }
 .hud-stat b {
@@ -542,7 +548,7 @@ body.hud-flat #body-wrapper > .container > .content-item > h1,
 .blog-page-header h1,
 .wiki-page-header h1 {
   font-size: clamp(2.1rem, 5vw, 3.4rem);
-  color: var(--hud-accent);
+  color: var(--hud-accent-text); /* was raw --hud-accent: 2.86:1 on paper, below the 3:1 large-text floor */
   padding-bottom: 0.9rem;
   border-bottom: 1px solid color-mix(in oklab, var(--hud-accent) 35%, transparent);
 }
@@ -604,11 +610,11 @@ body.hud-flat #body-wrapper > .container > .content-item > h1::after,
   color: #c9d6cf;
 }
 .hud-out .prompt {
-  color: var(--hud-accent);
+  color: var(--hud-accent-text);
   font-weight: 700;
 }
 .hud-out .hl {
-  color: var(--hud-accent);
+  color: var(--hud-accent-text);
   font-weight: 700;
 }
 .hud-out .dir {

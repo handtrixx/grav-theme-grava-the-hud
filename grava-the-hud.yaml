@@ -24,4 +24,7 @@ blog-page: '/blog'
 code_highlighting: true
 fontawesome:
   enabled: true
-  local: false
+  # true = serve css/fontawesome/all.min.css from this theme: a subset built 2026-11-27
+  # with only the 29 icons used here (4 kB of woff2 vs 178 kB from the cdnjs CDN,
+  # no third-party render-blocking request). Set back to false to use cdnjs again.
+  local: true

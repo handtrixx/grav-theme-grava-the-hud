@@ -19,7 +19,9 @@
    data-supported="{{ langs|join(',') }}"
    data-lang-href="{{ target_url }}"
    data-lang-target="{{ other }}"
-   aria-label="{{ active_lang == 'de' ? 'Sprache wechseln' : 'Switch language' }}"
+   {# aria-label must contain the visible text (the language code) or Lighthouse
+      flags label-content-name-mismatch; it also names the target language. #}
+   aria-label="{{ active_lang|upper }} – {{ other == 'de' ? 'Deutsch' : 'English' }}"
    title="{{ active_lang == 'de' ? 'Sprache wechseln' : 'Switch language' }}">
     <span class="lang-code">{{ active_lang|upper }}</span>
 </a>
