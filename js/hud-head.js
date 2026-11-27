@@ -6,22 +6,29 @@
 // top; a vertex-colour scan band sweeps the mesh. Pauses off-screen/hidden.
 (() => {
   const stage = document.querySelector('.sketch-stage');
-  const canvas = stage && stage.querySelector('canvas');
-  if (!canvas) return;
+  if (!stage) return;
+  const sketch = stage.closest('.hud-sketch') || stage;
+  const hide = () => { sketch.style.display = 'none'; };
+  let started = false;
 
-  const caps = {
-    front: stage.querySelector('.cap-front'),
-    side: stage.querySelector('.cap-side'),
-    top: stage.querySelector('.cap-top'),
-  };
-  const readout = stage.querySelector('.sketch-readout');
-  const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const hide = () => stage.closest('.hud-sketch').style.display = 'none';
+  const start = () => {
+    if (started) return;
+    started = true;
+    const canvas = stage.querySelector('canvas');
+    if (!canvas) return;
 
-  Promise.all([
-    import('three'),
-    import('three/addons/loaders/GLTFLoader.js'),
-  ]).then(([THREE, { GLTFLoader }]) => {
+    const caps = {
+      front: stage.querySelector('.cap-front'),
+      side: stage.querySelector('.cap-side'),
+      top: stage.querySelector('.cap-top'),
+    };
+    const readout = stage.querySelector('.sketch-readout');
+    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    Promise.all([
+      import('three'),
+      import('three/addons/loaders/GLTFLoader.js'),
+    ]).then(([THREE, { GLTFLoader }]) => {
     let renderer;
     try {
       renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
@@ -43,7 +50,7 @@
     let loaded = false;
 
     new GLTFLoader().load(
-      '/user/themes/grava-the-hud/js/models/LeePerrySmith.glb',
+      '/user/themes/grava-the-hud/js/models/LeePerrySmith.402b8a8ac9.glb',
       (gltf) => {
         const src = gltf.scene;
         src.updateMatrixWorld(true);
@@ -204,5 +211,26 @@
       }
       renderer.render(scene, camera);
     });
-  }).catch(hide);
+    }).catch(hide);
+  };
+
+  // Below 1180px .hud-sketch is display:none (css/custom.css) - never fetch the
+  // ~1.1 MB of three.js + head model for a viewport that cannot show it; load
+  // on demand if the window is resized to desktop width (tracker #84).
+  if (getComputedStyle(sketch).display === 'none') {
+    window.addEventListener('resize', () => {
+      if (getComputedStyle(sketch).display !== 'none') start();
+    });
+    return;
+  }
+  // Desktop: still keep the deps out of the critical path until the stage is
+  // about to enter the viewport.
+  if ('IntersectionObserver' in window) {
+    const io = new IntersectionObserver((es) => {
+      if (es.some((e) => e.isIntersecting)) { io.disconnect(); start(); }
+    }, { rootMargin: '300px' });
+    io.observe(stage);
+  } else {
+    start();
+  }
 })();

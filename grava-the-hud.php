@@ -13,7 +13,87 @@ class GravaTheHud extends Theme
             'onPageInitialized'  => ['onPageInitialized', 0],
             'onTwigLoader'       => ['onTwigLoader', 0],
             'onTwigInitialized'  => ['onTwigInitialized', 0],
+            'onPageContentProcessed' => ['onPageContentProcessed', 0],
         ];
+    }
+
+    /**
+     * Post-process rendered page content once per cache build:
+     * - every content <img> gets real width/height attributes (Lighthouse
+     *   unsized-images / CLS): markdown can't carry them and the media files
+     *   know their own size; SVGs from their root element;
+     * - every <pre> gets tabindex="0" (axe scrollable-region-focusable): code
+     *   blocks scroll sideways on mobile and must be keyboard-reachable.
+     */
+    public function onPageContentProcessed($event)
+    {
+        $page = $event['page'];
+        $orig = $page->content();
+        if (!is_string($orig)) {
+            return;
+        }
+        $content = $orig;
+        if (strpos($content, '<pre') !== false) {
+            $content = preg_replace_callback('/<pre\b[^>]*>/i', static function ($m) {
+                $tag = $m[0];
+                if (preg_match('/\btabindex=/i', $tag)) {
+                    return $tag;
+                }
+                return substr($tag, 0, -1) . ' tabindex="0">';
+            }, $content);
+        }
+        if (strpos($content, '<img') !== false) {
+            $content = preg_replace_callback('/<img\b[^>]*>/i', function ($m) {
+            $tag = $m[0];
+            if (preg_match('/\bwidth=/i', $tag) && preg_match('/\bheight=/i', $tag)) {
+                return $tag;
+            }
+            if (!preg_match('/\bsrc="([^"]+)"/', $tag, $s)) {
+                return $tag;
+            }
+            $src = parse_url(rawurldecode($s[1]), PHP_URL_PATH);
+            if (!$src || $src[0] !== '/' || !is_file(GRAV_ROOT . $src)) {
+                return $tag;
+            }
+            $wh = null;
+            if (preg_match('/\.svg$/i', $src)) {
+                $head = (string) file_get_contents(GRAV_ROOT . $src, false, null, 0, 4000);
+                if (preg_match('/<svg[^>]*\bwidth="(\d+)/i', $head, $w)
+                    && preg_match('/<svg[^>]*\bheight="(\d+)/i', $head, $h)) {
+                    $wh = [$w[1], $h[1]];
+                }
+            } else {
+                $size = @getimagesize(GRAV_ROOT . $src);
+                if ($size && $size[0] && $size[1]) {
+                    $wh = [$size[0], $size[1]];
+                }
+            }
+            if (!$wh) {
+                return $tag;
+            }
+            $close = strrpos($tag, '>');
+            if (substr($tag, $close - 1, 1) === '/') {
+                $close--;
+            }
+                return substr($tag, 0, $close) . ' width="' . $wh[0] . '" height="' . $wh[1] . '"' . substr($tag, $close);
+            }, $content);
+        }
+        if ($content === $orig) {
+            return;
+        }
+        // Grav 2 has no public setter for *processed* content (content($var)
+        // re-enters the parser from raw markdown, setRawContent() would dirty
+        // the file for git-sync), so write the protected property directly.
+        // The core caches $this->content right after this event, making the
+        // injection a build-time cost. Guarded: if the core ever renames the
+        // property the pages keep their markup untouched.
+        try {
+            $prop = new \ReflectionProperty(\Grav\Common\Page\Page::class, 'content');
+            $prop->setAccessible(true);
+            $prop->setValue($page, $content);
+        } catch (\Throwable $t) {
+            // fail soft
+        }
     }
 
     public function onThemeInitialized()
@@ -123,14 +203,21 @@ class GravaTheHud extends Theme
             $meta,
             static fn ($entry) => !is_array($entry) || (($entry['name'] ?? $entry['property'] ?? '') !== 'description')
         ));
-        if ($description !== '') {
-            $meta[] = ['name' => 'description', 'content' => htmlspecialchars($description, ENT_QUOTES)];
-        }
-
         // SimpleSearch dispatches its own synthetic page under the language
         // root, so match the template as well as the route name.
-        if (basename($route) === 'search' || $page->template() === 'search') {
+        $isSearch = basename($route) === 'search'
+            || in_array((string) $page->template(), ['search', 'wiki-search', 'simplesearch_results'], true);
+        if ($isSearch) {
             $meta[] = ['name' => 'robots', 'content' => 'noindex, follow'];
+            // The synthetic page carries no front matter, so it had no meta
+            // description at all (Lighthouse SEO). Use the translated hint.
+            if ($description === '') {
+                $description = (string) $this->grav['language']->translate('THEME_GRAVA_HUD.SEARCH.HINT');
+            }
+        }
+
+        if ($description !== '') {
+            $meta[] = ['name' => 'description', 'content' => htmlspecialchars($description, ENT_QUOTES)];
         }
 
         $title = $this->stripEmoji((string) $page->title());

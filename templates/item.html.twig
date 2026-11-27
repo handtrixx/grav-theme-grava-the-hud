@@ -47,10 +47,10 @@
                 {# Related posts from the relatedpages plugin (tag and content
                    scoring); the plugin exposes the scored list as related_pages. #}
                 {% if config.plugins.relatedpages.enabled and related_pages|default([])|length > 0 %}
-                    <aside class="related-posts">
+                    <div class="related-posts">
                         <h2 class="related-posts-headline">{{ 'THEME_GRAVA_HUD.SIDEBAR.RELATED_POSTS.HEADLINE'|t }}</h2>
                         {% include 'partials/relatedpages.html.twig' %}
-                    </aside>
+                    </div>
                 {% endif %}
             {% endblock %}
             {% block sidebar %}

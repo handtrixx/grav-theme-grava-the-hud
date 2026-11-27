@@ -86,7 +86,7 @@ html:not(.wiki-js) .wiki-branch {
   display: block;
 }
 .wiki-node.is-current > .wiki-node-link {
-  color: var(--q2-accent);
+  color: var(--hud-accent-text);
   border-color: color-mix(in oklab, var(--q2-accent) 45%, transparent);
   background: color-mix(in oklab, var(--q2-accent) 10%, transparent);
 }
@@ -124,7 +124,7 @@ html:not(.wiki-js) .wiki-branch {
   color: var(--q2-text);
 }
 .wiki-toc-item a.is-current {
-  color: var(--q2-accent);
+  color: var(--hud-accent-text);
   border-left-color: var(--q2-accent);
 }
 .wiki-toc-h3 a {
@@ -269,7 +269,7 @@ html:not(.wiki-js) .wiki-branch {
 .wiki-prevnext-title {
   font-family: var(--hud-mono);
   font-size: 0.86rem;
-  color: var(--q2-accent);
+  color: var(--hud-accent-text); /* raw accent 2.86:1 on paper */
 }
 .wiki-next {
   margin-left: auto;

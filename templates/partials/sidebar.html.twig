@@ -2,12 +2,12 @@
 
 {# No search box here: the site header carries one (partials/header-search). #}
 
-{# Related posts live in the article body (item.html.twig aside.related-posts) —
+{# Related posts live in the article body (item.html.twig div.related-posts) —
    not here, or every blog post would show the block twice. #}
 
 {% if config.plugins.random.enabled %}
 <div class="sidebar-content">
-    <h4>{{ 'THEME_GRAVA_HUD.SIDEBAR.RANDOM_ARTICLE.HEADLINE'|t }}</h4>
+    <h3>{{ 'THEME_GRAVA_HUD.SIDEBAR.RANDOM_ARTICLE.HEADLINE'|t }}</h3>
     <a class="btn btn-ghost btn-sm" href="{{ base_url }}/random"><i class="fa-solid fa-shuffle" aria-hidden="true"></i> {{ 'THEME_GRAVA_HUD.SIDEBAR.RANDOM_ARTICLE.FEELING_LUCKY'|t }}</a>
 </div>
 {% endif %}
@@ -16,21 +16,21 @@
 
 {% if config.plugins.taxonomylist.enabled %}
 <div class="sidebar-content">
-    <h4>{{ 'THEME_GRAVA_HUD.SIDEBAR.POPULAR_TAGS.HEADLINE'|t }}</h4>
+    <h3>{{ 'THEME_GRAVA_HUD.SIDEBAR.POPULAR_TAGS.HEADLINE'|t }}</h3>
     {% include 'partials/taxonomylist.html.twig' with {'base_url': new_base_url, 'taxonomy': 'tag', 'children_only': true, 'of_page': blog} %}
 </div>
 {% endif %}
 
 {% if config.plugins.archives.enabled %}
 <div class="sidebar-content">
-    <h4>{{ 'THEME_GRAVA_HUD.SIDEBAR.ARCHIVES.HEADLINE'|t }}</h4>
+    <h3>{{ 'THEME_GRAVA_HUD.SIDEBAR.ARCHIVES.HEADLINE'|t }}</h3>
     {% include 'partials/archives.html.twig' with {'base_url': new_base_url} %}
 </div>
 {% endif %}
 
 {% if config.plugins.feed.enabled %}
 <div class="sidebar-content syndicate">
-    <h4>{{ 'THEME_GRAVA_HUD.SIDEBAR.SYNDICATE.HEADLINE'|t }}</h4>
+    <h3>{{ 'THEME_GRAVA_HUD.SIDEBAR.SYNDICATE.HEADLINE'|t }}</h3>
     <a class="btn btn-ghost btn-sm" href="{{ blog.url(false, false, true, false, 'atom')|e }}"><i class="fa-solid fa-square-rss" aria-hidden="true"></i> Atom</a>
     <a class="btn btn-ghost btn-sm" href="{{ blog.url(false, false, true, false, 'rss')|e }}"><i class="fa-solid fa-square-rss" aria-hidden="true"></i> RSS</a>
     {% if config.plugins.feed.enable_json_feed %}<a class="btn btn-ghost btn-sm" href="{{ feed_url }}.json"><i class="fa-solid fa-code" aria-hidden="true"></i> JSON</a>{% endif %}

@@ -47,7 +47,10 @@
       :root {
         --q2-accent: {{ accent }};
         --q2-accent-contrast: #ffffff;
-        --q2-link: {{ accent }};
+        /* links carry the accent but must clear 4.5:1 as body-size text:
+           raw #18a98a on paper is 2.86:1. Mixing toward the theme text color
+           darkens on light and lightens on dark in one rule. (2026-11-27) */
+        --q2-link: color-mix(in oklab, {{ accent }} 55%, var(--q2-text));
         --q2-focus-ring: color-mix(in oklab, {{ accent }} 45%, transparent);
       }
       :root[data-theme='dark'] {
@@ -102,6 +105,15 @@
     {# Wiki tree: collapse, live filter, TOC, mobile drawer (wiki pages only). #}
     {% if page.template in ['wiki', 'wiki-article', 'wiki-search'] %}
         {% do assets.addJs('theme://js/wiki.js', {group:'bottom', priority: 110}) %}
+    {% endif %}
+    {# About-page wireframe head (hud-flat pages). Classic script on purpose:
+       hud-head.js dynamic-imports three + GLTFLoader (resolved by the importmap
+       in the bottom block) only when the stage is visible and near the viewport,
+       so mobile never fetches ~1.1 MB for a CSS-hidden element. Registered via
+       assets so the URL carries Grav's content timestamp (theme JS is served
+       immutable). #}
+    {% if "hud-flat" in body_classes %}
+        {% do assets.addJs('theme://js/hud-head.js', {group:'bottom', priority: 120}) %}
     {% endif %}
 {% endblock %}
 
@@ -190,8 +202,10 @@
 {% block bottom %}
     {{ assets.js('bottom')|raw }}
 {% if "hud-flat" in body_classes %}
-    <script type="importmap">{"imports":{"three":"/user/themes/grava-the-hud/js/three.module.min.js","three/addons/":"/user/themes/grava-the-hud/js/addons/"}}</script>
-    <script type="module" src="/user/themes/grava-the-hud/js/hud-head.js"></script>
+    {# Importmap for hud-head.js's dynamic imports; three files are content-hashed
+       in their filenames (immutable caching), bump the hashes on upgrade and
+       re-apply the internal core import in three.module.*.js. #}
+    <script type="importmap">{"imports":{"three":"/user/themes/grava-the-hud/js/three.module.e2b5ee6bcc.js","three/addons/":"/user/themes/grava-the-hud/js/addons-e2b5ee6bcc/"}}</script>
     {% endif %}
 {% endblock %}
 </body>

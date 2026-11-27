@@ -44,9 +44,9 @@
                         <div class="zoo-card">
                             <span class="zoo-index">{{ loop.index < 10 ? '0' ~ loop.index : loop.index }}</span>
                             <span class="zoo-kicker">{{ r.language|default(de ? 'verschiedenes' : 'misc') }}{% if r.fork %} · {{ 'THEME_GRAVA_HUD.ZOO.FORK'|t }}{% endif %} · {{ r.pushed|date('Y-m-d') }}</span>
-                            <h3>
+                            <h2>
                                 <a href="{{ w ? w.url : r.url }}"{% if not w %} target="_blank" rel="noopener noreferrer"{% endif %}>{{ w ? w.title|strip_emoji : r.name }}</a>
-                            </h3>
+                            </h2>
                             {% if r.description %}<p>{{ r.description|strip_emoji }}</p>{% endif %}
                             <div class="zoo-links">
                                 <a href="{{ r.url }}" target="_blank" rel="noopener noreferrer"><i class="fa-brands fa-github" aria-hidden="true"></i> {{ 'THEME_GRAVA_HUD.ZOO.REPO'|t }}</a>
@@ -65,9 +65,9 @@
                         <div class="zoo-card is-archived">
                             <span class="zoo-index">{{ loop.index < 10 ? '0' ~ loop.index : loop.index }}</span>
                             <span class="zoo-kicker">{{ r.language|default(de ? 'verschiedenes' : 'misc') }} · {{ r.pushed|date('Y-m-d') }} <span class="zoo-tag-archived">{{ 'THEME_GRAVA_HUD.ZOO.ARCHIVED'|t }}</span></span>
-                            <h3>
+                            <h2>
                                 <a href="{{ w ? w.url : r.url }}"{% if not w %} target="_blank" rel="noopener noreferrer"{% endif %}>{{ w ? w.title|strip_emoji : r.name }}</a>
-                            </h3>
+                            </h2>
                             {% if r.description %}<p>{{ r.description|strip_emoji }}</p>{% endif %}
                             <div class="zoo-links">
                                 <a href="{{ r.url }}" target="_blank" rel="noopener noreferrer"><i class="fa-brands fa-github" aria-hidden="true"></i> {{ 'THEME_GRAVA_HUD.ZOO.REPO'|t }}</a>
@@ -86,7 +86,7 @@
                         <div class="zoo-card">
                             <span class="zoo-index">{{ loop.index < 10 ? '0' ~ loop.index : loop.index }}</span>
                             {% if p.header.kicker %}<span class="zoo-kicker">{{ p.header.kicker }}</span>{% endif %}
-                            <h3><a href="{{ p.url }}">{{ p.title|strip_emoji }}</a></h3>
+                            <h2><a href="{{ p.url }}">{{ p.title|strip_emoji }}</a></h2>
                             {% if p.header.description %}<p>{{ p.header.description }}</p>{% endif %}
                             {% if p.header.links %}{{ zm.links(p.header.links) }}{% endif %}
                         </div>

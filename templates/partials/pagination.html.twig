@@ -2,10 +2,11 @@
 {% set base_url = base_url|default(page.url) %}
 
 {% if pagination|length > 1 %}
-<ul class="pagination" role="navigation" aria-label="{{ 'THEME_GRAVA_HUD.ARIA.PAGINATION'|t|e('html_attr') }}">
+{# no role="navigation": the role stripped list semantics and axe flagged every <li> as an orphan listitem (2026-11-27) #}
+<ul class="pagination" aria-label="{{ 'THEME_GRAVA_HUD.ARIA.PAGINATION'|t|e('html_attr') }}">
     {% if pagination.hasPrev %}
         {% set url = (base_url ~ pagination.params ~ pagination.prevUrl)|replace({'//':'/'}) %}
-        <li><a href="{{ url }}" rel="prev"><i class="fa-solid fa-angle-left" aria-hidden="true"></i></a></li>
+        <li><a href="{{ url }}" rel="prev" aria-label="{{ 'THEME_GRAVA_HUD.ARIA.PREV_PAGE'|t }}"><i class="fa-solid fa-angle-left" aria-hidden="true"></i></a></li>
     {% else %}
         <li class="disabled"><span><i class="fa-solid fa-angle-left" aria-hidden="true"></i></span></li>
     {% endif %}
@@ -23,7 +24,7 @@
 
     {% if pagination.hasNext %}
         {% set url = (base_url ~ pagination.params ~ pagination.nextUrl)|replace({'//':'/'}) %}
-        <li><a href="{{ url }}" rel="next"><i class="fa-solid fa-angle-right" aria-hidden="true"></i></a></li>
+        <li><a href="{{ url }}" rel="next" aria-label="{{ 'THEME_GRAVA_HUD.ARIA.NEXT_PAGE'|t }}"><i class="fa-solid fa-angle-right" aria-hidden="true"></i></a></li>
     {% else %}
         <li class="disabled"><span><i class="fa-solid fa-angle-right" aria-hidden="true"></i></span></li>
     {% endif %}

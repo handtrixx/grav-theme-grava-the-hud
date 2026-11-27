@@ -36,7 +36,7 @@
   /* AA-safe sibling of the accent for small accent-colored TEXT: #18a98a is
      only ~2.96:1 on white, #0e7a61 reaches 5.3:1 (Lighthouse color-contrast
      audit, home teasers + hero, 2026-11-27). Large text/decoration keeps --hud-accent. */
-  --hud-accent-text: #0e7a61;
+  --hud-accent-text: #0c6b53; /* on the 13% accent nav pill: 5.5:1 (#0e7a61 landed at 4.46:1 there) */
   --hud-accent-glow: color-mix(in oklab, var(--hud-accent) 35%, transparent);
   --hud-accent-line: color-mix(in oklab, var(--hud-accent) 45%, transparent);
   --hud-warning: #9a6700; /* archived / caution tone, matches markdown alerts */
@@ -138,7 +138,7 @@ html[data-theme='light']::after { opacity: 0.03; }
 }
 .dropmenu a.active {
   background: color-mix(in oklab, var(--hud-accent) 13%, transparent);
-  color: var(--hud-accent);
+  color: var(--hud-accent-text);
   border-color: var(--hud-accent-line);
   box-shadow:
     0 0 18px -2px var(--hud-accent-glow),
@@ -146,7 +146,7 @@ html[data-theme='light']::after { opacity: 0.03; }
 }
 .dropmenu a.active:hover {
   background: color-mix(in oklab, var(--hud-accent) 20%, transparent);
-  color: var(--hud-accent);
+  color: var(--hud-accent-text);
 }
 
 /* dropdown submenus: monospace, glowing border */
@@ -244,12 +244,12 @@ a:hover {
 
 /* ---------- Sidebar / tree nav ---------- */
 
-#sidebar .sidebar-content h4 {
+#sidebar .sidebar-content h3 {
   font-family: var(--hud-mono);
   font-size: 0.8rem;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: color-mix(in oklab, var(--hud-accent) 80%, var(--q2-text));
+  color: var(--hud-accent-text); /* 80% mix was 4.11:1 */
 }
 
 .tree a {
@@ -275,7 +275,7 @@ pre {
 }
 
 code:not(pre code) {
-  color: color-mix(in oklab, var(--hud-accent) 75%, var(--q2-text));
+  color: color-mix(in oklab, var(--hud-accent) 55%, var(--q2-text)); /* inline code: 75% mix measured 3.8:1, 55% clears 4.5:1 */
   border: 1px solid color-mix(in oklab, var(--hud-accent) 18%, transparent);
   background: color-mix(in oklab, var(--hud-accent) 6%, var(--q2-bg-muted));
 }
@@ -370,7 +370,7 @@ body.hud-home #body-wrapper > .container > .content-item {
   margin-bottom: 1rem;
 }
 .hud-ls-head .prompt {
-  color: var(--hud-accent);
+  color: var(--hud-accent-text);
   font-weight: 700;
 }
 .hud-teasers {
@@ -517,11 +517,11 @@ body.hud-home #body-wrapper > .container > .content-item {
   margin-top: 0.6rem;
 }
 .hud-footer-links .prompt {
-  color: var(--hud-accent);
+  color: var(--hud-accent-text);
   font-weight: 700;
 }
 .hud-footer-links a {
-  color: var(--hud-accent);
+  color: var(--hud-accent-text);
 }
 
 /* ---------- Page titles: one terminal header band everywhere ---------- */
@@ -818,7 +818,7 @@ html[data-theme='dark'] footer.section {
   font-family: var(--hud-mono);
   font-weight: 700;
   font-size: 1.15rem;
-  color: var(--hud-accent);
+  color: var(--hud-accent-text);
   letter-spacing: 0.02em;
   font-variant-numeric: tabular-nums;
 }
@@ -905,7 +905,7 @@ body.hud-flat #body-wrapper > .container > .content-item .hud-trivia {
 }
 /* terminal header band */
 body.hud-flat #body-wrapper > .container > .content-item > h1 {
-  color: var(--hud-accent);
+  color: var(--hud-accent-text); /* same later rule re-painted raw accent over the fixed one above */
   padding-bottom: 0.9rem;
   border-bottom: 1px solid color-mix(in oklab, var(--hud-accent) 35%, transparent);
 }
@@ -936,7 +936,7 @@ body.hud-flat #body-wrapper > .container > .content-item > h2:first-of-type {
   font-size: 0.9rem;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: var(--hud-accent);
+  color: var(--hud-accent-text);
   margin-bottom: 0.5rem;
 }
 .hud-trivia-label::before {
@@ -1023,7 +1023,7 @@ body.hud-flat #body-wrapper > .container > .content-item p {
   font-size: 0.95rem;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: var(--hud-accent);
+  color: var(--hud-accent-text);
 }
 .biz-role::before {
   content: "> ";
@@ -1047,7 +1047,7 @@ body.hud-flat #body-wrapper > .container > .content-item p {
   font-size: 0.8rem;
   text-transform: uppercase;
   letter-spacing: 0.14em;
-  color: color-mix(in oklab, var(--hud-accent) 70%, var(--pico-color));
+  color: var(--hud-accent-text); /* 70% mix still only ~3.2:1 at this size */
 }
 .biz-links a {
   font-family: var(--hud-mono);
@@ -1112,7 +1112,7 @@ body.hud-flat #body-wrapper > .container > .content-item p {
   font-family: var(--hud-mono);
   font-size: 0.75rem;
   letter-spacing: 0.12em;
-  color: var(--hud-accent);
+  color: var(--hud-accent-text);
 }
 .sketch-caption .cap {
   position: absolute;
@@ -1130,7 +1130,7 @@ body.hud-flat #body-wrapper > .container > .content-item p {
   font-family: var(--hud-mono);
   font-size: 0.7rem;
   letter-spacing: 0.1em;
-  color: var(--hud-accent);
+  color: var(--hud-accent-text);
   opacity: 0.6;
 }
 
@@ -1343,17 +1343,20 @@ body.hud-flat #body-wrapper > .container > .content-item p {
   color: var(--q2-text-muted);
   margin-bottom: 0.4rem;
 }
+.blog-row-body h2,
 .blog-row-body h3 {
   margin: 0 0 0.5rem;
   font-size: clamp(1.15rem, 2.2vw, 1.45rem);
   line-height: 1.3;
 }
+.blog-row-body h2 a,
 .blog-row-body h3 a {
   color: var(--q2-text-strong);
   text-decoration: none;
 }
+.blog-row-body h2 a:hover,
 .blog-row-body h3 a:hover {
-  color: var(--hud-accent);
+  color: var(--hud-accent-text);
 }
 .blog-row-summary {
   color: var(--q2-text-muted);
@@ -1453,7 +1456,7 @@ body.hud-flat #body-wrapper > .container > .content-item p {
   opacity: 0.9;
 }
 .wiki-node.is-active > .wiki-node-link {
-  color: var(--hud-accent);
+  color: var(--hud-accent-text);
   background: color-mix(in oklab, var(--hud-accent) 13%, transparent);
   border-color: var(--hud-accent-line);
 }
@@ -1500,7 +1503,7 @@ body.hud-flat #body-wrapper > .container > .content-item p {
   font-family: var(--hud-mono);
   font-size: 0.75rem;
   letter-spacing: 0.1em;
-  color: var(--hud-accent);
+  color: var(--hud-accent-text);
   margin-bottom: 0.8rem;
 }
 .zoo-kicker {
@@ -1512,7 +1515,7 @@ body.hud-flat #body-wrapper > .container > .content-item p {
   color: var(--q2-text-muted);
   margin-bottom: 0.5rem;
 }
-.zoo-card h3 {
+.zoo-card h2 {
   margin: 0 0 0.7rem;
   font-size: clamp(1.3rem, 2.4vw, 1.6rem);
 }
@@ -1560,12 +1563,13 @@ body.hud-flat #body-wrapper > .container > .content-item p {
   color: var(--q2-text-muted);
 }
 .zoo-archive-head .prompt {
-  color: var(--hud-accent);
+  color: var(--hud-accent-text);
 }
 .zoo-grid-archived .zoo-card.is-archived {
   border-style: dashed;
   background: color-mix(in oklab, var(--q2-bg-elev) 55%, transparent);
-  opacity: 0.75;
+  /* no opacity dim: 0.75 composited every color inside below the 4.5:1 floor
+     (muted text 3.42:1, archived tag 3.07:1). Dashed border marks it. */
 }
 .zoo-grid-archived .zoo-card.is-archived:hover {
   transform: none;
@@ -1588,12 +1592,12 @@ body.hud-flat #body-wrapper > .container > .content-item p {
 }
 
 /* Zoo card titles link to the project page */
-.zoo-card h3 a {
+.zoo-card h2 a {
   color: inherit;
   text-decoration: none;
 }
-.zoo-card h3 a:hover {
-  color: var(--hud-accent);
+.zoo-card h2 a:hover {
+  color: var(--hud-accent-text);
 }
 
 /* Zoo project page */
@@ -1628,7 +1632,7 @@ body.hud-flat #body-wrapper > .container > .content-item p {
   text-decoration: none;
 }
 .zoo-back a:hover {
-  color: var(--hud-accent);
+  color: var(--hud-accent-text);
 }
 
 /* ---------- Server-side syntax highlighting (highlight-php) ---------- */
@@ -1637,9 +1641,9 @@ body.hud-flat #body-wrapper > .container > .content-item p {
    palette below follows the HUD theme in both light and dark mode. */
 
 .hljs {
-  --hl-comment: #6b7280;
+  --hl-comment: #646b78; /* 4.3:1 on the code background was below 4.5 */
   --hl-key: #0e7a63;
-  --hl-string: #b45309;
+  --hl-string: #a84b04; /* 4.49:1 vs #f2f2f4 - just below AA; darkened */
   --hl-number: #2563eb;
   --hl-title: #7c3aed;
   --hl-attr: #0369a3;
