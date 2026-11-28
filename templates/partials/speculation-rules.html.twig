@@ -1,13 +1,26 @@
 {# Speculation Rules (Chrome/Edge 121+, fail-safe: unknown keys are ignored,
-   unsupported browsers simply never see this). Prerenders same-origin pages
-   once a link is likely to be followed (hover/focus/tap), so the navigation
-   commits near-instantly. Exclusions: non-HTML targets and the QAS oauth
-   endpoints must not be prerendered. #}
+   unsupported browsers simply never see this). Two rules, deliberately split:
+   - prefetch on hover (moderate): warms network+server, has no activation
+     race with the click;
+   - prerender only on pointerdown (conservative, Chrome's default): the
+     prerender belongs to the same gesture as the navigation, so no
+     "hover-prerender still running swallows the first click" race
+     (observed with moderate-prerender on 2026-11-28).
+   Exclusions: non-HTML targets and the QAS oauth endpoints. #}
 <script type="speculationrules">
 {
-  "prerender": [{
+  "prefetch": [{
     "where": "a[href]",
     "eagerness": "moderate",
+    "not_href_matches": [
+      "/media/*", "/oauth2/*", "/gitsync/*",
+      "*.md", "*.pdf", "*.zip", "*.xml", "*.json", "*.txt", "*.rss",
+      "*.css", "*.js", "*.png", "*.jpg", "*.jpeg", "*.webp", "*.svg", "*.gif", "*.ico"
+    ]
+  }],
+  "prerender": [{
+    "where": "a[href]",
+    "eagerness": "conservative",
     "not_href_matches": [
       "/media/*", "/oauth2/*", "/gitsync/*",
       "*.md", "*.pdf", "*.zip", "*.xml", "*.json", "*.txt", "*.rss",
