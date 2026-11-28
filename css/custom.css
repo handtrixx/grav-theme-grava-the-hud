@@ -341,6 +341,13 @@ code:not(pre code) {
 .hud-hero .lead {
   margin-bottom: 2rem;
 }
+/* Landing subtext in dark: Niklas 2026-11-28 "still too dark". The .lead is
+ * weight-300, so its thin strokes read darker than the hex already looks;
+ * lift it well past the muted token here rather than washing out small muted
+ * text everywhere. ~12:1 on the near-black canvas. */
+:root[data-theme="dark"] .hud-hero .lead {
+  color: color-mix(in oklab, var(--q2-text) 78%, var(--q2-text-muted));
+}
 
 /* Desktop home: text left, terminal right */
 @media (min-width: 900px) {

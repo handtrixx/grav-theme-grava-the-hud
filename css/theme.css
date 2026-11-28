@@ -109,7 +109,7 @@
 
   --q2-text: #f2f2f3;
   --q2-text-strong: #ffffff;
-  --q2-text-muted: #85858e; /* dimmed 2026-11-26: #9a9aa0 glared on near-black */
+  --q2-text-muted: #91929a; /* 2026-11-28: Niklas "subtext still too dark" — #85858e overcorrected the #9a9aa0 glare; this sits between (6.4:1 on #08090b) */
   --q2-text-inverse: #111111;
 
   --q2-border-ring: rgba(255, 255, 255, 0.14);
@@ -1120,13 +1120,18 @@ button.button_container:focus-visible {
 .overlay .overlay-menu > ul > li + li {
   margin-top: 0.125rem;
 }
+/* Same mono identity as the desktop navbar (custom.css .dropmenu a) — Niklas
+   2026-11-28 noticed the overlay ran Cal Sans while the desktop nav is
+   JetBrains Mono ("looks like a different font"). It was: now it isn't.
+   1.35rem rather than the desktop 0.825rem for touch targets, slightly less
+   than the old 1.5rem since mono glyphs are wider. */
 .overlay .overlay-menu a {
   display: block;
   width: 100%;
   margin: 0; /* kill Pico's negative nav a margin */
   padding: 0.625rem 0;
-  font-family: var(--pico-font-family-display);
-  font-size: 1.5rem;
+  font-family: var(--hud-mono);
+  font-size: 1.35rem;
   font-weight: 600;
   color: var(--q2-text-strong);
   text-decoration: none;
@@ -1148,7 +1153,7 @@ button.button_container:focus-visible {
 .overlay .overlay-menu ul ul a {
   font-size: 1rem;
   font-weight: 500;
-  font-family: var(--pico-font-family-sans-serif);
+  font-family: var(--hud-mono);
   color: var(--q2-text-muted);
   letter-spacing: 0;
   padding: 0.5rem 0 0.5rem 0.75rem;
