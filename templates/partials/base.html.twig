@@ -241,10 +241,10 @@
        re-apply the internal core import in three.module.*.js. #}
     <script type="importmap">{"imports":{"three":"/user/themes/grava-the-hud/js/three.module.e2b5ee6bcc.js","three/addons/":"/user/themes/grava-the-hud/js/addons-e2b5ee6bcc/"}}</script>
     {% endif %}
-    {# Speculation rules OFF for now (bisect 2026-11-28): Vivaldi/Chromium 156
-       swallowed the first nav click whenever speculation existed at any
-       eagerness. partials/speculation-rules.html.twig stays in the repo for a
-       future re-enable once the browser bug is pinned down. #}
+    {# Rung-1 state (2026-11-28 bisect): cross-document view transitions are
+       OUT (Vivaldi 8.3 swallows the first nav click - see custom.css note).
+       Speculation rules are back WITHOUT VT: prerender conservative only. #}
+    {% include 'partials/speculation-rules.html.twig' %}
 {% endblock %}
 </body>
 </html>
