@@ -1966,17 +1966,10 @@ html.palette-open {
   }
 }
 
-/* Cross-document View Transitions (Chrome/Edge 126+, Safari 18+): each page
-   navigation cross-fades instead of hard-cutting - the reload still happens
-   (Speculation Rules make it near-instant), only the swap becomes smooth.
-   Both documents opt in through this same stylesheet; unknown-at-rule parsers
-   ignore the block. Cross-origin redirect chains (QAS Keycloak login) are
-   skipped by spec. Reduced-motion users get no animation. */
-@view-transition { navigation: auto; }
-
-@media (prefers-reduced-motion: reduce) {
-  ::view-transition-old(root),
-  ::view-transition-new(root) {
-    animation: none;
-  }
-}
+/* Cross-document View Transitions: OFF (bisect 2026-11-28). Vivaldi 8.3 /
+   Chromium 156 swallowed the first navigation click even with ONLY this
+   at-rule present (speculation rules already removed). Vivaldi's MPA view
+   transition integration is the remaining suspect. To re-enable (after a
+   Vivaldi update, or gated to Chrome/Edge):
+     @view-transition { navigation: auto; }
+   plus a prefers-reduced-motion guard for ::view-transition-old/new(root). */
