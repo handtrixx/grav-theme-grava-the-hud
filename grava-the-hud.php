@@ -217,6 +217,24 @@ class GravaTheHud extends Theme
                 return substr($tag, 0, $close) . ' width="' . $wh[0] . '" height="' . $wh[1] . '"' . substr($tag, $close);
             }, $content);
         }
+        // #87 (2026-11-28): below-the-fold images load lazily. The FIRST img
+        // of a page stays eager - it is the usual LCP candidate of a blog
+        // post, and lazy-loading the LCP element is a Lighthouse regression.
+        if (strpos($content, '<img') !== false) {
+            $imgIndex = 0;
+            $content = preg_replace_callback('/<img\b[^>]*>/i', static function ($m) use (&$imgIndex) {
+                $imgIndex++;
+                $tag = $m[0];
+                if ($imgIndex === 1 || preg_match('/\bloading=/i', $tag)) {
+                    return $tag;
+                }
+                $close = strrpos($tag, '>');
+                if (substr($tag, $close - 1, 1) === '/') {
+                    $close--;
+                }
+                return substr($tag, 0, $close) . ' loading="lazy"' . substr($tag, $close);
+            }, $content);
+        }
         if ($content === $orig) {
             return;
         }
