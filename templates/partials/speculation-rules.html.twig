@@ -1,23 +1,13 @@
 {# Speculation Rules (Chrome/Edge 121+, fail-safe: unknown keys are ignored,
-   unsupported browsers simply never see this). Two rules, deliberately split:
-   - prefetch on hover (moderate): warms network+server, has no activation
-     race with the click;
-   - prerender only on pointerdown (conservative, Chrome's default): the
-     prerender belongs to the same gesture as the navigation, so no
-     "hover-prerender still running swallows the first click" race
-     (observed with moderate-prerender on 2026-11-28).
+   unsupported browsers simply never see this). Prerender ONLY, and only on
+   the pointerdown gesture (conservative = Chrome default): the prerender
+   belongs to the same user gesture as the navigation.
+   NO hover rules: both "prerender: moderate" and "prefetch: moderate"
+   swallowed the first click while the speculation was in flight
+   (Niklas on QAS, 2026-11-28; fixed by removing hover eagerness).
    Exclusions: non-HTML targets and the QAS oauth endpoints. #}
 <script type="speculationrules">
 {
-  "prefetch": [{
-    "where": "a[href]",
-    "eagerness": "moderate",
-    "not_href_matches": [
-      "/media/*", "/oauth2/*", "/gitsync/*",
-      "*.md", "*.pdf", "*.zip", "*.xml", "*.json", "*.txt", "*.rss",
-      "*.css", "*.js", "*.png", "*.jpg", "*.jpeg", "*.webp", "*.svg", "*.gif", "*.ico"
-    ]
-  }],
   "prerender": [{
     "where": "a[href]",
     "eagerness": "conservative",
