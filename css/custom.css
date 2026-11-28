@@ -1965,3 +1965,18 @@ html.palette-open {
     overflow-x: auto;
   }
 }
+
+/* Cross-document View Transitions (Chrome/Edge 126+, Safari 18+): each page
+   navigation cross-fades instead of hard-cutting - the reload still happens
+   (Speculation Rules make it near-instant), only the swap becomes smooth.
+   Both documents opt in through this same stylesheet; unknown-at-rule parsers
+   ignore the block. Cross-origin redirect chains (QAS Keycloak login) are
+   skipped by spec. Reduced-motion users get no animation. */
+@view-transition { navigation: auto; }
+
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation: none;
+  }
+}

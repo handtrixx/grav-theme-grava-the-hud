@@ -1,0 +1,18 @@
+{# Speculation Rules (Chrome/Edge 121+, fail-safe: unknown keys are ignored,
+   unsupported browsers simply never see this). Prerenders same-origin pages
+   once a link is likely to be followed (hover/focus/tap), so the navigation
+   commits near-instantly. Exclusions: non-HTML targets and the QAS oauth
+   endpoints must not be prerendered. #}
+<script type="speculationrules">
+{
+  "prerender": [{
+    "where": "a[href]",
+    "eagerness": "moderate",
+    "not_href_matches": [
+      "/media/*", "/oauth2/*", "/gitsync/*",
+      "*.md", "*.pdf", "*.zip", "*.xml", "*.json", "*.txt", "*.rss",
+      "*.css", "*.js", "*.png", "*.jpg", "*.jpeg", "*.webp", "*.svg", "*.gif", "*.ico"
+    ]
+  }]
+}
+</script>
