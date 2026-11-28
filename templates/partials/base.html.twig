@@ -241,7 +241,10 @@
        re-apply the internal core import in three.module.*.js. #}
     <script type="importmap">{"imports":{"three":"/user/themes/grava-the-hud/js/three.module.e2b5ee6bcc.js","three/addons/":"/user/themes/grava-the-hud/js/addons-e2b5ee6bcc/"}}</script>
     {% endif %}
-    {% include 'partials/speculation-rules.html.twig' %}
+    {# Speculation rules OFF for now (bisect 2026-11-28): Vivaldi/Chromium 156
+       swallowed the first nav click whenever speculation existed at any
+       eagerness. partials/speculation-rules.html.twig stays in the repo for a
+       future re-enable once the browser bug is pinned down. #}
 {% endblock %}
 </body>
 </html>
